@@ -30,16 +30,16 @@ export const Route = createFileRoute("/")({
 
 const FEATURED_SLUGS = [
   "fone-conducao-ossea",
-  "kit-seguranca-urbana",
   "bracadeira-led",
-  "fita-anti-atrito",
-  "cinto-corrida",
   "colete-refletivo",
+  "cinto-corrida",
+  "fita-anti-atrito",
 ];
 
 function Home() {
   const featured = FEATURED_SLUGS.map((s) => PRODUCTS.find((p) => p.slug === s)!).filter(Boolean);
   const spotlight = PRODUCTS.find((p) => p.slug === "fone-conducao-ossea")!;
+  const homeCategories = CATEGORIES.filter((c) => c.slug !== "kits");
 
   return (
     <StoreLayout>
