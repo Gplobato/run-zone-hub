@@ -12,7 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Minus, Plus, ShieldCheck, Truck, RotateCcw } from "lucide-react";
+import { Minus, Plus, ShieldCheck, Truck, RotateCcw, Check } from "lucide-react";
 
 export const Route = createFileRoute("/produto/$slug")({
   loader: ({ params }) => {
