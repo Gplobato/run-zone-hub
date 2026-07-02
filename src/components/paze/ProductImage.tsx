@@ -5,10 +5,12 @@ export function ProductImage({
   product,
   className = "",
   eager = false,
+  fit = "cover",
 }: {
   product: Product;
   className?: string;
   eager?: boolean;
+  fit?: "cover" | "contain";
 }) {
   const src = PRODUCT_IMAGES[product.slug];
   if (src) {
@@ -17,12 +19,11 @@ export function ProductImage({
         src={src}
         alt={product.name}
         loading={eager ? "eager" : "lazy"}
-        className={`h-full w-full object-cover ${className}`}
+        className={`h-full w-full ${fit === "contain" ? "object-contain" : "object-cover"} ${className}`}
         draggable={false}
       />
     );
   }
-  // Fallback (should not happen — every product has an image mapped).
   return (
     <div
       className={`flex h-full w-full items-center justify-center bg-[color:var(--bone)] font-mono text-xs uppercase tracking-widest text-[color:var(--graphite)]/50 ${className}`}
