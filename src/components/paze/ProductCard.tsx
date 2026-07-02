@@ -11,12 +11,15 @@ export function ProductCard({ product }: { product: Product }) {
       <Link
         to="/produto/$slug"
         params={{ slug: product.slug }}
-        className="relative block aspect-square overflow-hidden"
+        className="relative block aspect-square overflow-hidden bg-[color:var(--bone)]"
       >
-        <ProductImage
-          product={product}
-          className="h-full w-full transition-transform duration-500 group-hover:scale-105"
-        />
+        <div className="absolute inset-0 flex items-center justify-center p-6 md:p-8">
+          <ProductImage
+            product={product}
+            fit="contain"
+            className="transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
         {product.badge && (
           <span className="absolute left-3 top-3 rounded-sm bg-[color:var(--terracotta)] px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-[color:var(--bone)]">
             {product.badge}
