@@ -246,7 +246,7 @@ function SummaryStep({
             <dt>Subtotal</dt><dd>{formatBRL(subtotal)}</dd>
           </div>
           <div className="flex justify-between text-muted-foreground">
-            <dt>Frete</dt><dd>{formatBRL(shipping)}</dd>
+            <dt>Frete</dt><dd>{shipping === 0 ? "Grátis" : formatBRL(shipping)}</dd>
           </div>
           <div className="flex justify-between border-t border-[color:var(--graphite)]/10 pt-2 text-base">
             <dt className="font-sans">Total</dt>
