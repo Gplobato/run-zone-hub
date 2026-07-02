@@ -3,6 +3,25 @@
 // from here. Prices are in BRL cents to avoid float math.
 // ─────────────────────────────────────────────────────────────────────────
 
+import imgFone from "@/assets/products/fone-conducao-ossea.jpg";
+import imgBrac from "@/assets/products/bracadeira-led.jpg";
+import imgColete from "@/assets/products/colete-refletivo.jpg";
+import imgFita from "@/assets/products/fita-anti-atrito.jpg";
+import imgCase from "@/assets/products/case-bracadeira.jpg";
+import imgCinto from "@/assets/products/cinto-corrida.jpg";
+import imgKit from "@/assets/products/kit-seguranca-urbana.jpg";
+
+export const PRODUCT_IMAGES: Record<string, string> = {
+  "fone-conducao-ossea": imgFone,
+  "bracadeira-led": imgBrac,
+  "colete-refletivo": imgColete,
+  "fita-anti-atrito": imgFita,
+  "case-braçadeira": imgCase,
+  "cinto-corrida": imgCinto,
+  "kit-seguranca-urbana": imgKit,
+};
+
+
 export type ProductCategory = "audio" | "seguranca" | "acessorios" | "kits";
 
 export type ProductSpec = { label: string; value: string };
