@@ -1,0 +1,68 @@
+import { Link } from "@tanstack/react-router";
+import { formatBRL, type Product } from "@/lib/products";
+import { ProductImage } from "./ProductImage";
+import { useCart } from "@/context/CartContext";
+import { Plus } from "lucide-react";
+
+export function ProductCard({ product }: { product: Product }) {
+  const { addItem } = useCart();
+  return (
+    <div className="group relative flex flex-col overflow-hidden rounded-md border border-border bg-card transition-colors hover:border-[color:var(--sage)]">
+      <Link
+        to="/produto/$slug"
+        params={{ slug: product.slug }}
+        className="relative block aspect-square overflow-hidden"
+      >
+        <ProductImage
+          product={product}
+          className="h-full w-full transition-transform duration-500 group-hover:scale-105"
+        />
+        {product.badge && (
+          <span className="absolute left-3 top-3 rounded-sm bg-[color:var(--terracotta)] px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-[color:var(--bone)]">
+            {product.badge}
+          </span>
+        )}
+        <span className="absolute right-3 top-3 rounded-sm bg-[color:var(--graphite)]/70 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-[color:var(--bone)]">
+          {product.categoryLabel}
+        </span>
+      </Link>
+      <div className="flex flex-1 flex-col justify-between gap-4 p-4">
+        <div>
+          <Link to="/produto/$slug" params={{ slug: product.slug }}>
+            <h3 className="font-display text-2xl leading-tight tracking-wide">
+              {product.shortName.toUpperCase()}
+            </h3>
+          </Link>
+          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+            {product.tagline}
+          </p>
+        </div>
+        <div className="flex items-end justify-between gap-2">
+          <div>
+            {product.compareAtCents && (
+              <div className="font-mono text-xs text-muted-foreground line-through">
+                {formatBRL(product.compareAtCents)}
+              </div>
+            )}
+            <div className="font-mono text-lg font-medium text-[color:var(--terracotta)]">
+              {formatBRL(product.priceCents)}
+            </div>
+            <div className="font-mono text-[11px] text-muted-foreground">
+              {product.installments.count}× {formatBRL(product.installments.valueCents)}
+            </div>
+          </div>
+          <button
+            aria-label={`Adicionar ${product.name} ao carrinho`}
+            onClick={(e) => {
+              e.preventDefault();
+              addItem(product.slug, 1);
+            }}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-sm bg-[color:var(--graphite)] text-[color:var(--bone)] transition-colors hover:bg-[color:var(--terracotta)]"
+          >
+            <Plus className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
