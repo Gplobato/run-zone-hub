@@ -58,7 +58,7 @@ function AllProducts() {
 
         <div className="mt-8 flex flex-wrap items-center gap-2 border-y border-[color:var(--graphite)]/10 py-4">
           <button
-            onClick={() => navigate({ search: (s) => ({ ...s, cat: undefined }) })}
+            onClick={() => navigate({ search: (s: any) => ({ ...s, cat: undefined }) })}
             className={`rounded-sm px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider ${
               !search.cat ? "bg-[color:var(--graphite)] text-[color:var(--bone)]" : "border border-[color:var(--graphite)]/20"
             }`}
@@ -68,7 +68,7 @@ function AllProducts() {
           {CATEGORIES.map((c) => (
             <button
               key={c.slug}
-              onClick={() => navigate({ search: (s) => ({ ...s, cat: c.slug }) })}
+              onClick={() => navigate({ search: (s: any) => ({ ...s, cat: c.slug }) })}
               className={`rounded-sm px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider ${
                 search.cat === c.slug ? "bg-[color:var(--graphite)] text-[color:var(--bone)]" : "border border-[color:var(--graphite)]/20"
               }`}
