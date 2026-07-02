@@ -130,8 +130,8 @@ function Home() {
             Ver todos os produtos →
           </Link>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {CATEGORIES.map((c, i) => (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {homeCategories.map((c, i) => (
             <Link
               key={c.slug}
               to="/categoria/$slug"
