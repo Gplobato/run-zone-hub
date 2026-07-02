@@ -28,17 +28,19 @@ export function Header() {
         </div>
       </div>
 
-      <div className="border-b border-[color:var(--bone)]/10">
-        <div className="mx-auto grid h-24 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-4 md:h-28 md:px-8">
-          {/* left: logo */}
-          <Link to="/" aria-label="Paze — início" className="flex items-center">
+      <div className="relative border-b border-[color:var(--bone)]/10">
+        <div className="mx-auto grid h-14 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-4 md:h-16 md:px-8">
+          {/* left: logo — allowed to overflow the thin bar */}
+          <Link to="/" aria-label="Paze — início" className="relative flex items-center">
             <img
               src={logoAsset.url}
               alt="Paze"
-              className="h-14 w-auto md:h-20"
+              className="block h-20 w-auto md:h-28"
+              style={{ maxHeight: "none" }}
               draggable={false}
             />
           </Link>
+
 
           {/* center: nav */}
           <nav className="hidden items-center justify-center gap-8 md:flex">
