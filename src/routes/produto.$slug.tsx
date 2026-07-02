@@ -1,0 +1,317 @@
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { StoreLayout } from "@/components/paze/StoreLayout";
+import { ProductCard } from "@/components/paze/ProductCard";
+import { ProductImage } from "@/components/paze/ProductImage";
+import { SignatureTrail } from "@/components/paze/SignatureTrail";
+import { formatBRL, getProduct, PRODUCTS } from "@/lib/products";
+import { useCart } from "@/context/CartContext";
+import { useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Minus, Plus, ShieldCheck, Truck, RotateCcw } from "lucide-react";
+
+export const Route = createFileRoute("/produto/$slug")({
+  loader: ({ params }) => {
+    const product = getProduct(params.slug);
+    if (!product) throw notFound();
+    return { product };
+  },
+  head: ({ loaderData }) => ({
+    meta: [
+      { title: `${loaderData?.product.name ?? "Produto"} — Paze` },
+      { name: "description", content: loaderData?.product.description ?? "" },
+      { property: "og:title", content: loaderData?.product.name ?? "Paze" },
+      { property: "og:description", content: loaderData?.product.description ?? "" },
+    ],
+  }),
+  notFoundComponent: () => (
+    <StoreLayout>
+      <div className="mx-auto max-w-3xl px-4 py-24 text-center md:px-8">
+        <h1 className="font-display text-5xl">Produto não encontrado</h1>
+        <Link to="/produtos" className="mt-6 inline-block font-mono text-xs uppercase text-[color:var(--terracotta)]">
+          Ver catálogo
+        </Link>
+      </div>
+    </StoreLayout>
+  ),
+  errorComponent: ({ reset }) => (
+    <StoreLayout>
+      <div className="mx-auto max-w-3xl px-4 py-24 text-center md:px-8">
+        <h1 className="font-display text-3xl">Algo deu errado</h1>
+        <button onClick={reset} className="mt-4 font-mono text-xs uppercase text-[color:var(--terracotta)]">Tentar de novo</button>
+      </div>
+    </StoreLayout>
+  ),
+  component: ProductPage,
+});
+
+function ProductPage() {
+  const { product } = Route.useLoaderData();
+  const { addItem } = useCart();
+  const [qty, setQty] = useState(1);
+  const [variant, setVariant] = useState<string | undefined>(
+    product.variants?.[0]?.options[0]
+  );
+
+  const isFone = product.slug === "fone-conducao-ossea";
+  const crossSell = product.crossSell
+    .map((s) => PRODUCTS.find((p) => p.slug === s)!)
+    .filter(Boolean);
+
+  const onAdd = () => {
+    // TODO: fbq('track','AddToCart',{content_ids:[product.slug],value:product.priceCents/100,currency:'BRL'})
+    // TODO: gtag('event','add_to_cart',{...}); ttq.track('AddToCart',{...})
+    addItem(product.slug, qty, variant);
+  };
+
+  return (
+    <StoreLayout>
+      <div className="relative mx-auto max-w-7xl px-4 py-8 md:px-8">
+        {isFone && <SignatureTrail />}
+        {/* breadcrumbs */}
+        <nav className="mb-6 flex gap-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+          <Link to="/">Home</Link>
+          <span>/</span>
+          <Link to="/categoria/$slug" params={{ slug: product.category }}>
+            {product.categoryLabel}
+          </Link>
+          <span>/</span>
+          <span className="text-[color:var(--graphite)]">{product.shortName}</span>
+        </nav>
+
+        <div className="grid gap-10 md:grid-cols-2">
+          {/* Galeria */}
+          <div className="space-y-3">
+            <div className="aspect-square overflow-hidden rounded-md border border-[color:var(--graphite)]/10">
+              <ProductImage product={product} className="h-full w-full" />
+            </div>
+            <div className="grid grid-cols-4 gap-3">
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="aspect-square overflow-hidden rounded-sm border border-[color:var(--graphite)]/10 opacity-70"
+                >
+                  <ProductImage product={product} className="h-full w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Info */}
+          <div>
+            {product.badge && (
+              <span className="mb-4 inline-block rounded-sm bg-[color:var(--terracotta)] px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-[color:var(--bone)]">
+                {product.badge}
+              </span>
+            )}
+            <div className="font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">
+              {product.categoryLabel}
+            </div>
+            <h1 className="mt-2 font-display text-4xl leading-none tracking-wide md:text-6xl">
+              {product.name.toUpperCase()}
+            </h1>
+            <p className="mt-4 text-lg text-muted-foreground">{product.tagline}</p>
+
+            <div className="mt-6 flex items-baseline gap-3">
+              {product.compareAtCents && (
+                <span className="font-mono text-lg text-muted-foreground line-through">
+                  {formatBRL(product.compareAtCents)}
+                </span>
+              )}
+              <span className="font-mono text-4xl font-medium text-[color:var(--terracotta)]">
+                {formatBRL(product.priceCents)}
+              </span>
+            </div>
+            <div className="font-mono text-xs text-muted-foreground">
+              ou {product.installments.count}× de {formatBRL(product.installments.valueCents)} sem juros
+            </div>
+
+            <p className="mt-6 text-sm leading-relaxed">{product.longDescription}</p>
+
+            <ul className="mt-6 space-y-2">
+              {product.bullets.map((b) => (
+                <li key={b} className="flex gap-2 text-sm">
+                  <span className="mt-2 h-1 w-1 flex-shrink-0 rounded-full bg-[color:var(--terracotta)]" />
+                  {b}
+                </li>
+              ))}
+            </ul>
+
+            {product.variants?.map((v) => (
+              <div key={v.key} className="mt-6">
+                <div className="mb-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                  {v.label}: <span className="text-[color:var(--graphite)]">{variant}</span>
+                </div>
+                <div className="flex gap-2">
+                  {v.options.map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => setVariant(opt)}
+                      className={`rounded-sm px-4 py-2 font-mono text-xs uppercase tracking-wider ${
+                        variant === opt
+                          ? "bg-[color:var(--graphite)] text-[color:var(--bone)]"
+                          : "border border-[color:var(--graphite)]/20"
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <div className="mt-8 flex items-center gap-3">
+              <div className="inline-flex items-center rounded-sm border border-[color:var(--graphite)]/20">
+                <button
+                  aria-label="Diminuir"
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  className="p-3 hover:bg-[color:var(--graphite)]/5"
+                >
+                  <Minus className="h-4 w-4" />
+                </button>
+                <span className="w-10 text-center font-mono text-sm">{qty}</span>
+                <button
+                  aria-label="Aumentar"
+                  onClick={() => setQty((q) => q + 1)}
+                  className="p-3 hover:bg-[color:var(--graphite)]/5"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+              <button
+                onClick={onAdd}
+                className="flex-1 rounded-sm bg-[color:var(--terracotta)] py-4 font-mono text-sm uppercase tracking-widest text-[color:var(--bone)] hover:opacity-90"
+              >
+                Adicionar ao carrinho
+              </button>
+            </div>
+
+            <div className="mt-8 grid grid-cols-3 gap-4 border-t border-[color:var(--graphite)]/10 pt-6 text-xs">
+              <div className="flex flex-col items-start gap-1">
+                <Truck className="h-4 w-4 text-[color:var(--sage)]" strokeWidth={1.2} />
+                <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Frete grátis SP/RJ</span>
+              </div>
+              <div className="flex flex-col items-start gap-1">
+                <RotateCcw className="h-4 w-4 text-[color:var(--sage)]" strokeWidth={1.2} />
+                <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Troca em 30 dias</span>
+              </div>
+              <div className="flex flex-col items-start gap-1">
+                <ShieldCheck className="h-4 w-4 text-[color:var(--sage)]" strokeWidth={1.2} />
+                <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Garantia 12 meses</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Ficha técnica */}
+        <section className="mt-24">
+          <div className="mb-6 font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">
+            / Ficha técnica
+          </div>
+          <h2 className="mb-8 font-display text-3xl tracking-wide md:text-4xl">
+            Especificações
+          </h2>
+          <div className="grid gap-x-8 gap-y-3 rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--graphite)]/[0.03] p-6 md:grid-cols-2">
+            {product.specs.map((s) => (
+              <div key={s.label} className="flex items-baseline justify-between gap-4 border-b border-[color:var(--graphite)]/10 py-2 last:border-0">
+                <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                  {s.label}
+                </span>
+                <span className="font-mono text-sm text-[color:var(--graphite)]">
+                  {s.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Cross-sell */}
+        {crossSell.length > 0 && (
+          <section className="mt-24">
+            <div className="mb-6 font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">
+              / Combina com
+            </div>
+            <h2 className="mb-8 font-display text-3xl tracking-wide md:text-4xl">
+              Complete seu equipamento
+            </h2>
+            <div className="grid gap-4 md:grid-cols-3">
+              {crossSell.slice(0, 3).map((p) => (
+                <ProductCard key={p.slug} product={p} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Reviews (placeholder) */}
+        <section className="mt-24">
+          <div className="mb-6 font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">
+            / Avaliações
+          </div>
+          <h2 className="mb-8 font-display text-3xl tracking-wide md:text-4xl">
+            O que dizem quem usa
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {[
+              { name: "Marina R.", role: "Corredora · SP", text: "Uso todo dia no treino de rua. Consigo ouvir carros, meu grupo e a música. Mudou meu treino." },
+              { name: "Diogo P.", role: "Ciclista · RJ", text: "Não escorrega no capacete e a bateria dura toda a pedalada de fim de semana." },
+            ].map((r) => (
+              <div key={r.name} className="rounded-md border border-[color:var(--graphite)]/10 p-6">
+                <p className="text-sm">{r.text}</p>
+                <div className="mt-4 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                  {r.name} · {r.role}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="mt-24 max-w-3xl">
+          <div className="mb-6 font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">
+            / FAQ
+          </div>
+          <h2 className="mb-8 font-display text-3xl tracking-wide md:text-4xl">
+            Perguntas frequentes
+          </h2>
+          <Accordion type="single" collapsible className="w-full">
+            {product.faq.map((f, i) => (
+              <AccordionItem key={i} value={`item-${i}`}>
+                <AccordionTrigger className="text-left font-sans text-base">
+                  {f.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground">
+                  {f.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </section>
+      </div>
+
+      {/* Sticky mobile buy bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-[color:var(--graphite)]/10 bg-[color:var(--bone)] p-3 md:hidden">
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0">
+            <div className="font-mono text-sm text-[color:var(--terracotta)]">
+              {formatBRL(product.priceCents)}
+            </div>
+            <div className="font-mono text-[10px] text-muted-foreground">
+              {product.installments.count}× {formatBRL(product.installments.valueCents)}
+            </div>
+          </div>
+          <button
+            onClick={onAdd}
+            className="flex-1 rounded-sm bg-[color:var(--terracotta)] py-3 font-mono text-xs uppercase tracking-widest text-[color:var(--bone)]"
+          >
+            Adicionar
+          </button>
+        </div>
+      </div>
+      <div className="h-20 md:hidden" />
+    </StoreLayout>
+  );
+}
