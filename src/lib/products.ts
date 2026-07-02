@@ -60,8 +60,8 @@ export const PRODUCTS: Product[] = [
       "Tecnologia de condução óssea que transmite o som pelos ossos do crânio — seus ouvidos ficam livres para escutar o trânsito, outros corredores e o ambiente.",
     longDescription:
       "Projetado para quem treina em rua. O som contorna a orelha em vez de tampá-la: você escuta música, podcast ou GPS ao mesmo tempo em que percebe carros, buzinas e ciclistas se aproximando. Resistente ao suor e à chuva leve, com bateria para uma semana de treinos.",
-    priceCents: 34900,
-    installments: { count: 10, valueCents: 3490 },
+    priceCents: 11990,
+    installments: { count: 10, valueCents: 1199 },
     variants: [{ key: "cor", label: "Cor", options: ["Grafite", "Osso"] }],
     specs: [
       { label: "Peso", value: "29 g" },
