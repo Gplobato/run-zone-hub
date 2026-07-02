@@ -50,7 +50,7 @@ export const Route = createFileRoute("/produto/$slug")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { product } = Route.useLoaderData() as { product: import("@/lib/products").Product };
   const { addItem } = useCart();
   const [qty, setQty] = useState(1);
   const [variant, setVariant] = useState<string | undefined>(

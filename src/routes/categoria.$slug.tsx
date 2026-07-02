@@ -39,7 +39,7 @@ export const Route = createFileRoute("/categoria/$slug")({
 });
 
 function CategoryPage() {
-  const { cat } = Route.useLoaderData();
+  const { cat } = Route.useLoaderData() as { cat: (typeof import("@/lib/products").CATEGORIES)[number] };
   const products = productsByCategory(cat.slug as ProductCategory);
 
   return (
