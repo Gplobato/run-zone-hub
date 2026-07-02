@@ -55,6 +55,26 @@ export function CartDrawer() {
           </button>
         </div>
 
+        {/* Free-shipping progress — non-invasive nudge, market-standard */}
+        {items.length > 0 && (
+          <div className="border-b border-[color:var(--graphite)]/10 bg-[color:var(--sage)]/10 px-6 py-3">
+            <div className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--graphite)]/80">
+              {freeShippingUnlocked ? (
+                <>Você ganhou <span className="text-[color:var(--sage)]">frete grátis</span></>
+              ) : (
+                <>Faltam <span className="text-[color:var(--terracotta)]">{formatBRL(remainingForFreeShipping)}</span> para frete grátis</>
+              )}
+            </div>
+            <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[color:var(--graphite)]/10">
+              <div
+                className="h-full rounded-full bg-[color:var(--sage)] transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
