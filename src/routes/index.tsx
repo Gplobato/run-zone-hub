@@ -120,7 +120,7 @@ function Home() {
               / 01 · Coleção
             </div>
             <h2 className="font-display text-4xl tracking-wide md:text-5xl">
-              Um sistema, quatro pilares
+              Um sistema, três pilares
             </h2>
           </div>
           <Link
