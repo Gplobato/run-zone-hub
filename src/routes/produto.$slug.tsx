@@ -12,7 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Minus, Plus, ShieldCheck, Truck, RotateCcw } from "lucide-react";
+import { Minus, Plus, ShieldCheck, Truck, RotateCcw, Check } from "lucide-react";
 
 export const Route = createFileRoute("/produto/$slug")({
   loader: ({ params }) => {
@@ -229,6 +229,11 @@ function ProductPage() {
           </div>
         </section>
 
+        {/* Frequentemente comprado junto — bundle upsell (padrão Amazon) */}
+        {crossSell.length >= 2 && (
+          <FrequentlyBoughtTogether main={product} extras={crossSell.slice(0, 2)} />
+        )}
+
         {/* Cross-sell */}
         {crossSell.length > 0 && (
           <section className="mt-24">
@@ -315,3 +320,98 @@ function ProductPage() {
     </StoreLayout>
   );
 }
+
+/**
+ * Frequentemente comprado junto — bundle upsell no padrão de mercado (Amazon-style).
+ * Não invasivo: aparece após a ficha técnica, com o produto principal já marcado
+ * e os complementares desmarcados. Usuário escolhe o que adicionar.
+ */
+function FrequentlyBoughtTogether({
+  main,
+  extras,
+}: {
+  main: import("@/lib/products").Product;
+  extras: import("@/lib/products").Product[];
+}) {
+  const { addItem } = useCart();
+  const [selected, setSelected] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries([main, ...extras].map((p) => [p.slug, p.slug === main.slug]))
+  );
+
+  const chosen = [main, ...extras].filter((p) => selected[p.slug]);
+  const totalCents = chosen.reduce((acc, p) => acc + p.priceCents, 0);
+  const canAdd = chosen.length >= 2;
+
+  const onAddBundle = () => {
+    // TODO: fbq('track','AddToCart', {content_ids: chosen.map(p=>p.slug), value: totalCents/100, currency:'BRL'})
+    // TODO: gtag('event','add_to_cart',{ items: chosen.map(p=>({item_id:p.slug, price:p.priceCents/100})) })
+    chosen.forEach((p) => addItem(p.slug, 1));
+  };
+
+  return (
+    <section className="mt-24">
+      <div className="mb-6 font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">
+        / Compre junto e economize no frete
+      </div>
+      <h2 className="mb-8 font-display text-3xl tracking-wide md:text-4xl">
+        Frequentemente comprado junto
+      </h2>
+
+      <div className="grid gap-8 rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--graphite)]/[0.03] p-6 md:grid-cols-[1.6fr_1fr] md:items-center">
+        <div className="flex flex-wrap items-center gap-4">
+          {[main, ...extras].map((p, i) => (
+            <div key={p.slug} className="flex items-center gap-3">
+              <label className="group relative block cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!!selected[p.slug]}
+                  onChange={(e) =>
+                    setSelected((s) => ({ ...s, [p.slug]: e.target.checked }))
+                  }
+                  className="peer sr-only"
+                />
+                <div className="h-24 w-24 overflow-hidden rounded-sm border border-[color:var(--graphite)]/15 opacity-60 transition-all peer-checked:border-[color:var(--sage)] peer-checked:opacity-100 md:h-28 md:w-28">
+                  <ProductImage product={p} className="h-full w-full" />
+                </div>
+                <div className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-sm border border-[color:var(--graphite)]/30 bg-[color:var(--bone)] peer-checked:border-[color:var(--sage)] peer-checked:bg-[color:var(--sage)] peer-checked:text-[color:var(--bone)]">
+                  {selected[p.slug] && <Check className="h-3 w-3" />}
+                </div>
+                <div className="mt-2 max-w-[7rem] font-mono text-[10px] uppercase leading-tight tracking-widest text-[color:var(--graphite)]/70">
+                  {p.shortName}
+                </div>
+                <div className="mt-0.5 font-mono text-[11px] text-[color:var(--terracotta)]">
+                  {formatBRL(p.priceCents)}
+                </div>
+              </label>
+              {i < extras.length && (
+                <span className="hidden font-mono text-2xl text-[color:var(--graphite)]/30 md:inline">
+                  +
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="border-t border-[color:var(--graphite)]/10 pt-4 md:border-l md:border-t-0 md:pl-6 md:pt-0">
+          <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+            Total dos selecionados
+          </div>
+          <div className="mt-1 font-mono text-3xl text-[color:var(--terracotta)]">
+            {formatBRL(totalCents)}
+          </div>
+          <div className="mt-1 font-mono text-[11px] text-muted-foreground">
+            {chosen.length} {chosen.length === 1 ? "item" : "itens"} · frete grátis acima de R$ 99,90
+          </div>
+          <button
+            disabled={!canAdd}
+            onClick={onAddBundle}
+            className="mt-4 w-full rounded-sm bg-[color:var(--graphite)] py-3 font-mono text-xs uppercase tracking-widest text-[color:var(--bone)] transition-opacity hover:opacity-90 disabled:opacity-40"
+          >
+            Adicionar selecionados
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+

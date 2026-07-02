@@ -24,7 +24,7 @@ function Checkout() {
   const [step, setStep] = useState<Step>(1);
   const [orderId] = useState(() => "PZ" + Math.random().toString(36).slice(2, 8).toUpperCase());
 
-  const shipping = 1990;
+  const shipping = subtotalCents >= 9990 ? 0 : 1990;
   const total = subtotalCents + shipping;
 
   if (items.length === 0 && step !== 4) {
@@ -246,7 +246,7 @@ function SummaryStep({
             <dt>Subtotal</dt><dd>{formatBRL(subtotal)}</dd>
           </div>
           <div className="flex justify-between text-muted-foreground">
-            <dt>Frete</dt><dd>{formatBRL(shipping)}</dd>
+            <dt>Frete</dt><dd>{shipping === 0 ? "Grátis" : formatBRL(shipping)}</dd>
           </div>
           <div className="flex justify-between border-t border-[color:var(--graphite)]/10 pt-2 text-base">
             <dt className="font-sans">Total</dt>

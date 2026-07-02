@@ -22,7 +22,11 @@ export function CartDrawer() {
   const suggestionInCart = items.some((i) => i.slug === suggestion.slug);
   const displaySuggestion = !suggestionInCart ? suggestion : PRODUCTS.find((p) => !items.some((i) => i.slug === p.slug));
 
-  const shipping = cep.length >= 8 ? 1990 : 0;
+  const FREE_SHIPPING_CENTS = 9990;
+  const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_CENTS - subtotalCents);
+  const freeShippingUnlocked = subtotalCents >= FREE_SHIPPING_CENTS;
+  const progress = Math.min(100, (subtotalCents / FREE_SHIPPING_CENTS) * 100);
+  const shipping = freeShippingUnlocked ? 0 : cep.length >= 8 ? 1990 : 0;
 
   return (
     <>
@@ -50,6 +54,26 @@ export function CartDrawer() {
             <X className="h-5 w-5" />
           </button>
         </div>
+
+        {/* Free-shipping progress — non-invasive nudge, market-standard */}
+        {items.length > 0 && (
+          <div className="border-b border-[color:var(--graphite)]/10 bg-[color:var(--sage)]/10 px-6 py-3">
+            <div className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--graphite)]/80">
+              {freeShippingUnlocked ? (
+                <>Você ganhou <span className="text-[color:var(--sage)]">frete grátis</span></>
+              ) : (
+                <>Faltam <span className="text-[color:var(--terracotta)]">{formatBRL(remainingForFreeShipping)}</span> para frete grátis</>
+              )}
+            </div>
+            <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[color:var(--graphite)]/10">
+              <div
+                className="h-full rounded-full bg-[color:var(--sage)] transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
 
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (

@@ -30,16 +30,16 @@ export const Route = createFileRoute("/")({
 
 const FEATURED_SLUGS = [
   "fone-conducao-ossea",
-  "kit-seguranca-urbana",
   "bracadeira-led",
-  "fita-anti-atrito",
-  "cinto-corrida",
   "colete-refletivo",
+  "cinto-corrida",
+  "fita-anti-atrito",
 ];
 
 function Home() {
   const featured = FEATURED_SLUGS.map((s) => PRODUCTS.find((p) => p.slug === s)!).filter(Boolean);
   const spotlight = PRODUCTS.find((p) => p.slug === "fone-conducao-ossea")!;
+  const homeCategories = CATEGORIES.filter((c) => c.slug !== "kits");
 
   return (
     <StoreLayout>
@@ -94,7 +94,7 @@ function Home() {
           <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-5 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--bone)]/60 md:grid-cols-4 md:px-8">
             <div className="flex items-center gap-3">
               <Truck className="h-4 w-4 text-[color:var(--sage)]" strokeWidth={1.4} />
-              Frete grátis &gt; R$ 299
+              Frete grátis &gt; R$ 99,90
             </div>
             <div className="flex items-center gap-3">
               <ShieldCheck className="h-4 w-4 text-[color:var(--sage)]" strokeWidth={1.4} />
@@ -120,7 +120,7 @@ function Home() {
               / 01 · Coleção
             </div>
             <h2 className="font-display text-4xl tracking-wide md:text-5xl">
-              Um sistema, quatro pilares
+              Um sistema, três pilares
             </h2>
           </div>
           <Link
@@ -130,8 +130,8 @@ function Home() {
             Ver todos os produtos →
           </Link>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {CATEGORIES.map((c, i) => (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {homeCategories.map((c, i) => (
             <Link
               key={c.slug}
               to="/categoria/$slug"
