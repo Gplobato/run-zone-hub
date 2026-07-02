@@ -24,18 +24,18 @@ export function Header() {
       {/* announcement bar */}
       <div className="border-b border-[color:var(--bone)]/10 bg-[color:var(--graphite)]">
         <div className="mx-auto flex h-8 max-w-7xl items-center justify-center px-4 font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--bone)]/60 md:px-8">
-          Frete grátis acima de R$ 299 · Entrega em todo o Brasil
+          Frete grátis acima de R$ 99,90 · Entrega em todo o Brasil
         </div>
       </div>
 
       <div className="relative border-b border-[color:var(--bone)]/10">
         <div className="mx-auto grid h-14 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-4 md:h-16 md:px-8">
-          {/* left: logo — allowed to overflow the thin bar */}
+          {/* left: logo — allowed to overflow the thin bar, optically lifted to align with nav text */}
           <Link to="/" aria-label="Paze — início" className="relative flex items-center">
             <img
               src={logoAsset.url}
               alt="Paze"
-              className="block h-20 w-auto md:h-28"
+              className="block h-16 w-auto -translate-y-[3px] md:h-24 md:-translate-y-[6px]"
               style={{ maxHeight: "none" }}
               draggable={false}
             />
