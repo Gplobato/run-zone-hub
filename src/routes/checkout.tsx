@@ -149,7 +149,6 @@ function ShippingStep({ onNext }: { onNext: () => void }) {
       <Field label="CPF" required />
       <Field label="Telefone" required />
       <Field label="CEP" required />
-      <Field label="Endereço" required className="md:col-span-2 hidden" />
       <div className="md:col-span-2 grid gap-4 md:grid-cols-[1fr_120px]">
         <Field label="Endereço" required />
         <Field label="Número" required />
