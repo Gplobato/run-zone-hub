@@ -5,7 +5,7 @@ import closingImg from "@/assets/paze-closing.jpg";
 import { StoreLayout } from "@/components/paze/StoreLayout";
 import { ProductCard } from "@/components/paze/ProductCard";
 import { CATEGORIES, PRODUCTS } from "@/lib/products";
-import { ArrowRight, Truck, ShieldCheck, RotateCcw, Headphones } from "lucide-react";
+import { ArrowRight, Truck, ShieldCheck, RotateCcw, Headphones, PlayCircle, Activity, Radio, Zap } from "lucide-react";
 
 // TODO: Meta Pixel PageView, GA4 page_view, TikTok Pixel Pageview
 
@@ -112,47 +112,148 @@ function Home() {
         </div>
       </section>
 
-      {/* ────────────────────────────────────────── SHOP THE COLLECTION */}
+      {/* ────────────────────────────────────────── TECH — Três pilares */}
       <section className="mx-auto max-w-7xl px-4 py-24 md:px-8">
         <div className="mb-12 flex items-end justify-between gap-6">
           <div>
             <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.24em] text-[color:var(--sage)]">
-              / 01 · Coleção
+              / 01 · Tecnologia
             </div>
             <h2 className="font-display text-4xl tracking-wide md:text-5xl">
               Um sistema, três pilares
             </h2>
+            <p className="mt-4 max-w-xl text-muted-foreground">
+              Cada produto Paze é validado sobre três eixos técnicos —
+              percepção, visibilidade e mobilidade. É assim que a rua
+              deixa de ser um obstáculo e vira parte do treino.
+            </p>
           </div>
           <Link
             to="/produtos"
             className="hidden font-mono text-[11px] uppercase tracking-[0.22em] text-[color:var(--graphite)]/70 hover:text-[color:var(--terracotta)] md:inline-flex"
           >
-            Ver todos os produtos →
+            Ver catálogo →
           </Link>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {homeCategories.map((c, i) => (
-            <Link
-              key={c.slug}
-              to="/categoria/$slug"
-              params={{ slug: c.slug }}
-              className="group relative flex aspect-[4/5] flex-col justify-between overflow-hidden rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--graphite)]/[0.04] p-6 transition-all hover:border-[color:var(--graphite)] hover:bg-[color:var(--graphite)] hover:text-[color:var(--bone)]"
-            >
-              <div className="flex items-start justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground group-hover:text-[color:var(--sage)]">
-                <span>0{i + 1}</span>
-                <span>{PRODUCTS.filter((p) => p.category === c.slug).length} itens</span>
+
+        <div className="grid gap-8 md:grid-cols-[1.15fr_1fr]">
+          {/* Vídeo placeholder — substitua src pelo mp4/embed quando tiver */}
+          <div className="relative aspect-video overflow-hidden rounded-md bg-[color:var(--graphite)]">
+            {/* TODO: <video src="/paze-tech.mp4" autoPlay muted loop playsInline className="h-full w-full object-cover" /> */}
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `linear-gradient(135deg, rgba(20,23,26,0.55), rgba(20,23,26,0.85)), url(${heroImg})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+            <div className="relative flex h-full flex-col justify-between p-6 text-[color:var(--bone)] md:p-8">
+              <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-[color:var(--bone)]/70">
+                PAZE · LAB · 00:47
               </div>
               <div>
-                <h3 className="font-display text-4xl tracking-wide">{c.label}</h3>
-                <p className="mt-2 text-sm text-muted-foreground group-hover:text-[color:var(--bone)]/70">
-                  {c.description}
-                </p>
-                <div className="mt-6 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--terracotta)] transition-transform group-hover:translate-x-1">
-                  Explorar <ArrowRight className="h-3 w-3" />
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-[color:var(--bone)]/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.24em] backdrop-blur">
+                  <PlayCircle className="h-3.5 w-3.5" />
+                  Assistir demo
                 </div>
+                <h3 className="font-display text-3xl leading-tight tracking-wide md:text-5xl">
+                  Ciência aplicada
+                  <br />
+                  na passada.
+                </h3>
+                <p className="mt-3 max-w-md text-sm text-[color:var(--bone)]/70">
+                  Sensores, condução óssea e materiais refletivos testados em
+                  bancada e em asfalto. Sem promessa de marketing — dados.
+                </p>
               </div>
-            </Link>
-          ))}
+            </div>
+          </div>
+
+          {/* Três pilares */}
+          <div className="grid grid-cols-1 gap-3">
+            {[
+              {
+                icon: Radio,
+                tag: "Percepção",
+                title: "Condução óssea",
+                desc: "Som vibra pelos ossos do crânio. Os ouvidos ficam abertos para carro, buzina e passo do lado.",
+                metric: "> 92% de percepção sonora do ambiente",
+              },
+              {
+                icon: Zap,
+                tag: "Visibilidade",
+                title: "LED + refletância 360°",
+                desc: "LEDs recarregáveis e faixas certificadas ISO 20471. Você é visto a mais de 400 m em qualquer ângulo.",
+                metric: "Visível a > 400 m no farol baixo",
+              },
+              {
+                icon: Activity,
+                tag: "Mobilidade",
+                title: "Zero atrito, zero balanço",
+                desc: "Elastano de alta densidade, silicone macio, ajuste anatômico. Nada pula, nada gera bolha em longões.",
+                metric: "Testado em 42 km sem incidência",
+              },
+            ].map((p, i) => {
+              const Icon = p.icon;
+              return (
+                <div
+                  key={p.title}
+                  className="group flex items-start gap-4 rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--bone)] p-5 transition-colors hover:border-[color:var(--graphite)]"
+                >
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-sm bg-[color:var(--graphite)] text-[color:var(--sage)]">
+                    <Icon className="h-5 w-5" strokeWidth={1.5} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.24em] text-[color:var(--terracotta)]">
+                      <span>0{i + 1}</span>
+                      <span className="h-px w-4 bg-[color:var(--terracotta)]/50" />
+                      <span>{p.tag}</span>
+                    </div>
+                    <h3 className="mt-1 font-display text-2xl tracking-wide">
+                      {p.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+                    <div className="mt-3 font-mono text-[11px] uppercase tracking-widest text-[color:var(--sage)]">
+                      → {p.metric}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-14">
+          <div className="mb-6 flex items-end justify-between gap-6">
+            <h3 className="font-display text-2xl tracking-wide md:text-3xl">
+              Explore por categoria
+            </h3>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {homeCategories.map((c, i) => (
+              <Link
+                key={c.slug}
+                to="/categoria/$slug"
+                params={{ slug: c.slug }}
+                className="group relative flex flex-col justify-between overflow-hidden rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--graphite)]/[0.04] p-6 transition-all hover:border-[color:var(--graphite)] hover:bg-[color:var(--graphite)] hover:text-[color:var(--bone)]"
+              >
+                <div className="flex items-start justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground group-hover:text-[color:var(--sage)]">
+                  <span>0{i + 1}</span>
+                  <span>{PRODUCTS.filter((p) => p.category === c.slug).length} itens</span>
+                </div>
+                <div className="mt-8">
+                  <h4 className="font-display text-3xl tracking-wide">{c.label}</h4>
+                  <p className="mt-2 text-sm text-muted-foreground group-hover:text-[color:var(--bone)]/70">
+                    {c.description}
+                  </p>
+                  <div className="mt-4 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--terracotta)] transition-transform group-hover:translate-x-1">
+                    Explorar <ArrowRight className="h-3 w-3" />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
