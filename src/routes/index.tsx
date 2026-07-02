@@ -1,24 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
+import bg from "@/assets/running-bg.jpg";
+import shoe from "@/assets/running-shoe.png";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Corrida — Tênis de Performance" },
+      { name: "description", content: "Homepage minimalista com um tênis de corrida em destaque." },
+      { property: "og:title", content: "Corrida — Tênis de Performance" },
+      { property: "og:description", content: "Homepage minimalista com um tênis de corrida em destaque." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
+    <main
+      className="min-h-screen w-full bg-cover bg-center flex items-center justify-center"
+      style={{ backgroundImage: `url(${bg})` }}
     >
+      <h1 className="sr-only">Tênis de corrida</h1>
       <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+        src={shoe}
+        alt="Tênis de corrida em destaque"
+        className="max-w-[80vw] max-h-[70vh] object-contain drop-shadow-2xl"
       />
-    </div>
+    </main>
   );
 }
