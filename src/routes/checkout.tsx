@@ -24,7 +24,7 @@ function Checkout() {
   const [step, setStep] = useState<Step>(1);
   const [orderId] = useState(() => "PZ" + Math.random().toString(36).slice(2, 8).toUpperCase());
 
-  const shipping = 1990;
+  const shipping = subtotalCents >= 9990 ? 0 : 1990;
   const total = subtotalCents + shipping;
 
   if (items.length === 0 && step !== 4) {
