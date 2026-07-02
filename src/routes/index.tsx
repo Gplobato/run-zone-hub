@@ -94,7 +94,7 @@ function Home() {
           <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-5 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--bone)]/60 md:grid-cols-4 md:px-8">
             <div className="flex items-center gap-3">
               <Truck className="h-4 w-4 text-[color:var(--sage)]" strokeWidth={1.4} />
-              Frete grátis &gt; R$ 299
+              Frete grátis &gt; R$ 99,90
             </div>
             <div className="flex items-center gap-3">
               <ShieldCheck className="h-4 w-4 text-[color:var(--sage)]" strokeWidth={1.4} />
