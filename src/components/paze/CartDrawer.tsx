@@ -22,7 +22,11 @@ export function CartDrawer() {
   const suggestionInCart = items.some((i) => i.slug === suggestion.slug);
   const displaySuggestion = !suggestionInCart ? suggestion : PRODUCTS.find((p) => !items.some((i) => i.slug === p.slug));
 
-  const shipping = cep.length >= 8 ? 1990 : 0;
+  const FREE_SHIPPING_CENTS = 9990;
+  const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_CENTS - subtotalCents);
+  const freeShippingUnlocked = subtotalCents >= FREE_SHIPPING_CENTS;
+  const progress = Math.min(100, (subtotalCents / FREE_SHIPPING_CENTS) * 100);
+  const shipping = freeShippingUnlocked ? 0 : cep.length >= 8 ? 1990 : 0;
 
   return (
     <>
