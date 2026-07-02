@@ -29,13 +29,13 @@ export function Header() {
       </div>
 
       <div className="border-b border-[color:var(--bone)]/10">
-        <div className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-4 md:px-8">
+        <div className="mx-auto grid h-24 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-4 md:h-28 md:px-8">
           {/* left: logo */}
           <Link to="/" aria-label="Paze — início" className="flex items-center">
             <img
               src={logoAsset.url}
               alt="Paze"
-              className="h-7 w-auto md:h-8"
+              className="h-14 w-auto md:h-20"
               draggable={false}
             />
           </Link>
