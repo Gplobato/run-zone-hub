@@ -39,7 +39,7 @@ export type Product = {
   compareAtCents?: number;
   installments: { count: number; valueCents: number };
   badge?: string;
-  variants?: { key: string; label: string; options: string[] }[];
+  variants?: { key: string; label: string; options: string[]; soldOut?: string[] }[];
   specs: ProductSpec[];
   bullets: string[];
   faq: { q: string; a: string }[];
@@ -60,8 +60,8 @@ export const PRODUCTS: Product[] = [
       "Tecnologia de condução óssea que transmite o som pelos ossos do crânio — seus ouvidos ficam livres para escutar o trânsito, outros corredores e o ambiente.",
     longDescription:
       "Projetado para quem treina em rua. O som contorna a orelha em vez de tampá-la: você escuta música, podcast ou GPS ao mesmo tempo em que percebe carros, buzinas e ciclistas se aproximando. Resistente ao suor e à chuva leve, com bateria para uma semana de treinos.",
-    priceCents: 11990,
-    installments: { count: 10, valueCents: 1199 },
+    priceCents: 7990,
+    installments: { count: 10, valueCents: 799 },
     variants: [{ key: "cor", label: "Cor", options: ["Grafite", "Osso"] }],
     specs: [
       { label: "Peso", value: "29 g" },
@@ -107,7 +107,14 @@ export const PRODUCTS: Product[] = [
       "Feita para o corredor e ciclista urbano. A luz é vista de mais de 400 metros de distância — motoristas te enxergam com antecedência suficiente para desviar. Três modos: fixo, pulsante lento e SOS.",
     priceCents: 5900,
     installments: { count: 4, valueCents: 1475 },
-    variants: [{ key: "cor", label: "Cor", options: ["Sálvia", "Terracota"] }],
+    variants: [
+      {
+        key: "cor",
+        label: "Cor",
+        options: ["Verde", "Rosa", "Vermelho", "Azul", "Branco"],
+        soldOut: ["Azul", "Branco"],
+      },
+    ],
     specs: [
       { label: "Autonomia", value: "12 h (modo fixo)" },
       { label: "Modos", value: "Fixo · Pulsante · SOS" },
