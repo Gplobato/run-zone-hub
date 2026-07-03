@@ -53,9 +53,11 @@ function ProductPage() {
   const { product } = Route.useLoaderData() as { product: import("@/lib/products").Product };
   const { addItem } = useCart();
   const [qty, setQty] = useState(1);
-  const [variant, setVariant] = useState<string | undefined>(
-    product.variants?.[0]?.options[0]
-  );
+  const firstVariant = product.variants?.[0];
+  const firstAvailable =
+    firstVariant?.options.find((o) => !firstVariant.soldOut?.includes(o)) ??
+    firstVariant?.options[0];
+  const [variant, setVariant] = useState<string | undefined>(firstAvailable);
 
   const isFone = product.slug === "fone-conducao-ossea";
   const crossSell = product.crossSell
