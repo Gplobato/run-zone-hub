@@ -107,7 +107,14 @@ export const PRODUCTS: Product[] = [
       "Feita para o corredor e ciclista urbano. A luz é vista de mais de 400 metros de distância — motoristas te enxergam com antecedência suficiente para desviar. Três modos: fixo, pulsante lento e SOS.",
     priceCents: 5900,
     installments: { count: 4, valueCents: 1475 },
-    variants: [{ key: "cor", label: "Cor", options: ["Sálvia", "Terracota"] }],
+    variants: [
+      {
+        key: "cor",
+        label: "Cor",
+        options: ["Verde", "Rosa", "Vermelho", "Azul", "Branco"],
+        soldOut: ["Azul", "Branco"],
+      },
+    ],
     specs: [
       { label: "Autonomia", value: "12 h (modo fixo)" },
       { label: "Modos", value: "Fixo · Pulsante · SOS" },
