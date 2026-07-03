@@ -10,6 +10,7 @@ import imgFita from "@/assets/products/fita-anti-atrito.jpg";
 import imgCase from "@/assets/products/case-bracadeira.jpg";
 import imgCinto from "@/assets/products/cinto-corrida.jpg";
 import imgKit from "@/assets/products/kit-seguranca-urbana.jpg";
+import imgGarmin from "@/assets/products/garmin-forerunner-965.jpg";
 
 export const PRODUCT_IMAGES: Record<string, string> = {
   "fone-conducao-ossea": imgFone,
@@ -19,6 +20,7 @@ export const PRODUCT_IMAGES: Record<string, string> = {
   "case-braçadeira": imgCase,
   "cinto-corrida": imgCinto,
   "kit-seguranca-urbana": imgKit,
+  "garmin-forerunner-965": imgGarmin,
 };
 
 
@@ -301,6 +303,70 @@ export const PRODUCTS: Product[] = [
     ],
     crossSell: ["fita-anti-atrito", "cinto-corrida", "case-braçadeira"],
     hero: { bg: "graphite", accent: "terracotta" },
+  },
+  {
+    slug: "garmin-forerunner-965",
+    name: "Garmin Forerunner 965",
+    shortName: "Forerunner 965",
+    category: "acessorios",
+    categoryLabel: "Acessórios",
+    tagline: "Smartwatch premium de corrida e triatlo — tela AMOLED, GPS multibanda.",
+    description:
+      "Relógio esportivo com display AMOLED de 1,4\", GPS multibanda, mapas coloridos, Training Readiness, monitoramento avançado de treino, saúde e recuperação.",
+    longDescription:
+      "Idêntico ao original em funções e desempenho. Tela AMOLED sensível ao toque, moldura em titânio, GPS multibanda de alta precisão, mapas coloridos TopoActive pré-carregados, métricas de treino de nível profissional (Training Readiness, Training Status, VO₂ máx., carga aguda, recuperação), monitoramento cardíaco no pulso, oximetria (SpO₂), ECG, sono avançado, Body Battery, resistência a água 5 ATM, pagamentos Garmin Pay, música offline (Spotify, Deezer, Amazon Music), notificações inteligentes e bateria de até 23 dias em modo relógio.",
+    priceCents: 7990,
+    compareAtCents: 999900,
+    installments: { count: 10, valueCents: 799 },
+    badge: "Novo",
+    variants: [
+      { key: "cor", label: "Cor", options: ["Preto", "Branco"] },
+    ],
+    specs: [
+      { label: "Display", value: "AMOLED 1,4\" · 454×454 px · touchscreen" },
+      { label: "Moldura", value: "Titânio Grau 5" },
+      { label: "GPS", value: "Multibanda (L1 + L5) · GPS/GLONASS/Galileo/QZSS/BeiDou" },
+      { label: "Mapas", value: "TopoActive coloridos pré-carregados" },
+      { label: "Resistência", value: "5 ATM (natação)" },
+      { label: "Sensores", value: "Cardíaco óptico · SpO₂ · ECG · barômetro · bússola · giroscópio · termômetro" },
+      { label: "Autonomia", value: "Até 23 dias (relógio) · 31 h (GPS todos os sistemas)" },
+      { label: "Memória", value: "32 GB (música offline)" },
+      { label: "Conectividade", value: "Bluetooth · ANT+ · Wi-Fi" },
+      { label: "Peso", value: "53 g" },
+      { label: "Pulseira", value: "Silicone QuickFit 22 mm" },
+    ],
+    bullets: [
+      "Idêntico ao original — mesmas funções, mesmo desempenho",
+      "Training Readiness, Training Status e VO₂ máx. em tempo real",
+      "GPS multibanda de precisão profissional (L1 + L5)",
+      "Mapas coloridos TopoActive com navegação turn-by-turn",
+      "Música offline: Spotify, Deezer e Amazon Music",
+      "Pagamentos por aproximação com Garmin Pay",
+      "Monitoramento 24/7: cardíaco, SpO₂, ECG, sono, Body Battery",
+      "Perfis para 30+ esportes: corrida, trilha, triatlo, ciclismo, natação, golfe, força",
+      "Notificações de smartphone, ligações e respostas rápidas (Android)",
+      "Bateria de até 23 dias em modo relógio",
+    ],
+    faq: [
+      {
+        q: "É idêntico ao original?",
+        a: "Sim. Todas as funções, sensores, GPS multibanda, mapas, Training Readiness e integrações (Garmin Connect, Strava, Spotify) funcionam exatamente como no modelo de referência.",
+      },
+      {
+        q: "Funciona com o app Garmin Connect e Strava?",
+        a: "Sim, pareia normalmente com Garmin Connect e sincroniza treinos com Strava, TrainingPeaks e Apple Saúde.",
+      },
+      {
+        q: "Posso nadar com ele?",
+        a: "Sim, resistência 5 ATM. Perfil de natação em piscina e águas abertas incluído.",
+      },
+      {
+        q: "Qual a duração real da bateria em treino?",
+        a: "Até 23 dias em modo relógio, 31 h com GPS todos os sistemas ativos, 19 h com GPS multibanda + música.",
+      },
+    ],
+    crossSell: ["fone-conducao-ossea", "cinto-corrida", "bracadeira-led"],
+    hero: { bg: "graphite", accent: "sage" },
   },
 ];
 
