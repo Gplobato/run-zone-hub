@@ -148,20 +148,36 @@ function ProductPage() {
                 <div className="mb-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                   {v.label}: <span className="text-[color:var(--graphite)]">{variant}</span>
                 </div>
-                <div className="flex gap-2">
-                  {v.options.map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => setVariant(opt)}
-                      className={`rounded-sm px-4 py-2 font-mono text-xs uppercase tracking-wider ${
-                        variant === opt
-                          ? "bg-[color:var(--graphite)] text-[color:var(--bone)]"
-                          : "border border-[color:var(--graphite)]/20"
-                      }`}
-                    >
-                      {opt}
-                    </button>
-                  ))}
+                <div className="flex flex-wrap gap-2">
+                  {v.options.map((opt) => {
+                    const soldOut = v.soldOut?.includes(opt);
+                    const selected = variant === opt;
+                    return (
+                      <button
+                        key={opt}
+                        onClick={() => !soldOut && setVariant(opt)}
+                        disabled={soldOut}
+                        aria-disabled={soldOut}
+                        title={soldOut ? "Esgotado" : opt}
+                        className={`relative rounded-sm px-4 py-2 font-mono text-xs uppercase tracking-wider transition-colors ${
+                          selected && !soldOut
+                            ? "bg-[color:var(--graphite)] text-[color:var(--bone)]"
+                            : "border border-[color:var(--graphite)]/20"
+                        } ${
+                          soldOut
+                            ? "cursor-not-allowed text-muted-foreground line-through opacity-60"
+                            : ""
+                        }`}
+                      >
+                        {opt}
+                        {soldOut && (
+                          <span className="ml-2 rounded-sm bg-[color:var(--graphite)]/10 px-1.5 py-0.5 text-[9px] tracking-widest">
+                            Esgotado
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             ))}
