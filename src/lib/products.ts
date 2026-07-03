@@ -10,6 +10,7 @@ import imgFita from "@/assets/products/fita-anti-atrito.jpg";
 import imgCase from "@/assets/products/case-bracadeira.jpg";
 import imgCinto from "@/assets/products/cinto-corrida.jpg";
 import imgKit from "@/assets/products/kit-seguranca-urbana.jpg";
+import imgGarmin from "@/assets/products/garmin-forerunner-965.jpg";
 
 export const PRODUCT_IMAGES: Record<string, string> = {
   "fone-conducao-ossea": imgFone,
@@ -19,6 +20,7 @@ export const PRODUCT_IMAGES: Record<string, string> = {
   "case-braçadeira": imgCase,
   "cinto-corrida": imgCinto,
   "kit-seguranca-urbana": imgKit,
+  "garmin-forerunner-965": imgGarmin,
 };
 
 
