@@ -39,7 +39,7 @@ export type Product = {
   compareAtCents?: number;
   installments: { count: number; valueCents: number };
   badge?: string;
-  variants?: { key: string; label: string; options: string[] }[];
+  variants?: { key: string; label: string; options: string[]; soldOut?: string[] }[];
   specs: ProductSpec[];
   bullets: string[];
   faq: { q: string; a: string }[];
