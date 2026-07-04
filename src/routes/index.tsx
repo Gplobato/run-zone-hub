@@ -29,6 +29,7 @@ export const Route = createFileRoute("/")({
 });
 
 const FEATURED_SLUGS = [
+  "garmin-forerunner-965",
   "fone-conducao-ossea",
   "bracadeira-led",
   "colete-refletivo",
@@ -39,7 +40,10 @@ const FEATURED_SLUGS = [
 function Home() {
   const featured = FEATURED_SLUGS.map((s) => PRODUCTS.find((p) => p.slug === s)!).filter(Boolean);
   const spotlight = PRODUCTS.find((p) => p.slug === "fone-conducao-ossea")!;
+  const garmin = PRODUCTS.find((p) => p.slug === "garmin-forerunner-965")!;
+  const garminImg = PRODUCT_IMAGES["garmin-forerunner-965"];
   const homeCategories = CATEGORIES.filter((c) => c.slug !== "kits");
+
 
   return (
     <StoreLayout>
