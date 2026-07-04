@@ -111,6 +111,19 @@ export const createHypercashTransaction = createServerFn({ method: "POST" })
     );
     const amount = itemsTotal + data.shippingFeeCents;
 
+    // IP do cliente + URL de webhook, quando disponíveis no request.
+    let clientIp: string | undefined;
+    let postbackUrl: string | undefined;
+    try {
+      const fwd = getRequestHeader("x-forwarded-for");
+      clientIp = fwd?.split(",")[0]?.trim() || undefined;
+      const req = getRequest();
+      const origin = new URL(req.url).origin;
+      postbackUrl = `${origin}/api/public/webhooks/hypercash`;
+    } catch {
+      // fora de contexto de request — ignorar
+    }
+
     const payload: Record<string, unknown> = {
       amount,
       currency: "BRL",
@@ -145,8 +158,12 @@ export const createHypercashTransaction = createServerFn({ method: "POST" })
         externalRef: i.slug,
       })),
       traceable: true,
+      ip: clientIp,
+      postbackUrl,
       externalRef: data.externalRef,
+      metadata: { pedido_id: data.externalRef },
     };
+
 
     if (data.paymentMethod === "PIX") {
       payload.pix = { expiresInDays: 1 };
