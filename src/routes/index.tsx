@@ -261,7 +261,80 @@ function Home() {
         </div>
       </section>
 
+      {/* ────────────────────────────────────────── SPOTLIGHT: GARMIN */}
+      <section className="relative overflow-hidden bg-[color:var(--bone)]">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 py-24 md:px-8 lg:grid-cols-[1.1fr_1fr] lg:py-32">
+          <div className="order-2 lg:order-1">
+            <div className="mb-4 inline-flex items-center gap-3 rounded-full bg-[color:var(--terracotta)]/10 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.24em] text-[color:var(--terracotta)]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--terracotta)]" />
+              Lançamento · Edição limitada
+            </div>
+            <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.24em] text-[color:var(--sage)]">
+              / 02 · GPS de alta performance
+            </div>
+            <h2 className="font-display text-5xl leading-[0.95] tracking-wide md:text-7xl">
+              GARMIN
+              <br />
+              <span className="text-[color:var(--terracotta)]">FORERUNNER</span>
+              <br />
+              965.
+            </h2>
+            <p className="mt-6 max-w-md text-base text-muted-foreground md:text-lg">
+              {garmin.tagline}
+            </p>
+
+            <dl className="mt-8 grid max-w-md grid-cols-3 gap-6 border-t border-[color:var(--graphite)]/10 pt-6">
+              {garmin.specs.slice(0, 3).map((s) => (
+                <div key={s.label}>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                    {s.label}
+                  </dt>
+                  <dd className="mt-1 font-display text-xl tracking-wide text-[color:var(--graphite)]">
+                    {s.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <Link
+                to="/produto/$slug"
+                params={{ slug: garmin.slug }}
+                className="group inline-flex items-center gap-3 rounded-sm bg-[color:var(--graphite)] px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-[color:var(--bone)] transition-colors hover:bg-[color:var(--terracotta)]"
+              >
+                Comprar por {formatBRL(garmin.priceCents)}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              {garmin.compareAtCents && (
+                <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground line-through">
+                  {formatBRL(garmin.compareAtCents)}
+                </span>
+              )}
+              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[color:var(--sage)]">
+                {garmin.installments.count}× sem juros
+              </span>
+            </div>
+          </div>
+
+          <div className="relative order-1 lg:order-2">
+            <div className="absolute -inset-8 rounded-full bg-[color:var(--terracotta)]/10 blur-3xl" />
+            <div className="relative overflow-hidden rounded-md border border-[color:var(--graphite)]/10 bg-white">
+              <img
+                src={garminImg}
+                alt="Garmin Forerunner 965"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+              <div className="absolute right-4 top-4 rounded-sm border border-[color:var(--graphite)]/10 bg-[color:var(--bone)]/90 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.24em] text-[color:var(--graphite)] backdrop-blur">
+                Idêntico ao original
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ────────────────────────────────────────── SPOTLIGHT: FONE */}
+
       <section className="bg-[color:var(--graphite)] text-[color:var(--bone)]">
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-stretch lg:grid-cols-2">
           <div
