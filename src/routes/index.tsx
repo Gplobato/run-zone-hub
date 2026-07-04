@@ -4,7 +4,7 @@ import productImg from "@/assets/paze-product.jpg";
 import closingImg from "@/assets/paze-closing.jpg";
 import { StoreLayout } from "@/components/paze/StoreLayout";
 import { ProductCard } from "@/components/paze/ProductCard";
-import { CATEGORIES, PRODUCTS } from "@/lib/products";
+import { CATEGORIES, PRODUCTS, PRODUCT_IMAGES, formatBRL } from "@/lib/products";
 import { ArrowRight, Truck, ShieldCheck, RotateCcw, Headphones, PlayCircle, Activity, Radio, Zap } from "lucide-react";
 
 // TODO: Meta Pixel PageView, GA4 page_view, TikTok Pixel Pageview
