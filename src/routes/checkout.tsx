@@ -12,6 +12,8 @@ import {
   Loader2,
   Lock,
   ShieldCheck,
+  Truck,
+
 } from "lucide-react";
 import {
   createHypercashTransaction,
@@ -92,8 +94,10 @@ function Checkout() {
   const [paid, setPaid] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const shippingCents = subtotalCents >= 9990 ? 0 : 1990;
+  // Promoção: frete SEDEX grátis na 1ª compra por CPF.
+  const shippingCents = 0;
   const totalCents = subtotalCents + shippingCents;
+
 
   // Busca CEP automática via ViaCEP
   useEffect(() => {
@@ -453,6 +457,20 @@ function Checkout() {
               </span>
             </div>
 
+            <div className="mb-4 flex items-start gap-2 rounded-sm border border-[color:var(--sage)]/30 bg-[color:var(--sage)]/10 p-3">
+              <Truck className="mt-0.5 h-4 w-4 flex-shrink-0 text-[color:var(--sage)]" />
+              <div>
+                <div className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--sage)]">
+                  🎉 Frete SEDEX grátis desbloqueado
+                </div>
+                <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted-foreground">
+                  Você ganhou envio gratuito via SEDEX — promoção 1 compra por CPF, entrega em 3–7 dias úteis para todo o Brasil.
+                </p>
+              </div>
+            </div>
+
+
+
             <ul className="divide-y divide-[color:var(--graphite)]/10">
               {items.map((it) => {
                 const p = getProduct(it.slug);
@@ -490,11 +508,13 @@ function Checkout() {
                 <span>{formatBRL(subtotalCents)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
-                <span>Frete</span>
-                <span>
-                  {shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}
+                <span>Frete SEDEX</span>
+                <span className="text-[color:var(--sage)]">
+                  <span className="mr-1 line-through opacity-60">R$ 24,90</span>
+                  Grátis
                 </span>
               </div>
+
               <div className="mt-2 flex justify-between border-t border-[color:var(--graphite)]/10 pt-2 text-base">
                 <span className="font-sans">Total</span>
                 <span className="text-[color:var(--terracotta)]">
