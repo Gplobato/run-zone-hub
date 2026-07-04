@@ -433,7 +433,7 @@ function Home() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-4 py-28 md:grid-cols-12 md:px-8">
           <div className="md:col-span-4">
             <div className="font-mono text-[11px] uppercase tracking-[0.24em] text-[color:var(--sage)]">
-              / 04 · Manifesto
+              / 05 · Manifesto
             </div>
           </div>
           <div className="md:col-span-8">
