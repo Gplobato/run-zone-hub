@@ -155,14 +155,13 @@ export const createHypercashTransaction = createServerFn({ method: "POST" })
         unitPrice: i.unitPriceCents,
         quantity: i.quantity,
         tangible: true,
-        externalRef: i.slug,
       })),
       traceable: true,
       ip: clientIp,
       postbackUrl,
-      externalRef: data.externalRef,
       metadata: { pedido_id: data.externalRef },
     };
+
 
 
     if (data.paymentMethod === "PIX") {
