@@ -455,6 +455,20 @@ function Checkout() {
               </span>
             </div>
 
+            <div className="mb-4 flex items-start gap-2 rounded-sm border border-[color:var(--sage)]/30 bg-[color:var(--sage)]/10 p-3">
+              <Truck className="mt-0.5 h-4 w-4 flex-shrink-0 text-[color:var(--sage)]" />
+              <div>
+                <div className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--sage)]">
+                  🎉 Frete SEDEX grátis desbloqueado
+                </div>
+                <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted-foreground">
+                  Você ganhou envio gratuito via SEDEX — promoção 1 compra por CPF, entrega em 3–7 dias úteis para todo o Brasil.
+                </p>
+              </div>
+            </div>
+
+
+
             <ul className="divide-y divide-[color:var(--graphite)]/10">
               {items.map((it) => {
                 const p = getProduct(it.slug);
