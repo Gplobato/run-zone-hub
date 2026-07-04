@@ -92,8 +92,10 @@ function Checkout() {
   const [paid, setPaid] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const shippingCents = subtotalCents >= 9990 ? 0 : 1990;
+  // Promoção: frete SEDEX grátis na 1ª compra por CPF.
+  const shippingCents = 0;
   const totalCents = subtotalCents + shippingCents;
+
 
   // Busca CEP automática via ViaCEP
   useEffect(() => {
