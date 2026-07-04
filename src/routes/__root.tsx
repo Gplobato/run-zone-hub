@@ -80,13 +80,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Paze — Fone de condução óssea para corredores" },
+      { title: "Paze — Acessórios técnicos de corrida e segurança urbana" },
       {
         name: "description",
         content:
           "Ouça sua música sem deixar de ouvir o mundo. Tecnologia de condução óssea criada para corrida, ciclismo e treinos ao ar livre.",
       },
-      { property: "og:title", content: "Paze — Fone de condução óssea para corredores" },
+      { property: "og:title", content: "Paze — Acessórios técnicos de corrida e segurança urbana" },
       {
         property: "og:description",
         content:
@@ -94,6 +94,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Paze — Acessórios técnicos de corrida e segurança urbana" },
+      { name: "description", content: "Fone de condução óssea, LEDs, coletes refletivos e acessórios técnicos para quem treina em ambiente urbano. Segurança e performance em cada passada." },
+      { property: "og:description", content: "Fone de condução óssea, LEDs, coletes refletivos e acessórios técnicos para quem treina em ambiente urbano. Segurança e performance em cada passada." },
+      { name: "twitter:description", content: "Fone de condução óssea, LEDs, coletes refletivos e acessórios técnicos para quem treina em ambiente urbano. Segurança e performance em cada passada." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/RWWzxbK4xpSbSnAfz9aHdmVZlO03/social-images/social-1783125604955-744abe26-6875-4e40-abef-ce2197656a79.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/RWWzxbK4xpSbSnAfz9aHdmVZlO03/social-images/social-1783125604955-744abe26-6875-4e40-abef-ce2197656a79.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
