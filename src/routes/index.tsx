@@ -354,7 +354,7 @@ function Home() {
           </div>
           <div className="flex flex-col justify-center px-6 py-16 md:px-16 md:py-24">
             <div className="mb-6 font-mono text-[11px] uppercase tracking-[0.24em] text-[color:var(--sage)]">
-              / 02 · Produto em destaque
+              / 03 · Produto em destaque
             </div>
             <h2 className="font-display text-4xl leading-none tracking-wide md:text-6xl">
               {spotlight.shortName.toUpperCase()}
