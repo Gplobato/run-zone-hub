@@ -5,6 +5,8 @@
 // ─────────────────────────────────────────────────────────────────────────
 
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest, getRequestHeader } from "@tanstack/react-start/server";
+
 
 const HYPERCASH_URL = "https://api.hypercashbrasil.com.br";
 
