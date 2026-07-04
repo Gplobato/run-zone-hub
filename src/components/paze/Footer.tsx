@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Youtube, MessageCircle } from "lucide-react";
-import logoAsset from "@/assets/paze-logo.png.asset.json";
+import logoUrl from "@/assets/paze-logo.png";
 
 const SUPPORT_PHONE = "11939147267";
 const SUPPORT_WA = `https://wa.me/55${SUPPORT_PHONE}`;
@@ -10,7 +10,7 @@ export function Footer() {
     <footer className="mt-24 bg-[color:var(--graphite)] text-[color:var(--bone)]">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-16 md:grid-cols-4 md:px-8">
         <div>
-          <img src={logoAsset.url} alt="Paze" className="h-20 w-auto md:h-24" />
+          <img src={logoUrl} alt="Paze" className="h-20 w-auto md:h-24" />
           <p className="mt-6 max-w-xs text-sm text-[color:var(--bone)]/60">
             Acessórios técnicos para quem treina em ambiente urbano. Segurança
             e performance em cada passada.

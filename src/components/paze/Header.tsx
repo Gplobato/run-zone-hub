@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { ShoppingBag, Search, Menu, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useState } from "react";
-import logoAsset from "@/assets/paze-logo.png.asset.json";
+import logoUrl from "@/assets/paze-logo.png";
 
 const NAV = [
   { to: "/produtos", label: "Todos" },
@@ -33,7 +33,7 @@ export function Header() {
           {/* left: logo — allowed to overflow the thin bar, optically lifted to align with nav text */}
           <Link to="/" aria-label="Paze — início" className="relative flex items-center">
             <img
-              src={logoAsset.url}
+              src={logoUrl}
               alt="Paze"
               className="block h-16 w-auto -translate-y-[3px] md:h-24 md:-translate-y-[6px]"
               style={{ maxHeight: "none" }}

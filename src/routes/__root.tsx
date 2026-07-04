@@ -7,13 +7,15 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { CartProvider } from "../context/CartContext";
 
-
-
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+
+const seoTitle = "Paze | Acessorios tecnicos de corrida e seguranca urbana";
+const seoDescription =
+  "Fone de conducao ossea, LEDs, coletes refletivos e acessorios tecnicos para quem treina em ambiente urbano. Seguranca e performance em cada passada.";
+const socialImage = "/seo-preview.jpg";
 
 function NotFoundComponent() {
   return (
@@ -40,9 +42,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -80,26 +79,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Paze — Acessórios técnicos de corrida e segurança urbana" },
-      {
-        name: "description",
-        content:
-          "Ouça sua música sem deixar de ouvir o mundo. Tecnologia de condução óssea criada para corrida, ciclismo e treinos ao ar livre.",
-      },
-      { property: "og:title", content: "Paze — Acessórios técnicos de corrida e segurança urbana" },
-      {
-        property: "og:description",
-        content:
-          "Tecnologia de condução óssea para quem corre, pedala e treina com mais liberdade e segurança.",
-      },
+      { title: seoTitle },
+      { name: "description", content: seoDescription },
+      { name: "robots", content: "index, follow" },
+      { property: "og:title", content: seoTitle },
+      { property: "og:description", content: seoDescription },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Paze" },
+      { property: "og:image", content: socialImage },
+      { property: "og:image:alt", content: "Acessorios de corrida e seguranca urbana da Paze" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Paze — Acessórios técnicos de corrida e segurança urbana" },
-      { name: "description", content: "Fone de condução óssea, LEDs, coletes refletivos e acessórios técnicos para quem treina em ambiente urbano. Segurança e performance em cada passada." },
-      { property: "og:description", content: "Fone de condução óssea, LEDs, coletes refletivos e acessórios técnicos para quem treina em ambiente urbano. Segurança e performance em cada passada." },
-      { name: "twitter:description", content: "Fone de condução óssea, LEDs, coletes refletivos e acessórios técnicos para quem treina em ambiente urbano. Segurança e performance em cada passada." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/RWWzxbK4xpSbSnAfz9aHdmVZlO03/social-images/social-1783125604955-744abe26-6875-4e40-abef-ce2197656a79.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/RWWzxbK4xpSbSnAfz9aHdmVZlO03/social-images/social-1783125604955-744abe26-6875-4e40-abef-ce2197656a79.webp" },
+      { name: "twitter:title", content: seoTitle },
+      { name: "twitter:description", content: seoDescription },
+      { name: "twitter:image", content: socialImage },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -121,7 +113,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootShell({ children }: { children: ReactNode }) {
   const pixelId = import.meta.env.VITE_META_PIXEL_ID as string | undefined;
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
         {pixelId && (
@@ -146,10 +138,8 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </CartProvider>
     </QueryClientProvider>
-
   );
 }
