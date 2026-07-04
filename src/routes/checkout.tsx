@@ -492,11 +492,13 @@ function Checkout() {
                 <span>{formatBRL(subtotalCents)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
-                <span>Frete</span>
-                <span>
-                  {shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}
+                <span>Frete SEDEX</span>
+                <span className="text-[color:var(--sage)]">
+                  <span className="mr-1 line-through opacity-60">R$ 24,90</span>
+                  Grátis
                 </span>
               </div>
+
               <div className="mt-2 flex justify-between border-t border-[color:var(--graphite)]/10 pt-2 text-base">
                 <span className="font-sans">Total</span>
                 <span className="text-[color:var(--terracotta)]">
