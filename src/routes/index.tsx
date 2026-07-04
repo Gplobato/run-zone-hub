@@ -401,7 +401,7 @@ function Home() {
         <div className="mb-12 flex items-end justify-between gap-6">
           <div>
             <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.24em] text-[color:var(--sage)]">
-              / 03 · Mais vendidos
+              / 04 · Mais vendidos
             </div>
             <h2 className="font-display text-4xl tracking-wide md:text-5xl">
               Equipamento validado na rua
