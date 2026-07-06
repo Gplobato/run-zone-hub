@@ -718,3 +718,134 @@ function PixPanel({
     </div>
   );
 }
+
+function ShippingOption({
+  selected,
+  onClick,
+  icon,
+  title,
+  subtitle,
+  badge,
+  strikePrice,
+  price,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  badge?: string;
+  strikePrice?: string;
+  price: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-start gap-3 rounded-sm border p-4 text-left transition ${
+        selected
+          ? "border-[color:var(--terracotta)] bg-[color:var(--terracotta)]/5"
+          : "border-[color:var(--graphite)]/15 bg-white hover:border-[color:var(--graphite)]/30"
+      }`}
+    >
+      <span
+        className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${
+          selected
+            ? "border-[color:var(--terracotta)]"
+            : "border-[color:var(--graphite)]/30"
+        }`}
+      >
+        {selected && (
+          <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--terracotta)]" />
+        )}
+      </span>
+      <span className="flex-shrink-0">{icon}</span>
+      <span className="flex-1">
+        <span className="flex items-center gap-2">
+          <span className="font-display text-base tracking-wide">{title}</span>
+          {badge && (
+            <span className="rounded-sm bg-[color:var(--terracotta)]/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-[color:var(--terracotta)]">
+              {badge}
+            </span>
+          )}
+        </span>
+        <span className="mt-0.5 block font-mono text-[11px] text-muted-foreground">
+          {subtitle}
+        </span>
+        <span className="mt-1 flex items-baseline gap-1.5">
+          {strikePrice && (
+            <span className="font-mono text-[11px] text-muted-foreground line-through opacity-60">
+              {strikePrice}
+            </span>
+          )}
+          <span className="font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">
+            {price}
+          </span>
+        </span>
+      </span>
+    </button>
+  );
+}
+
+function PaymentOption({
+  selected,
+  onClick,
+  disabled,
+  icon,
+  title,
+  subtitle,
+  badge,
+}: {
+  selected?: boolean;
+  onClick?: () => void;
+  disabled?: boolean;
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  badge?: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex items-center gap-3 rounded-sm border p-4 text-left transition ${
+        disabled
+          ? "cursor-not-allowed border-[color:var(--graphite)]/10 bg-[color:var(--graphite)]/5 opacity-60"
+          : selected
+            ? "border-[color:var(--terracotta)] bg-[color:var(--terracotta)]/5"
+            : "border-[color:var(--graphite)]/15 bg-white hover:border-[color:var(--graphite)]/30"
+      }`}
+    >
+      <span
+        className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${
+          selected && !disabled
+            ? "border-[color:var(--terracotta)]"
+            : "border-[color:var(--graphite)]/30"
+        }`}
+      >
+        {selected && !disabled && (
+          <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--terracotta)]" />
+        )}
+      </span>
+      <span className="flex-shrink-0">{icon}</span>
+      <span className="flex-1">
+        <span className="font-display text-base tracking-wide">{title}</span>
+        <span className="mt-0.5 block font-mono text-[11px] text-muted-foreground">
+          {subtitle}
+        </span>
+      </span>
+      {badge && (
+        <span
+          className={`rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest ${
+            disabled
+              ? "bg-[color:var(--graphite)]/10 text-muted-foreground"
+              : "bg-[color:var(--sage)]/15 text-[color:var(--sage)]"
+          }`}
+        >
+          {badge}
+        </span>
+      )}
+    </button>
+  );
+}
