@@ -11,6 +11,7 @@ import imgCase from "@/assets/products/case-bracadeira.jpg";
 import imgCinto from "@/assets/products/cinto-corrida.jpg";
 import imgKit from "@/assets/products/kit-seguranca-urbana.jpg";
 import imgGarmin from "@/assets/products/garmin-forerunner-965.jpg";
+import imgGarminPreto from "@/assets/products/garmin-forerunner-965-preto.jpg";
 
 export const PRODUCT_IMAGES: Record<string, string> = {
   "fone-conducao-ossea": imgFone,
@@ -21,6 +22,12 @@ export const PRODUCT_IMAGES: Record<string, string> = {
   "cinto-corrida": imgCinto,
   "kit-seguranca-urbana": imgKit,
   "garmin-forerunner-965": imgGarmin,
+};
+
+// Imagens específicas por variante. Chave: `${slug}::${variante}`.
+export const PRODUCT_VARIANT_IMAGES: Record<string, string> = {
+  "garmin-forerunner-965::Branco": imgGarmin,
+  "garmin-forerunner-965::Preto": imgGarminPreto,
 };
 
 
