@@ -1,18 +1,23 @@
 import type { Product } from "@/lib/products";
-import { PRODUCT_IMAGES } from "@/lib/products";
+import { PRODUCT_IMAGES, PRODUCT_VARIANT_IMAGES } from "@/lib/products";
 
 export function ProductImage({
   product,
   className = "",
   eager = false,
   fit = "cover",
+  variant,
 }: {
   product: Product;
   className?: string;
   eager?: boolean;
   fit?: "cover" | "contain";
+  variant?: string;
 }) {
-  const src = PRODUCT_IMAGES[product.slug];
+  const variantSrc = variant
+    ? PRODUCT_VARIANT_IMAGES[`${product.slug}::${variant}`]
+    : undefined;
+  const src = variantSrc ?? PRODUCT_IMAGES[product.slug];
   if (src) {
     return (
       <img

@@ -89,7 +89,7 @@ function ProductPage() {
           {/* Galeria */}
           <div className="space-y-3">
             <div className="aspect-square overflow-hidden rounded-md border border-[color:var(--graphite)]/10">
-              <ProductImage product={product} className="h-full w-full" />
+              <ProductImage product={product} variant={variant} className="h-full w-full" />
             </div>
             <div className="grid grid-cols-4 gap-3">
               {[0, 1, 2, 3].map((i) => (
@@ -97,7 +97,7 @@ function ProductPage() {
                   key={i}
                   className="aspect-square overflow-hidden rounded-sm border border-[color:var(--graphite)]/10 opacity-70"
                 >
-                  <ProductImage product={product} className="h-full w-full" />
+                  <ProductImage product={product} variant={variant} className="h-full w-full" />
                 </div>
               ))}
             </div>
