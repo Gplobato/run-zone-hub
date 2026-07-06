@@ -425,6 +425,78 @@ function Checkout() {
                   </div>
                 </section>
 
+                <section>
+                  <h2 className="font-display text-2xl tracking-wide">
+                    Forma de envio
+                  </h2>
+                  <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                    Promoção: frete grátis — 1 compra por CPF
+                  </p>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <ShippingOption
+                      selected={shippingMethod === "sedex"}
+                      onClick={() => setShippingMethod("sedex")}
+                      icon={<Zap className="h-5 w-5 text-[color:var(--terracotta)]" />}
+                      title="SEDEX"
+                      subtitle="Entrega em 1 a 3 dias úteis"
+                      badge="Recomendado"
+                      strikePrice="R$ 39,90"
+                      price="Grátis"
+                    />
+                    <ShippingOption
+                      selected={shippingMethod === "pac"}
+                      onClick={() => setShippingMethod("pac")}
+                      icon={<Package className="h-5 w-5 text-[color:var(--sage)]" />}
+                      title="PAC"
+                      subtitle="Entrega em 3 a 7 dias úteis"
+                      strikePrice="R$ 19,90"
+                      price="Grátis"
+                    />
+                  </div>
+                </section>
+
+                <section>
+                  <h2 className="font-display text-2xl tracking-wide">
+                    Forma de pagamento
+                  </h2>
+                  <div className="mt-3 grid gap-3">
+                    <PaymentOption
+                      selected={paymentMethod === "pix"}
+                      onClick={() => setPaymentMethod("pix")}
+                      icon={<QrCode className="h-5 w-5 text-[color:var(--terracotta)]" />}
+                      title="Pix"
+                      subtitle="Aprovação instantânea · sem taxas"
+                      badge="Mais rápido"
+                    />
+                    <PaymentOption
+                      disabled
+                      icon={<CreditCard className="h-5 w-5 text-muted-foreground" />}
+                      title="Cartão de crédito"
+                      subtitle="Temporariamente indisponível"
+                      badge={
+                        <span className="inline-flex items-center gap-1">
+                          <Ban className="h-3 w-3" />
+                          Indisponível
+                        </span>
+                      }
+                    />
+                  </div>
+                </section>
+
+                <div className="flex items-start gap-2 rounded-sm border border-[color:var(--sage)]/30 bg-[color:var(--sage)]/10 p-3">
+                  <Lock className="mt-0.5 h-4 w-4 flex-shrink-0 text-[color:var(--sage)]" />
+                  <div>
+                    <div className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--sage)]">
+                      Checkout 100% seguro
+                    </div>
+                    <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted-foreground">
+                      Seus dados são criptografados (SSL/TLS) e processados em ambiente
+                      protegido. Nenhuma informação de pagamento é armazenada em nossos
+                      servidores.
+                    </p>
+                  </div>
+                </div>
+
                 {error && (
                   <div className="flex items-start gap-2 rounded-sm bg-[color:var(--terracotta)]/10 p-3">
                     <CircleAlert className="mt-0.5 h-4 w-4 flex-shrink-0 text-[color:var(--terracotta)]" />
@@ -442,10 +514,13 @@ function Checkout() {
                   {loading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      Gerando Pix…
+                      Gerando QR Code Pix…
                     </>
                   ) : (
-                    <>Gerar Pix · {formatBRL(totalCents)}</>
+                    <>
+                      <QrCode className="h-4 w-4" />
+                      Gerar QR Code Pix · {formatBRL(totalCents)}
+                    </>
                   )}
                 </button>
               </form>
