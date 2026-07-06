@@ -4,13 +4,17 @@ import { useCart } from "@/context/CartContext";
 import { useState } from "react";
 import logoUrl from "@/assets/paze-logo.png";
 
-const NAV = [
+type NavItem =
+  | { to: "/produtos"; label: string }
+  | { to: "/categoria/$slug"; params: { slug: string }; label: string };
+
+const NAV: NavItem[] = [
   { to: "/produtos", label: "Todos" },
-  { to: "/categoria/audio", label: "Áudio" },
-  { to: "/categoria/seguranca", label: "Segurança" },
-  { to: "/categoria/acessorios", label: "Acessórios" },
-  { to: "/categoria/kits", label: "Kits" },
-] as const;
+  { to: "/categoria/$slug", params: { slug: "audio" }, label: "Áudio" },
+  { to: "/categoria/$slug", params: { slug: "seguranca" }, label: "Segurança" },
+  { to: "/categoria/$slug", params: { slug: "acessorios" }, label: "Acessórios" },
+  { to: "/categoria/$slug", params: { slug: "kits" }, label: "Kits" },
+];
 
 export function Header() {
   const { itemCount, openCart } = useCart();
@@ -46,8 +50,9 @@ export function Header() {
           <nav className="hidden items-center justify-center gap-8 md:flex">
             {NAV.map((n) => (
               <Link
-                key={n.to}
+                key={n.label}
                 to={n.to}
+                params={"params" in n ? n.params : undefined}
                 className="font-mono text-[11px] uppercase tracking-[0.18em] text-[color:var(--bone)]/70 transition-colors hover:text-[color:var(--bone)]"
                 activeProps={{ className: "text-[color:var(--sage)]" }}
               >
@@ -115,8 +120,9 @@ export function Header() {
           <div className="mx-auto flex max-w-7xl flex-col px-4 py-2">
             {NAV.map((n) => (
               <Link
-                key={n.to}
+                key={n.label}
                 to={n.to}
+                params={"params" in n ? n.params : undefined}
                 onClick={() => setMobileOpen(false)}
                 className="border-b border-[color:var(--bone)]/5 py-3 font-mono text-sm uppercase tracking-[0.18em] text-[color:var(--bone)]/80"
               >

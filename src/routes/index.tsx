@@ -117,7 +117,8 @@ function Home() {
       </section>
 
       {/* ────────────────────────────────────────── TECH — Três pilares */}
-      <section className="mx-auto max-w-7xl px-4 py-24 md:px-8">
+      <section className="bg-[color:var(--graphite)] text-[color:var(--bone)]">
+        <div className="mx-auto max-w-7xl px-4 py-24 md:px-8">
         <div className="mb-12 flex items-end justify-between gap-6">
           <div>
             <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.24em] text-[color:var(--sage)]">
@@ -126,7 +127,7 @@ function Home() {
             <h2 className="font-display text-4xl tracking-wide md:text-5xl">
               Um sistema, três pilares
             </h2>
-            <p className="mt-4 max-w-xl text-muted-foreground">
+            <p className="mt-4 max-w-xl text-[color:var(--bone)]/70">
               Cada produto Paze é validado sobre três eixos técnicos —
               percepção, visibilidade e mobilidade. É assim que a rua
               deixa de ser um obstáculo e vira parte do treino.
@@ -134,7 +135,7 @@ function Home() {
           </div>
           <Link
             to="/produtos"
-            className="hidden font-mono text-[11px] uppercase tracking-[0.22em] text-[color:var(--graphite)]/70 hover:text-[color:var(--terracotta)] md:inline-flex"
+            className="hidden font-mono text-[11px] uppercase tracking-[0.22em] text-[color:var(--bone)]/70 hover:text-[color:var(--terracotta)] md:inline-flex"
           >
             Ver catálogo →
           </Link>
@@ -203,9 +204,9 @@ function Home() {
               return (
                 <div
                   key={p.title}
-                  className="group flex items-start gap-4 rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--bone)] p-5 transition-colors hover:border-[color:var(--graphite)]"
+                  className="group flex items-start gap-4 rounded-md border border-[color:var(--bone)]/10 bg-[color:var(--bone)]/[0.04] p-5 transition-colors hover:border-[color:var(--sage)]/60 hover:bg-[color:var(--bone)]/[0.07]"
                 >
-                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-sm bg-[color:var(--graphite)] text-[color:var(--sage)]">
+                  <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-sm bg-[color:var(--bone)]/10 text-[color:var(--sage)]">
                     <Icon className="h-5 w-5" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1">
@@ -217,7 +218,7 @@ function Home() {
                     <h3 className="mt-1 font-display text-2xl tracking-wide">
                       {p.title}
                     </h3>
-                    <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+                    <p className="mt-2 text-sm text-[color:var(--bone)]/70">{p.desc}</p>
                     <div className="mt-3 font-mono text-[11px] uppercase tracking-widest text-[color:var(--sage)]">
                       → {p.metric}
                     </div>
@@ -240,15 +241,15 @@ function Home() {
                 key={c.slug}
                 to="/categoria/$slug"
                 params={{ slug: c.slug }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--graphite)]/[0.04] p-6 transition-all hover:border-[color:var(--graphite)] hover:bg-[color:var(--graphite)] hover:text-[color:var(--bone)]"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-md border border-[color:var(--bone)]/10 bg-[color:var(--bone)]/[0.04] p-6 transition-all hover:border-[color:var(--sage)]/60 hover:bg-[color:var(--bone)]/[0.08]"
               >
-                <div className="flex items-start justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground group-hover:text-[color:var(--sage)]">
+                <div className="flex items-start justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--bone)]/50 group-hover:text-[color:var(--sage)]">
                   <span>0{i + 1}</span>
                   <span>{PRODUCTS.filter((p) => p.category === c.slug).length} itens</span>
                 </div>
                 <div className="mt-8">
                   <h4 className="font-display text-3xl tracking-wide">{c.label}</h4>
-                  <p className="mt-2 text-sm text-muted-foreground group-hover:text-[color:var(--bone)]/70">
+                  <p className="mt-2 text-sm text-[color:var(--bone)]/70">
                     {c.description}
                   </p>
                   <div className="mt-4 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--terracotta)] transition-transform group-hover:translate-x-1">
@@ -258,6 +259,7 @@ function Home() {
               </Link>
             ))}
           </div>
+        </div>
         </div>
       </section>
 

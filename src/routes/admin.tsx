@@ -131,7 +131,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       <header className="border-b border-[color:var(--graphite)]/10 bg-[color:var(--graphite)] text-[color:var(--bone)]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-8">
           <div className="flex items-center gap-3">
-            <img src={logoAsset.url} alt="Paze" className="h-12 w-auto" />
+            <img src={logoUrl} alt="Paze" className="h-12 w-auto" />
             <span className="rounded-sm bg-[color:var(--terracotta)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-widest">
               admin
             </span>
