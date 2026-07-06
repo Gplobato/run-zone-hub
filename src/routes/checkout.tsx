@@ -589,9 +589,11 @@ function Checkout() {
                 <span>{formatBRL(subtotalCents)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
-                <span>Frete SEDEX</span>
+                <span>Frete {shippingMethod === "sedex" ? "SEDEX" : "PAC"}</span>
                 <span className="text-[color:var(--sage)]">
-                  <span className="mr-1 line-through opacity-60">R$ 24,90</span>
+                  <span className="mr-1 line-through opacity-60">
+                    {shippingMethod === "sedex" ? "R$ 39,90" : "R$ 19,90"}
+                  </span>
                   Grátis
                 </span>
               </div>
