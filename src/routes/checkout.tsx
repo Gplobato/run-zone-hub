@@ -88,6 +88,8 @@ function Checkout() {
     city: "",
     state: "",
   });
+  const [shippingMethod, setShippingMethod] = useState<"sedex" | "pac">("sedex");
+  const [paymentMethod, setPaymentMethod] = useState<"pix">("pix");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tx, setTx] = useState<{
@@ -98,7 +100,7 @@ function Checkout() {
   const [paid, setPaid] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Promoção: frete SEDEX grátis na 1ª compra por CPF.
+  // Promoção: frete grátis na 1ª compra por CPF (SEDEX e PAC).
   const shippingCents = 0;
   const totalCents = subtotalCents + shippingCents;
 
