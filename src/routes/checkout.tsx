@@ -13,7 +13,11 @@ import {
   Lock,
   ShieldCheck,
   Truck,
-
+  Package,
+  Zap,
+  QrCode,
+  CreditCard,
+  Ban,
 } from "lucide-react";
 import {
   createHypercashTransaction,
