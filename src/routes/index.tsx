@@ -241,15 +241,15 @@ function Home() {
                 key={c.slug}
                 to="/categoria/$slug"
                 params={{ slug: c.slug }}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--graphite)]/[0.04] p-6 transition-all hover:border-[color:var(--graphite)] hover:bg-[color:var(--graphite)] hover:text-[color:var(--bone)]"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-md border border-[color:var(--bone)]/10 bg-[color:var(--bone)]/[0.04] p-6 transition-all hover:border-[color:var(--sage)]/60 hover:bg-[color:var(--bone)]/[0.08]"
               >
-                <div className="flex items-start justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground group-hover:text-[color:var(--sage)]">
+                <div className="flex items-start justify-between font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--bone)]/50 group-hover:text-[color:var(--sage)]">
                   <span>0{i + 1}</span>
                   <span>{PRODUCTS.filter((p) => p.category === c.slug).length} itens</span>
                 </div>
                 <div className="mt-8">
                   <h4 className="font-display text-3xl tracking-wide">{c.label}</h4>
-                  <p className="mt-2 text-sm text-muted-foreground group-hover:text-[color:var(--bone)]/70">
+                  <p className="mt-2 text-sm text-[color:var(--bone)]/70">
                     {c.description}
                   </p>
                   <div className="mt-4 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[color:var(--terracotta)] transition-transform group-hover:translate-x-1">
@@ -259,6 +259,7 @@ function Home() {
               </Link>
             ))}
           </div>
+        </div>
         </div>
       </section>
 
