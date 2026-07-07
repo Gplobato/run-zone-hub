@@ -258,6 +258,8 @@ function ProductPage() {
           </div>
         </section>
 
+        {product.slug.startsWith("garmin") && <PartnersVideo />}
+
         {/* Frequentemente comprado junto — bundle upsell (padrão Amazon) */}
         {crossSell.length >= 2 && (
           <FrequentlyBoughtTogether main={product} extras={crossSell.slice(0, 2)} />
