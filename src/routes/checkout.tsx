@@ -90,6 +90,8 @@ function Checkout() {
   });
   const [shippingMethod, setShippingMethod] = useState<"sedex" | "pac">("sedex");
   const [paymentMethod, setPaymentMethod] = useState<"pix">("pix");
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingReady, setShippingReady] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tx, setTx] = useState<{
