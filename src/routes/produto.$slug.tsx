@@ -13,7 +13,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Minus, Plus, ShieldCheck, Truck, RotateCcw, Check } from "lucide-react";
+import { Minus, Plus, ShieldCheck, Truck, RotateCcw, Check, Play } from "lucide-react";
+import garminPartnersVideo from "@/assets/garmin-parceiros.mp4.asset.json";
 
 export const Route = createFileRoute("/produto/$slug")({
   loader: ({ params }) => {
