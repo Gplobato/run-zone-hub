@@ -692,6 +692,16 @@ function PixPanel({
   totalCents: number;
 }) {
   const [copied, setCopied] = useState(false);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = panelRef.current;
+    if (!el) return;
+    // Wait for layout, then scroll QR into view (mobile-first).
+    const t = setTimeout(() => {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
+    return () => clearTimeout(t);
+  }, []);
   const code = tx.pix?.qrcode || "";
   const imgSrc =
     tx.pix?.qrcodeBase64
