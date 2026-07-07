@@ -11,12 +11,15 @@ import {
   Gift,
   Star,
   ChevronRight,
+  ZoomIn,
+  X,
+  Ruler,
 } from "lucide-react";
 import { fbqTrack } from "@/lib/pixel";
-import mlLogo from "@/assets/mercadopromo/ml-logo.png.asset.json";
-import review1 from "@/assets/mercadopromo/review-1.jpg.asset.json";
-import review2 from "@/assets/mercadopromo/review-2.jpg.asset.json";
-import review3 from "@/assets/mercadopromo/review-3.jpg.asset.json";
+import mlLogo from "@/assets/mercadopromo/ml-logo.png";
+import review1 from "@/assets/mercadopromo/review-1.jpg";
+import review2 from "@/assets/mercadopromo/review-2.jpg";
+import review3 from "@/assets/mercadopromo/review-3.jpg";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo — página standalone estilo Mercado Livre (produto único).
@@ -77,7 +80,15 @@ const COLORS: {
   },
 ];
 
-const SIZES = ["M", "G", "EXG", "GG"];
+const SIZES = ["P", "M", "G", "GG", "EXG"];
+
+const SIZE_GUIDE = [
+  { label: "P", equivalent: "P", chest: 88, height: 55, shoulders: 37 },
+  { label: "M", equivalent: "M", chest: 95, height: 56, shoulders: 40 },
+  { label: "G", equivalent: "G", chest: 100, height: 57, shoulders: 41 },
+  { label: "GG", equivalent: "GG", chest: 102, height: 58, shoulders: 42 },
+  { label: "EXG", equivalent: "XG", chest: 104, height: 59, shoulders: 43 },
+];
 
 const RELATED = [
   {
@@ -105,38 +116,6 @@ const RELATED = [
   },
 ];
 
-const BRANDS = [
-  {
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_769606-MLA113777566597_062026-O.webp",
-    tag: "ROVITEX",
-    title: "Blusão Feminino Com Bordado E Aplique Rovitex Marrom",
-    priceCents: 11304,
-    compareCents: 16999,
-    discount: "33% OFF no Pix",
-    installments: "ou R$ 118,99 em 4x R$ 29,75 sem juros",
-    coupon: "Cupom 5% OFF",
-    freeShip: true,
-  },
-  {
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_628670-MLA113778124669_062026-O.webp",
-    tag: "",
-    title: "Jaqueta Bomber Em Material Sintético Com Detalhes Metálicos",
-    priceCents: 236000,
-    installments: "10x R$ 236,04 sem juros",
-    freeShip: true,
-  },
-  {
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_952201-MLA113837087325_062026-O.webp",
-    tag: "HERING",
-    title: "Jaqueta Puffer Hering Feminina Inverno Casaco Frio Original",
-    priceCents: 26820,
-    compareCents: 29999,
-    discount: "10% OFF",
-    installments: "12x R$ 26,24",
-    freeShip: true,
-  },
-];
-
 const REVIEWS = [
   {
     name: "juliana.m",
@@ -144,7 +123,7 @@ const REVIEWS = [
     rating: 5,
     text: "Chegou super rápido, o couro sintético é firme e o caimento slim ficou perfeito. Comprei M e serviu certinho.",
     when: "há 1 mês",
-    photo: review1.url,
+    photo: review1,
   },
   {
     name: "carol.s",
@@ -152,7 +131,7 @@ const REVIEWS = [
     rating: 5,
     text: "Linda! Igual à foto, cor marrom-escuro exatamente como aparece. Quente sem ser pesada.",
     when: "há 2 meses",
-    photo: review2.url,
+    photo: review2,
   },
   {
     name: "priscila.f",
@@ -160,7 +139,7 @@ const REVIEWS = [
     rating: 5,
     text: "Recomendo demais. Zíper de qualidade, costura reforçada. Já é a segunda que compro.",
     when: "há 2 meses",
-    photo: review3.url,
+    photo: review3,
   },
 ];
 
@@ -203,6 +182,8 @@ function MercadoPromoPage() {
   const [activeImg, setActiveImg] = useState(color.gallery[0]);
   const [size, setSize] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
+  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [zoomPhoto, setZoomPhoto] = useState<string | null>(null);
   const priceSplit = formatBRLSplit(PRODUCT.price);
 
   useEffect(() => {
@@ -396,9 +377,13 @@ function MercadoPromoPage() {
                   </button>
                 ))}
               </div>
-              <a href="#" className="mt-3 inline-flex items-center gap-1 text-[13px] text-[#3483fa] hover:underline">
-                📖 Guia de tamanhos
-              </a>
+              <button
+                type="button"
+                onClick={() => setSizeGuideOpen(true)}
+                className="mt-3 inline-flex items-center gap-1 text-[13px] text-[#3483fa] hover:underline"
+              >
+                <Ruler className="h-3.5 w-3.5" /> Guia de tamanhos
+              </button>
               <div className="mt-2">
                 <a href="#" className="inline-flex items-center gap-1 text-[13px] text-[#3483fa] hover:underline">
                   Perfeito para 100% <ChevronDown className="h-3 w-3" />
@@ -519,16 +504,20 @@ function MercadoPromoPage() {
           <SellerCard />
         </div>
 
-        {/* Marcas em destaque + payment methods */}
+        {/* Marcas relacionadas + payment methods */}
         <div className="grid gap-6 border-t border-[#eee] p-4 md:p-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-[20px] font-semibold text-[#333]">Marcas em destaque</h2>
-              <span className="text-[12px] text-[#999]">Ad</span>
+              <h2 className="text-[20px] font-semibold text-[#333]">Marcas relacionadas</h2>
+              <span className="text-[12px] text-[#999]">Fotos de compradores</span>
             </div>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-              {BRANDS.map((p) => (
-                <BrandCard key={p.title} {...p} />
+              {REVIEWS.map((review) => (
+                <ReviewPhotoCard
+                  key={review.name}
+                  review={review}
+                  onZoom={() => setZoomPhoto(review.photo)}
+                />
               ))}
             </div>
           </div>
@@ -593,11 +582,10 @@ function MercadoPromoPage() {
                   </div>
                   <p className="mb-3 text-[14px] leading-relaxed text-[#333]">{r.text}</p>
                   {r.photo && (
-                    <a
-                      href={r.photo}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-block overflow-hidden rounded border border-[#eee]"
+                    <button
+                      type="button"
+                      onClick={() => setZoomPhoto(r.photo)}
+                      className="group relative inline-block overflow-hidden rounded border border-[#eee]"
                     >
                       <img
                         src={r.photo}
@@ -605,7 +593,10 @@ function MercadoPromoPage() {
                         loading="lazy"
                         className="h-40 w-40 object-cover"
                       />
-                    </a>
+                      <span className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#3483fa] shadow transition-transform group-hover:scale-105">
+                        <ZoomIn className="h-4 w-4" />
+                      </span>
+                    </button>
                   )}
                 </div>
               ))}
@@ -613,6 +604,8 @@ function MercadoPromoPage() {
           </div>
         </div>
       </div>
+      {sizeGuideOpen && <SizeGuideModal onClose={() => setSizeGuideOpen(false)} />}
+      {zoomPhoto && <ZoomModal src={zoomPhoto} onClose={() => setZoomPhoto(null)} />}
       <div className="h-10" />
     </div>
   );
@@ -620,6 +613,58 @@ function MercadoPromoPage() {
 
 // ---------------- Header ----------------
 function MLHeader() {
+  const [destination, setDestination] = useState("Casa");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadCurrentLocation() {
+      if (!("geolocation" in navigator)) return;
+
+      const permissions = navigator.permissions;
+      if (permissions?.query) {
+        try {
+          const status = await permissions.query({ name: "geolocation" as PermissionName });
+          if (status.state !== "granted") return;
+        } catch {
+          return;
+        }
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async ({ coords }) => {
+          try {
+            const response = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coords.latitude}&longitude=${coords.longitude}&localityLanguage=pt-BR`,
+            );
+            const data = (await response.json()) as {
+              city?: string;
+              locality?: string;
+              principalSubdivision?: string;
+              postcode?: string;
+            };
+            if (cancelled) return;
+            const city = data.city || data.locality || data.principalSubdivision;
+            const postcode = data.postcode ? ` ${data.postcode}` : "";
+            if (city) setDestination(`${city}${postcode}`);
+          } catch {
+            if (!cancelled) setDestination("Casa");
+          }
+        },
+        () => {
+          if (!cancelled) setDestination("Casa");
+        },
+        { maximumAge: 30 * 60 * 1000, timeout: 3500 },
+      );
+    }
+
+    loadCurrentLocation();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <header className="bg-[#fff159]">
       <div className="mx-auto max-w-[1200px] px-4 pt-3">
@@ -627,7 +672,7 @@ function MLHeader() {
           {/* Logo */}
           <a href="/mercadopromo" className="flex-shrink-0">
             <img
-              src={mlLogo.url}
+              src={mlLogo}
               alt="Mercado Livre"
               className="h-8 w-auto md:h-10"
               draggable={false}
@@ -667,7 +712,12 @@ function MLHeader() {
           <div className="flex items-center gap-1">
             <MapPin className="h-4 w-4" />
             <span className="text-[#666]">
-              Enviar para <b className="text-[#333]">Rio de Janeiro 20211...</b>
+              Enviar para{" "}
+              {destination === "Casa" ? (
+                "Casa"
+              ) : (
+                <b className="text-[#333]">{destination}</b>
+              )}
             </span>
           </div>
           <a href="#" className="hover:underline">Categorias <ChevronDown className="inline h-3 w-3" /></a>
@@ -715,28 +765,151 @@ function RelatedCard(p: (typeof RELATED)[number]) {
   );
 }
 
-function BrandCard(p: (typeof BRANDS)[number]) {
+function ReviewPhotoCard({
+  review,
+  onZoom,
+}: {
+  review: (typeof REVIEWS)[number];
+  onZoom: () => void;
+}) {
   return (
     <div className="flex flex-col overflow-hidden rounded border border-[#eee] bg-white p-3">
-      <div className="aspect-square overflow-hidden rounded">
-        <img src={p.img} alt={p.title} loading="lazy" className="h-full w-full object-cover" />
+      <button
+        type="button"
+        onClick={onZoom}
+        className="group relative aspect-square overflow-hidden rounded bg-[#f5f5f5]"
+      >
+        <img
+          src={review.photo}
+          alt={`Foto enviada por ${review.name}`}
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
+        <span className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#3483fa] shadow transition-transform group-hover:scale-105">
+          <ZoomIn className="h-4 w-4" />
+        </span>
+      </button>
+      <div className="mt-3 flex">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star
+            key={i}
+            className={`h-3.5 w-3.5 ${
+              i < review.rating ? "fill-[#3483fa] text-[#3483fa]" : "text-[#ddd]"
+            }`}
+            strokeWidth={0}
+          />
+        ))}
       </div>
-      {p.tag && <div className="mt-3 text-[11px] font-semibold text-[#666]">{p.tag}</div>}
-      <p className={`${p.tag ? "" : "mt-3"} line-clamp-2 text-[13px] text-[#333]`}>{p.title}</p>
-      {"compareCents" in p && p.compareCents && (
-        <div className="mt-2 text-[11px] text-[#999] line-through">{formatBRL(p.compareCents)}</div>
-      )}
-      <div className="mt-0.5 flex items-center gap-2">
-        <span className="text-[18px] text-[#333]">{formatBRL(p.priceCents)}</span>
-        {p.discount && <span className="text-[12px] font-semibold text-[#00a650]">{p.discount}</span>}
-      </div>
-      <div className="text-[12px] text-[#00a650]">{p.installments}</div>
-      {p.coupon && (
-        <div className="mt-1 inline-block w-fit rounded bg-[#e6f0ff] px-2 py-0.5 text-[11px] text-[#3483fa]">
-          🎟 {p.coupon}
+      <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-[#333]">{review.text}</p>
+      <div className="mt-2 text-[12px] text-[#666]">{review.name}</div>
+    </div>
+  );
+}
+
+function SizeGuideModal({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/55 px-3 py-8 md:py-12">
+      <div className="w-full max-w-[760px] rounded-md bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-[#eee] px-6 py-4">
+          <h2 className="text-[26px] font-semibold text-[#111]">Guia de tamanhos</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fechar guia de tamanhos"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#3483fa] hover:bg-[#f2f6ff]"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
-      )}
-      {p.freeShip && <div className="mt-1 text-[12px] font-semibold text-[#00a650]">Frete grátis</div>}
+
+        <div className="px-6 py-5">
+          <div className="mb-6 grid grid-cols-2 border-b border-[#e6e6e6] text-center text-[14px]">
+            <div className="pb-2 text-[#bbb]">
+              Do corpo
+              <div className="mx-auto mt-1 w-fit rounded-full bg-[#eee] px-3 py-0.5 text-[10px] text-[#777]">
+                Guia não disponível
+              </div>
+            </div>
+            <div className="border-b-2 border-[#3483fa] pb-3 font-medium text-[#3483fa]">Da peça</div>
+          </div>
+
+          <h3 className="text-[16px] font-semibold text-[#333]">Tabela de medidas para peças</h3>
+          <p className="mt-2 text-[13px] text-[#777]">
+            As medidas estão em centímetros e podem variar conforme o modelo.
+          </p>
+
+          <div className="mt-4 overflow-hidden rounded-md border border-[#ddd]">
+            <table className="w-full border-collapse text-center text-[12px] text-[#333]">
+              <thead>
+                <tr className="bg-[#f5f5f5]">
+                  <th className="bg-[#dce9fb] px-3 py-4 font-semibold">Tamanho na etiqueta</th>
+                  <th className="px-3 py-4 font-semibold">Equivalências</th>
+                  <th className="px-3 py-4 font-semibold">Largura do peito</th>
+                  <th className="px-3 py-4 font-semibold">Altura da peça</th>
+                  <th className="px-3 py-4 font-semibold">Largura dos ombros</th>
+                </tr>
+              </thead>
+              <tbody>
+                {SIZE_GUIDE.map((row) => (
+                  <tr key={row.label} className="border-t border-[#ddd]">
+                    <td className="bg-[#dce9fb] px-3 py-4 font-medium text-[#0b1f3f]">{row.label}</td>
+                    <td className="px-3 py-4">{row.equivalent}</td>
+                    <td className="px-3 py-4">{row.chest}</td>
+                    <td className="px-3 py-4">{row.height}</td>
+                    <td className="px-3 py-4">{row.shoulders}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-7">
+            <h3 className="text-[16px] font-semibold text-[#333]">Como medir suas peças</h3>
+            <p className="mt-2 text-[13px] leading-relaxed text-[#777]">
+              Coloque a peça sobre uma superfície plana. Meça a largura do peito de axila a axila,
+              a altura da peça do ombro até a barra e a largura dos ombros de ponta a ponta.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ZoomModal({ src, onClose }: { src: string; onClose: () => void }) {
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" onClick={onClose}>
+      <div className="relative max-h-full max-w-4xl" onClick={(event) => event.stopPropagation()}>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Fechar imagem ampliada"
+          className="absolute -right-2 -top-2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#3483fa] shadow-lg hover:bg-[#f5f5f5]"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <img
+          src={src}
+          alt="Foto ampliada do comprador"
+          className="max-h-[86vh] max-w-full rounded-md bg-white object-contain shadow-2xl"
+        />
+      </div>
     </div>
   );
 }
