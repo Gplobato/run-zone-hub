@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCart } from "@/context/CartContext";
 import { formatBRL, getProduct, PRODUCTS } from "@/lib/products";
 import { ProductImage } from "./ProductImage";
+import { fbqTrack } from "@/lib/pixel";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 
