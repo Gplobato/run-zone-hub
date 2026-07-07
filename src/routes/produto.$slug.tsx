@@ -327,8 +327,8 @@ function ProductPage() {
           </Accordion>
         </section>
 
-        {product.slug.startsWith("garmin") && <PartnersVideo />}
       </div>
+
 
       {/* Sticky mobile buy bar */}
       <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-[color:var(--graphite)]/10 bg-[color:var(--bone)] p-3 md:hidden">
