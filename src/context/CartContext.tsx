@@ -1,11 +1,7 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { getProduct, type Product } from "@/lib/products";
+import { fbqTrack } from "@/lib/pixel";
 
-// ─── Analytics hooks (placeholders) ──────────────────────────────────────
-// TODO: Meta Pixel — fbq('track','AddToCart', {content_ids:[slug], value, currency:'BRL'})
-// TODO: GA4 — gtag('event','add_to_cart', { items:[{item_id:slug, price, quantity}] })
-// TODO: TikTok Pixel — ttq.track('AddToCart', { content_id:slug, value, currency:'BRL' })
-// ─────────────────────────────────────────────────────────────────────────
 
 export type CartItem = {
   slug: string;
