@@ -53,6 +53,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }
           return [...prev, { slug, quantity, variant }];
         });
+        const p = getProduct(slug);
+        if (p) {
+          fbqTrack("AddToCart", {
+            content_ids: [slug],
+            content_name: p.name,
+            content_type: "product",
+            contents: [{ id: slug, quantity, item_price: p.priceCents / 100 }],
+            value: (p.priceCents * quantity) / 100,
+            currency: "BRL",
+          });
+        }
         setIsOpen(true);
       },
       removeItem: (slug) => setItems((prev) => prev.filter((i) => i.slug !== slug)),
