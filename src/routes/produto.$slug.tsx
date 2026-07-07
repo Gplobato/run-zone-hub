@@ -446,3 +446,56 @@ function FrequentlyBoughtTogether({
   );
 }
 
+/**
+ * Vídeo de parceiros — leve, lazy, sem autoplay. Aparece bem abaixo do
+ * checkout pra não competir com a conversão. Expande no clique.
+ */
+function PartnersVideo() {
+  const [open, setOpen] = useState(false);
+  return (
+    <section className="mt-24 max-w-3xl">
+      <div className="mb-6 font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">
+        / Comunidade
+      </div>
+      <h2 className="mb-6 font-display text-3xl tracking-wide md:text-4xl">
+        Nossos parceiros gostaram
+      </h2>
+      <div className="overflow-hidden rounded-md border border-[color:var(--graphite)]/15 bg-[color:var(--graphite)]/[0.03] p-3">
+        {!open ? (
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="group relative flex aspect-[9/16] w-full max-w-[260px] items-center justify-center overflow-hidden rounded-sm bg-[color:var(--graphite)]/10 mx-auto"
+            aria-label="Reproduzir vídeo do parceiro"
+          >
+            <video
+              src={garminPartnersVideo.url}
+              preload="metadata"
+              muted
+              playsInline
+              className="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100"
+            />
+            <span className="absolute inset-0 flex items-center justify-center">
+              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[color:var(--terracotta)] text-[color:var(--bone)] shadow-lg">
+                <Play className="h-6 w-6 translate-x-0.5" fill="currentColor" />
+              </span>
+            </span>
+          </button>
+        ) : (
+          <video
+            src={garminPartnersVideo.url}
+            controls
+            autoPlay
+            playsInline
+            preload="metadata"
+            className="mx-auto aspect-[9/16] w-full max-w-[320px] rounded-sm bg-black"
+          />
+        )}
+        <p className="mt-3 text-center font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+          Depoimento real · sem edição
+        </p>
+      </div>
+    </section>
+  );
+}
+
