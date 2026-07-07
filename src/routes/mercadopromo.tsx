@@ -13,6 +13,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { fbqTrack } from "@/lib/pixel";
+import mlLogo from "@/assets/mercadopromo/ml-logo.png.asset.json";
+import review1 from "@/assets/mercadopromo/review-1.jpg.asset.json";
+import review2 from "@/assets/mercadopromo/review-2.jpg.asset.json";
+import review3 from "@/assets/mercadopromo/review-3.jpg.asset.json";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo — página standalone estilo Mercado Livre (produto único).
@@ -140,6 +144,7 @@ const REVIEWS = [
     rating: 5,
     text: "Chegou super rápido, o couro sintético é firme e o caimento slim ficou perfeito. Comprei M e serviu certinho.",
     when: "há 1 mês",
+    photo: review1.url,
   },
   {
     name: "carol.s",
@@ -147,6 +152,7 @@ const REVIEWS = [
     rating: 5,
     text: "Linda! Igual à foto, cor marrom-escuro exatamente como aparece. Quente sem ser pesada.",
     when: "há 2 meses",
+    photo: review2.url,
   },
   {
     name: "priscila.f",
@@ -154,6 +160,7 @@ const REVIEWS = [
     rating: 5,
     text: "Recomendo demais. Zíper de qualidade, costura reforçada. Já é a segunda que compro.",
     when: "há 2 meses",
+    photo: review3.url,
   },
 ];
 
@@ -584,7 +591,22 @@ function MercadoPromoPage() {
                       />
                     ))}
                   </div>
-                  <p className="text-[14px] leading-relaxed text-[#333]">{r.text}</p>
+                  <p className="mb-3 text-[14px] leading-relaxed text-[#333]">{r.text}</p>
+                  {r.photo && (
+                    <a
+                      href={r.photo}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-block overflow-hidden rounded border border-[#eee]"
+                    >
+                      <img
+                        src={r.photo}
+                        alt={`Foto enviada por ${r.name}`}
+                        loading="lazy"
+                        className="h-40 w-40 object-cover"
+                      />
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
@@ -604,22 +626,12 @@ function MLHeader() {
         <div className="flex items-center gap-3 md:gap-6">
           {/* Logo */}
           <a href="/mercadopromo" className="flex-shrink-0">
-            <div className="flex items-center">
-              <svg viewBox="0 0 60 40" className="h-8 w-12 md:h-10 md:w-16">
-                <ellipse cx="30" cy="20" rx="28" ry="18" fill="#3483fa" />
-                <path
-                  d="M14 22 Q22 14 30 20 Q38 26 46 18"
-                  stroke="#fff159"
-                  strokeWidth="3"
-                  fill="none"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <span className="ml-1 hidden font-semibold leading-tight text-[#333] md:block">
-                <span className="block text-[15px]">mercado</span>
-                <span className="-mt-1 block text-[15px]">livre</span>
-              </span>
-            </div>
+            <img
+              src={mlLogo.url}
+              alt="Mercado Livre"
+              className="h-8 w-auto md:h-10"
+              draggable={false}
+            />
           </a>
 
           {/* Search */}
