@@ -136,7 +136,31 @@ function Checkout() {
     };
   }, [form.zipCode]);
 
-  // Polling do status quando PIX gerado
+  // Só calcula frete depois que o endereço estiver preenchido
+  const addressComplete =
+    onlyDigits(form.zipCode).length === 8 &&
+    form.street.trim().length > 0 &&
+    form.streetNumber.trim().length > 0 &&
+    form.neighborhood.trim().length > 0 &&
+    form.city.trim().length > 0 &&
+    form.state.trim().length === 2;
+
+  useEffect(() => {
+    if (!addressComplete) {
+      setShippingReady(false);
+      setShippingLoading(false);
+      return;
+    }
+    setShippingLoading(true);
+    setShippingReady(false);
+    const t = setTimeout(() => {
+      setShippingLoading(false);
+      setShippingReady(true);
+    }, 900);
+    return () => clearTimeout(t);
+  }, [addressComplete, form.zipCode, form.streetNumber, form.city, form.state]);
+
+
   useEffect(() => {
     if (!tx?.id || paid) return;
     pollRef.current = setInterval(async () => {
