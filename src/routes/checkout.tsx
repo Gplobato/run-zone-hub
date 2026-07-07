@@ -458,27 +458,43 @@ function Checkout() {
                   <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                     Promoção: frete grátis — 1 compra por CPF
                   </p>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                    <ShippingOption
-                      selected={shippingMethod === "sedex"}
-                      onClick={() => setShippingMethod("sedex")}
-                      icon={<Zap className="h-5 w-5 text-[color:var(--terracotta)]" />}
-                      title="SEDEX"
-                      subtitle="Entrega em 1 a 3 dias úteis"
-                      badge="Recomendado"
-                      strikePrice="R$ 39,90"
-                      price="Grátis"
-                    />
-                    <ShippingOption
-                      selected={shippingMethod === "pac"}
-                      onClick={() => setShippingMethod("pac")}
-                      icon={<Package className="h-5 w-5 text-[color:var(--sage)]" />}
-                      title="PAC"
-                      subtitle="Entrega em 3 a 7 dias úteis"
-                      strikePrice="R$ 19,90"
-                      price="Grátis"
-                    />
-                  </div>
+                  {!addressComplete ? (
+                    <div className="mt-3 flex items-center gap-3 rounded-sm border border-dashed border-[color:var(--graphite)]/20 bg-[color:var(--graphite)]/[0.03] px-4 py-6 text-sm text-muted-foreground">
+                      <Truck className="h-5 w-5 text-[color:var(--graphite)]/40" />
+                      <span className="font-mono text-[11px] uppercase tracking-widest">
+                        Preencha o endereço para ver as opções de frete
+                      </span>
+                    </div>
+                  ) : shippingLoading || !shippingReady ? (
+                    <div className="mt-3 flex items-center gap-3 rounded-sm border border-[color:var(--graphite)]/10 bg-[color:var(--graphite)]/[0.03] px-4 py-6 text-sm text-muted-foreground">
+                      <Loader2 className="h-5 w-5 animate-spin text-[color:var(--sage)]" />
+                      <span className="font-mono text-[11px] uppercase tracking-widest">
+                        Calculando frete para seu CEP…
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      <ShippingOption
+                        selected={shippingMethod === "sedex"}
+                        onClick={() => setShippingMethod("sedex")}
+                        icon={<Zap className="h-5 w-5 text-[color:var(--terracotta)]" />}
+                        title="SEDEX"
+                        subtitle="Entrega em 1 a 3 dias úteis"
+                        badge="Recomendado"
+                        strikePrice="R$ 39,90"
+                        price="Grátis"
+                      />
+                      <ShippingOption
+                        selected={shippingMethod === "pac"}
+                        onClick={() => setShippingMethod("pac")}
+                        icon={<Package className="h-5 w-5 text-[color:var(--sage)]" />}
+                        title="PAC"
+                        subtitle="Entrega em 3 a 7 dias úteis"
+                        strikePrice="R$ 19,90"
+                        price="Grátis"
+                      />
+                    </div>
+                  )}
                 </section>
 
                 <section>
