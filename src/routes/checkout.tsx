@@ -726,7 +726,7 @@ function PixPanel({
   }
 
   return (
-    <div className="text-center">
+    <div ref={panelRef} className="scroll-mt-4 text-center">
       <div className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--sage)]">
         Pix gerado · {formatBRL(totalCents)}
       </div>
