@@ -5,7 +5,8 @@ import { ProductImage } from "@/components/paze/ProductImage";
 import { SignatureTrail } from "@/components/paze/SignatureTrail";
 import { formatBRL, getProduct, PRODUCTS } from "@/lib/products";
 import { useCart } from "@/context/CartContext";
-import { useState } from "react";
+import { fbqTrack } from "@/lib/pixel";
+import { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionContent,
