@@ -13,6 +13,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { fbqTrack } from "@/lib/pixel";
+import mlLogo from "@/assets/mercadopromo/ml-logo.png.asset.json";
+import review1 from "@/assets/mercadopromo/review-1.jpg.asset.json";
+import review2 from "@/assets/mercadopromo/review-2.jpg.asset.json";
+import review3 from "@/assets/mercadopromo/review-3.jpg.asset.json";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo — página standalone estilo Mercado Livre (produto único).
@@ -140,6 +144,7 @@ const REVIEWS = [
     rating: 5,
     text: "Chegou super rápido, o couro sintético é firme e o caimento slim ficou perfeito. Comprei M e serviu certinho.",
     when: "há 1 mês",
+    photo: review1.url,
   },
   {
     name: "carol.s",
@@ -147,6 +152,7 @@ const REVIEWS = [
     rating: 5,
     text: "Linda! Igual à foto, cor marrom-escuro exatamente como aparece. Quente sem ser pesada.",
     when: "há 2 meses",
+    photo: review2.url,
   },
   {
     name: "priscila.f",
@@ -154,6 +160,7 @@ const REVIEWS = [
     rating: 5,
     text: "Recomendo demais. Zíper de qualidade, costura reforçada. Já é a segunda que compro.",
     when: "há 2 meses",
+    photo: review3.url,
   },
 ];
 
