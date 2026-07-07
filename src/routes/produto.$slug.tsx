@@ -14,7 +14,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Minus, Plus, ShieldCheck, Truck, RotateCcw, Check, Play } from "lucide-react";
-import garminPartnersVideo from "@/assets/garmin-parceiros.mp4.asset.json";
 
 export const Route = createFileRoute("/produto/$slug")({
   loader: ({ params }) => {
@@ -454,6 +453,8 @@ function FrequentlyBoughtTogether({
  */
 function PartnersVideo() {
   const [open, setOpen] = useState(false);
+  const videoId = "k33UPC9vBCo";
+  const thumb = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
   return (
     <section className="mt-24 max-w-3xl">
       <div className="mb-6 font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">
@@ -463,41 +464,34 @@ function PartnersVideo() {
         Nossos parceiros gostaram
       </h2>
       <div className="overflow-hidden rounded-md border border-[color:var(--graphite)]/15 bg-[color:var(--graphite)]/[0.03] p-3">
-        {!open ? (
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="group relative flex aspect-[9/16] w-full max-w-[260px] items-center justify-center overflow-hidden rounded-sm bg-[color:var(--graphite)]/10 mx-auto"
-            aria-label="Reproduzir vídeo do parceiro"
-          >
-            <video
-              src={`${garminPartnersVideo.url}#t=0.5`}
-              preload="metadata"
-              muted
-              playsInline
-              onLoadedMetadata={(e) => {
-                // força o browser a renderizar o primeiro frame como thumb
-                const v = e.currentTarget;
-                try { v.currentTime = 0.5; } catch { /* noop */ }
-              }}
-              className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
-            />
-            <span className="absolute inset-0 flex items-center justify-center">
-              <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[color:var(--terracotta)] text-[color:var(--bone)] shadow-lg">
+        <div className="relative mx-auto aspect-[9/16] w-full max-w-[300px] overflow-hidden rounded-sm bg-black">
+          {!open ? (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="group absolute inset-0 flex items-center justify-center"
+              aria-label="Reproduzir vídeo do parceiro"
+            >
+              <img
+                src={thumb}
+                alt="Prévia do vídeo do parceiro"
+                loading="lazy"
+                className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
+              />
+              <span className="absolute flex h-14 w-14 items-center justify-center rounded-full bg-[color:var(--terracotta)] text-[color:var(--bone)] shadow-lg">
                 <Play className="h-6 w-6 translate-x-0.5" fill="currentColor" />
               </span>
-            </span>
-          </button>
-        ) : (
-          <video
-            src={garminPartnersVideo.url}
-            controls
-            autoPlay
-            playsInline
-            preload="metadata"
-            className="mx-auto aspect-[9/16] w-full max-w-[320px] rounded-sm bg-black"
-          />
-        )}
+            </button>
+          ) : (
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+              title="Depoimento do parceiro"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className="absolute inset-0 h-full w-full"
+            />
+          )}
+        </div>
         <p className="mt-3 text-center font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
           Depoimento real · sem edição
         </p>
