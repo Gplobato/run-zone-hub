@@ -258,6 +258,8 @@ function ProductPage() {
           </div>
         </section>
 
+        {product.slug.startsWith("garmin") && <PartnersVideo />}
+
         {/* Frequentemente comprado junto — bundle upsell (padrão Amazon) */}
         {crossSell.length >= 2 && (
           <FrequentlyBoughtTogether main={product} extras={crossSell.slice(0, 2)} />
@@ -325,8 +327,8 @@ function ProductPage() {
           </Accordion>
         </section>
 
-        {product.slug.startsWith("garmin") && <PartnersVideo />}
       </div>
+
 
       {/* Sticky mobile buy bar */}
       <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-[color:var(--graphite)]/10 bg-[color:var(--bone)] p-3 md:hidden">
@@ -469,11 +471,16 @@ function PartnersVideo() {
             aria-label="Reproduzir vídeo do parceiro"
           >
             <video
-              src={garminPartnersVideo.url}
+              src={`${garminPartnersVideo.url}#t=0.5`}
               preload="metadata"
               muted
               playsInline
-              className="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100"
+              onLoadedMetadata={(e) => {
+                // força o browser a renderizar o primeiro frame como thumb
+                const v = e.currentTarget;
+                try { v.currentTime = 0.5; } catch { /* noop */ }
+              }}
+              className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
             />
             <span className="absolute inset-0 flex items-center justify-center">
               <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[color:var(--terracotta)] text-[color:var(--bone)] shadow-lg">
