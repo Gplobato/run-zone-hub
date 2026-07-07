@@ -31,7 +31,7 @@ import review3 from "@/assets/mercadopromo/review-3.jpg";
 const PRODUCT = {
   title: "Jaqueta Feminina Courino Slim Casaco Frio Zíper Motoqueiro",
   brand: "SKATHI",
-  seller: "Skathi Wear",
+  seller: "Skhati Wear",
   sold: "+50 vendidos",
   rating: 5.0,
   reviewsCount: 9,
@@ -89,6 +89,37 @@ const SIZE_GUIDE = [
   { label: "GG", equivalent: "GG", chest: 102, height: 58, shoulders: 42 },
   { label: "EXG", equivalent: "XG", chest: 104, height: 59, shoulders: 43 },
 ];
+
+const PAYMENT_METHODS = {
+  credit: [
+    {
+      name: "American Express",
+      src: "https://http2.mlstatic.com/storage/logos-api-admin/b2c93a40-f3be-11eb-9984-b7076edb0bb7-m.svg",
+    },
+    {
+      name: "Elo",
+      src: "https://http2.mlstatic.com/storage/logos-api-admin/bb7c7bb0-adec-11f0-92e6-59fb0bcb38c2-m.svg",
+    },
+    {
+      name: "Visa",
+      src: "https://http2.mlstatic.com/storage/logos-api-admin/a5f047d0-9be0-11ec-aad4-c3381f368aaf-m.svg",
+    },
+    {
+      name: "Mastercard",
+      src: "https://http2.mlstatic.com/storage/logos-api-admin/9cf818e0-723a-11f0-a459-cf21d0937aeb-m.svg",
+    },
+  ],
+  pix: {
+    name: "Pix",
+    src: "https://http2.mlstatic.com/storage/logos-api-admin/f99fcca0-f3bd-11eb-9984-b7076edb0bb7-m.svg",
+  },
+};
+
+const SELLER = {
+  name: "Skhati Wear",
+  image: "https://http2.mlstatic.com/D_NQ_NP_624580-MLA91707854636_092025-F.jpg",
+  medal: "https://http2.mlstatic.com/frontend-assets/vpp-frontend/medal.svg",
+};
 
 const RELATED = [
   {
@@ -219,7 +250,17 @@ function MercadoPromoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#ededed] font-sans text-[#333]">
+    <div className="mercado-promo-page min-h-screen bg-[#ededed] text-[#333]">
+      <style>{`
+        .mercado-promo-page,
+          .mercado-promo-page h1,
+          .mercado-promo-page h2,
+          .mercado-promo-page h3 {
+          font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+          letter-spacing: 0 !important;
+          text-transform: none !important;
+        }
+      `}</style>
       <MLHeader />
 
       {/* Breadcrumbs */}
@@ -501,27 +542,10 @@ function MercadoPromoPage() {
               ))}
             </div>
           </div>
-          <SellerCard />
-        </div>
-
-        {/* Marcas relacionadas + payment methods */}
-        <div className="grid gap-6 border-t border-[#eee] p-4 md:p-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div>
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-[20px] font-semibold text-[#333]">Marcas relacionadas</h2>
-              <span className="text-[12px] text-[#999]">Fotos de compradores</span>
-            </div>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-              {REVIEWS.map((review) => (
-                <ReviewPhotoCard
-                  key={review.name}
-                  review={review}
-                  onZoom={() => setZoomPhoto(review.photo)}
-                />
-              ))}
-            </div>
+          <div className="space-y-4">
+            <SellerCard />
+            <PaymentMethodsCard />
           </div>
-          <PaymentMethodsCard />
         </div>
 
         {/* Opiniões */}
@@ -731,11 +755,6 @@ function MLHeader() {
           </a>
           <a href="#" className="hover:underline">Vender</a>
           <a href="#" className="hover:underline">Contato</a>
-          <div className="ml-auto flex items-center gap-4">
-            <a href="#" className="hover:underline">Crie a sua conta</a>
-            <a href="#" className="hover:underline">Entre</a>
-            <a href="#" className="hover:underline">Compras</a>
-          </div>
         </div>
       </div>
     </header>
@@ -761,47 +780,6 @@ function RelatedCard(p: (typeof RELATED)[number]) {
       </div>
       <div className="text-[12px] text-[#00a650]">{p.installments}</div>
       {p.freeShip && <div className="mt-1 text-[12px] font-semibold text-[#00a650]">Frete grátis</div>}
-    </div>
-  );
-}
-
-function ReviewPhotoCard({
-  review,
-  onZoom,
-}: {
-  review: (typeof REVIEWS)[number];
-  onZoom: () => void;
-}) {
-  return (
-    <div className="flex flex-col overflow-hidden rounded border border-[#eee] bg-white p-3">
-      <button
-        type="button"
-        onClick={onZoom}
-        className="group relative aspect-square overflow-hidden rounded bg-[#f5f5f5]"
-      >
-        <img
-          src={review.photo}
-          alt={`Foto enviada por ${review.name}`}
-          loading="lazy"
-          className="h-full w-full object-cover"
-        />
-        <span className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#3483fa] shadow transition-transform group-hover:scale-105">
-          <ZoomIn className="h-4 w-4" />
-        </span>
-      </button>
-      <div className="mt-3 flex">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Star
-            key={i}
-            className={`h-3.5 w-3.5 ${
-              i < review.rating ? "fill-[#3483fa] text-[#3483fa]" : "text-[#ddd]"
-            }`}
-            strokeWidth={0}
-          />
-        ))}
-      </div>
-      <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-[#333]">{review.text}</p>
-      <div className="mt-2 text-[12px] text-[#666]">{review.name}</div>
     </div>
   );
 }
@@ -918,11 +896,16 @@ function SellerCard() {
   return (
     <aside className="rounded-md border border-[#e6e6e6] p-4">
       <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#eee] text-[13px] text-[#333]">
-          SW
+        <div className="h-12 w-12 overflow-hidden rounded-full bg-[#eee]">
+          <img
+            src={SELLER.image}
+            alt={SELLER.name}
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
         </div>
         <div className="flex-1">
-          <div className="text-[15px] font-semibold text-[#333]">Skathi Wear</div>
+          <div className="text-[15px] font-semibold text-[#333]">{SELLER.name}</div>
           <div className="text-[12px] text-[#666]">+1000 Seguidores &nbsp; +500 Produtos</div>
         </div>
         <button className="rounded border border-[#3483fa] px-3 py-1 text-[12px] text-[#3483fa] hover:bg-[#e6f0ff]">
@@ -930,7 +913,8 @@ function SellerCard() {
         </button>
       </div>
       <div className="mt-3 flex items-center gap-2 text-[13px] text-[#00a650]">
-        🍃 MercadoLíder Platinum
+        <img src={SELLER.medal} alt="" className="h-5 w-5" loading="lazy" />
+        MercadoLíder Platinum
       </div>
       <div className="mt-1 text-[12px] text-[#666]">É um dos melhores do site!</div>
       <div className="mt-3 grid grid-cols-4 gap-1">
@@ -966,25 +950,16 @@ function PaymentMethodsCard() {
       <div className="mb-3 text-[16px] font-semibold text-[#333]">Meios de pagamento</div>
       <div className="text-[13px] text-[#333]">Cartões de crédito</div>
       <div className="mt-2 flex flex-wrap items-center gap-2">
-        {["AMEX", "ELO", "VISA", "Master"].map((b) => (
-          <span
-            key={b}
-            className="inline-flex h-7 items-center justify-center rounded border border-[#eee] bg-white px-2 text-[11px] font-semibold text-[#333]"
-          >
-            {b}
+        {PAYMENT_METHODS.credit.map((method) => (
+          <span key={method.name} className="inline-flex h-8 items-center justify-center rounded border border-[#eee] bg-white px-2">
+            <img src={method.src} alt={method.name} className="h-5 max-w-[48px]" loading="lazy" />
           </span>
         ))}
       </div>
       <div className="mt-4 text-[13px] text-[#333]">Pix</div>
       <div className="mt-2">
-        <span className="inline-flex h-7 items-center justify-center rounded border border-[#eee] bg-white px-2 text-[11px] font-semibold text-[#00a99d]">
-          pix
-        </span>
-      </div>
-      <div className="mt-4 text-[13px] text-[#333]">Boleto bancário</div>
-      <div className="mt-2">
-        <span className="inline-flex h-7 items-center justify-center rounded border border-[#eee] bg-white px-2 text-[11px] font-semibold text-[#333]">
-          ||||
+        <span className="inline-flex h-8 items-center justify-center rounded border border-[#eee] bg-white px-2">
+          <img src={PAYMENT_METHODS.pix.src} alt={PAYMENT_METHODS.pix.name} className="h-5 max-w-[48px]" loading="lazy" />
         </span>
       </div>
       <a href="#" className="mt-4 inline-block text-[13px] text-[#3483fa] hover:underline">
