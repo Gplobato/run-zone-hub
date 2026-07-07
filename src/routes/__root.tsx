@@ -15,7 +15,6 @@ import appCss from "../styles.css?url";
 const seoTitle = "Paze | Acessorios tecnicos de corrida e seguranca urbana";
 const seoDescription =
   "Fone de conducao ossea, LEDs, coletes refletivos e acessorios tecnicos para quem treina em ambiente urbano. Seguranca e performance em cada passada.";
-const socialImage = "/seo-preview.jpg";
 
 function NotFoundComponent() {
   return (
@@ -86,12 +85,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: seoDescription },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Paze" },
-      { property: "og:image", content: socialImage },
-      { property: "og:image:alt", content: "Acessorios de corrida e seguranca urbana da Paze" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: seoTitle },
       { name: "twitter:description", content: seoDescription },
-      { name: "twitter:image", content: socialImage },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
