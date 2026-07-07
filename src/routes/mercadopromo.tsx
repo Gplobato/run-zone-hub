@@ -16,7 +16,6 @@ import {
   Info,
   Loader2,
   Lock,
-  QrCode,
   Zap,
   ShieldCheck,
   Gift,
@@ -30,6 +29,7 @@ import {
 import { fbqTrack } from "@/lib/pixel";
 import { createHypercashTransaction } from "@/lib/hypercash.functions";
 import mlLogo from "@/assets/mercadopromo/ml-logo.png";
+import pixLogo from "@/assets/mercadopromo/pix-logo.png";
 import review1 from "@/assets/mercadopromo/review-1.jpg";
 import review2 from "@/assets/mercadopromo/review-2.jpg";
 import review3 from "@/assets/mercadopromo/review-3.jpg";
@@ -213,6 +213,13 @@ const maskPhone = (value: string) => {
 };
 const maskCEP = (value: string) =>
   onlyDigits(value).slice(0, 8).replace(/(\d{5})(\d)/, "$1-$2");
+const maskCardNumber = (value: string) =>
+  onlyDigits(value)
+    .slice(0, 19)
+    .replace(/(\d{4})(?=\d)/g, "$1 ")
+    .trim();
+const maskCardExpiry = (value: string) =>
+  onlyDigits(value).slice(0, 4).replace(/(\d{2})(\d)/, "$1/$2");
 
 type CheckoutForm = {
   name: string;
@@ -232,6 +239,14 @@ type PixData = {
   qrcode?: string;
   qrcodeBase64?: string;
   qrcodeUrl?: string;
+};
+
+type CardForm = {
+  holderName: string;
+  number: string;
+  expiry: string;
+  cvv: string;
+  installments: number;
 };
 
 export const Route = createFileRoute("/mercadopromo")({
@@ -726,9 +741,18 @@ function MercadoCheckout({
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pixCelebration, setPixCelebration] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [tx, setTx] = useState<{ id: string; status: string; pix: PixData | null } | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"PIX" | "CREDIT_CARD">("PIX");
+  const [tx, setTx] = useState<{ id: string; status: string; pix: PixData | null; method: "PIX" | "CREDIT_CARD" } | null>(null);
+  const [card, setCard] = useState<CardForm>({
+    holderName: "",
+    number: "",
+    expiry: "",
+    cvv: "",
+    installments: 1,
+  });
   const [form, setForm] = useState<CheckoutForm>({
     name: "",
     email: "",
@@ -761,6 +785,15 @@ function MercadoCheckout({
     form.neighborhood.trim().length > 0 &&
     form.city.trim().length > 0 &&
     form.state.trim().length === 2;
+
+  const [expiryMonth, expiryYear] = card.expiry.split("/");
+  const cardComplete =
+    card.holderName.trim().length > 3 &&
+    onlyDigits(card.number).length >= 13 &&
+    Number(expiryMonth) >= 1 &&
+    Number(expiryMonth) <= 12 &&
+    onlyDigits(expiryYear || "").length === 2 &&
+    onlyDigits(card.cvv).length >= 3;
 
   useEffect(() => {
     const cep = onlyDigits(form.zipCode);
@@ -804,53 +837,107 @@ function MercadoCheckout({
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function finishPurchase() {
+  const baseTransactionData = {
+    items: [
+      {
+        slug: "mercadopromo-jaqueta-courino",
+        title: itemTitle,
+        unitPriceCents: PRODUCT.price,
+        quantity,
+      },
+    ],
+    shippingFeeCents: shippingCents,
+    customer: {
+      name: form.name.trim(),
+      email: form.email.trim(),
+      document: form.document,
+      phone: form.phone,
+    },
+    address: {
+      street: form.street.trim(),
+      streetNumber: form.streetNumber.trim(),
+      complement: form.complement.trim() || undefined,
+      zipCode: form.zipCode,
+      neighborhood: form.neighborhood.trim(),
+      city: form.city.trim(),
+      state: form.state.toUpperCase(),
+    },
+  };
+
+  async function finishPixPurchase() {
     if (!identityComplete || !addressComplete || loading) return;
+    setLoading(true);
+    setPixCelebration(true);
+    setError(null);
+    fbqTrack("AddPaymentInfo", {
+      content_ids: ["mercadopromo-jaqueta-courino"],
+      value: totalCents / 100,
+      currency: "BRL",
+      payment_method: "pix",
+    });
+    try {
+      const result = await createTx({
+        data: {
+          ...baseTransactionData,
+          paymentMethod: "PIX",
+          externalRef: `mercadopromo-${Date.now()}`,
+        },
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1400));
+      setTx({
+        id: result.id,
+        status: result.status,
+        pix: (result.pix as PixData) ?? null,
+        method: "PIX",
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Falha ao gerar o Pix. Tente novamente.");
+    } finally {
+      setPixCelebration(false);
+      setLoading(false);
+    }
+  }
+
+  async function finishCardPurchase() {
+    if (!identityComplete || !addressComplete || !cardComplete || loading) return;
     setLoading(true);
     setError(null);
     fbqTrack("AddPaymentInfo", {
       content_ids: ["mercadopromo-jaqueta-courino"],
       value: totalCents / 100,
       currency: "BRL",
+      payment_method: "credit_card",
     });
     try {
+      const year = 2000 + Number(expiryYear);
       const result = await createTx({
         data: {
-          paymentMethod: "PIX",
-          items: [
-            {
-              slug: "mercadopromo-jaqueta-courino",
-              title: itemTitle,
-              unitPriceCents: PRODUCT.price,
-              quantity,
-            },
-          ],
-          shippingFeeCents: shippingCents,
-          customer: {
-            name: form.name.trim(),
-            email: form.email.trim(),
-            document: form.document,
-            phone: form.phone,
+          ...baseTransactionData,
+          paymentMethod: "CREDIT_CARD",
+          card: {
+            number: card.number,
+            holderName: card.holderName.trim(),
+            expirationMonth: Number(expiryMonth),
+            expirationYear: year,
+            cvv: card.cvv,
+            installments: card.installments,
           },
-          address: {
-            street: form.street.trim(),
-            streetNumber: form.streetNumber.trim(),
-            complement: form.complement.trim() || undefined,
-            zipCode: form.zipCode,
-            neighborhood: form.neighborhood.trim(),
-            city: form.city.trim(),
-            state: form.state.toUpperCase(),
-          },
-          externalRef: `mercadopromo-${Date.now()}`,
+          externalRef: `mercadopromo-card-${Date.now()}`,
         },
       });
       setTx({
         id: result.id,
         status: result.status,
-        pix: (result.pix as PixData) ?? null,
+        pix: null,
+        method: "CREDIT_CARD",
+      });
+      fbqTrack("Purchase", {
+        content_ids: ["mercadopromo-jaqueta-courino"],
+        value: totalCents / 100,
+        currency: "BRL",
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Falha ao gerar o Pix. Tente novamente.");
+      setError(err instanceof Error ? err.message : "Falha ao processar o cartão. Confira os dados e tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -877,6 +964,12 @@ function MercadoCheckout({
     } catch {
       setError("Não foi possível copiar automaticamente. Selecione o código Pix na tela.");
     }
+  }
+
+  if (pixCelebration) {
+    return (
+      <PixCelebrationScreen />
+    );
   }
 
   return (
@@ -1096,72 +1189,125 @@ function MercadoCheckout({
           {step === 3 && (
             <div className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
               <StepTitle title="Pagamento" step="3 de 3" subtitle="Todas as transações são seguras e criptografadas." />
-              <div className="mt-6 space-y-5">
-                <div className="rounded-md border border-[#1675f8] p-3">
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-[#1675f8]">
-                      <span className="h-2 w-2 rounded-full bg-[#1675f8]" />
-                    </span>
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f7fb]">
-                      <QrCode className="h-5 w-5 text-[#4db6ac]" />
-                    </span>
-                    <span className="font-semibold">PIX</span>
-                  </div>
-                  <div className="ml-7 mt-5 text-[14px] leading-relaxed text-[#667085]">
-                    <p>O código Pix expira em 30 minutos após finalizar a compra.</p>
-                    <p className="mt-4">Valor no Pix: <b>{formatBRL(totalCents)}</b></p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={finishPurchase}
-                    disabled={loading || !!tx}
-                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                    {tx ? "Pix Gerado" : "Finalizar Compra"}
-                  </button>
-                </div>
+              {tx?.method === "PIX" ? (
+                <PixPaymentPanel
+                  pixCode={pixCode}
+                  pixImage={pixImage}
+                  copied={copied}
+                  onCopy={copyPix}
+                />
+              ) : tx?.method === "CREDIT_CARD" ? (
+                <CardApprovedPanel status={tx.status} totalCents={totalCents} installments={card.installments} />
+              ) : (
+                <div className="mt-6 space-y-5">
+                  <PaymentChoice
+                    selected={paymentMethod === "PIX"}
+                    onClick={() => setPaymentMethod("PIX")}
+                    icon={<img src={pixLogo} alt="" className="h-5 w-5" />}
+                    title="PIX"
+                  />
+                  {paymentMethod === "PIX" && (
+                    <div className="rounded-md border border-[#1675f8] p-4">
+                      <div className="text-[14px] leading-relaxed text-[#667085]">
+                        <p>O código Pix expira em 30 minutos após finalizar a compra.</p>
+                        <p className="mt-4">Valor no Pix: <b>{formatBRL(totalCents)}</b></p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={finishPixPurchase}
+                        disabled={loading}
+                        className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                        Finalizar Compra
+                      </button>
+                    </div>
+                  )}
 
-                <div className="flex items-center gap-3 rounded-md border border-[#d9e0ea] p-4 text-[14px] font-semibold">
-                  <span className="h-4 w-4 rounded-full border border-[#667085]" />
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f7fb]">
-                    <CreditCard className="h-4 w-4 text-[#667085]" />
-                  </span>
-                  Cartão de crédito
-                </div>
-
-                {error && (
-                  <div className="flex items-start gap-2 rounded-md bg-[#fff1f0] p-3 text-[13px] text-[#d93025]">
-                    <CircleAlert className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                {tx && (
-                  <div className="rounded-md border border-[#d9e0ea] bg-[#f8fbff] p-4 text-center">
-                    <h3 className="text-[18px] font-semibold text-[#001133]">Pix pronto para pagamento</h3>
-                    <p className="mt-1 text-[13px] text-[#667085]">Escaneie o QR Code ou copie o código Pix no app do seu banco.</p>
-                    {pixImage && (
-                      <img src={pixImage} alt="QR Code Pix" className="mx-auto mt-4 h-56 w-56 rounded-md bg-white p-2" />
-                    )}
-                    {pixCode && (
-                      <>
-                        <div className="mt-4 max-h-24 overflow-auto break-all rounded border border-[#d9e0ea] bg-white p-3 text-left text-[11px] text-[#333]">
-                          {pixCode}
+                  <PaymentChoice
+                    selected={paymentMethod === "CREDIT_CARD"}
+                    onClick={() => setPaymentMethod("CREDIT_CARD")}
+                    icon={<CreditCard className="h-4 w-4 text-[#667085]" />}
+                    title="Cartão de crédito"
+                  />
+                  {paymentMethod === "CREDIT_CARD" && (
+                    <div className="rounded-md border border-[#1675f8] p-4">
+                      <div className="grid gap-4">
+                        <CheckoutField label="Nome impresso no cartão">
+                          <input
+                            value={card.holderName}
+                            onChange={(event) => setCard({ ...card, holderName: event.target.value.toUpperCase() })}
+                            placeholder="NOME COMPLETO"
+                            className={checkoutInputClass}
+                          />
+                        </CheckoutField>
+                        <CheckoutField label="Número do cartão">
+                          <input
+                            inputMode="numeric"
+                            value={card.number}
+                            onChange={(event) => setCard({ ...card, number: maskCardNumber(event.target.value) })}
+                            placeholder="0000 0000 0000 0000"
+                            className={checkoutInputClass}
+                          />
+                        </CheckoutField>
+                        <div className="grid grid-cols-2 gap-3">
+                          <CheckoutField label="Validade">
+                            <input
+                              inputMode="numeric"
+                              value={card.expiry}
+                              onChange={(event) => setCard({ ...card, expiry: maskCardExpiry(event.target.value) })}
+                              placeholder="MM/AA"
+                              className={checkoutInputClass}
+                            />
+                          </CheckoutField>
+                          <CheckoutField label="CVV">
+                            <input
+                              inputMode="numeric"
+                              value={card.cvv}
+                              onChange={(event) => setCard({ ...card, cvv: onlyDigits(event.target.value).slice(0, 4) })}
+                              placeholder="000"
+                              className={checkoutInputClass}
+                            />
+                          </CheckoutField>
                         </div>
-                        <button
-                          type="button"
-                          onClick={copyPix}
-                          className="mt-3 inline-flex items-center justify-center gap-2 rounded-md bg-[#001133] px-4 py-2.5 text-[13px] font-semibold text-white"
-                        >
-                          <Copy className="h-4 w-4" />
-                          {copied ? "Copiado" : "Copiar código Pix"}
-                        </button>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
+                        <CheckoutField label="Parcelas">
+                          <select
+                            value={card.installments}
+                            onChange={(event) => setCard({ ...card, installments: Number(event.target.value) })}
+                            className={checkoutInputClass}
+                          >
+                            {Array.from({ length: 12 }).map((_, index) => {
+                              const installments = index + 1;
+                              const installmentValue = Math.ceil(totalCents / installments);
+                              return (
+                                <option key={installments} value={installments}>
+                                  {installments}x de {formatBRL(installmentValue)}
+                                </option>
+                              );
+                            })}
+                          </select>
+                        </CheckoutField>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={finishCardPurchase}
+                        disabled={!cardComplete || loading}
+                        className="mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                        Pagar com cartão
+                      </button>
+                    </div>
+                  )}
+
+                  {error && (
+                    <div className="flex items-start gap-2 rounded-md bg-[#fff1f0] p-3 text-[13px] text-[#d93025]">
+                      <CircleAlert className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </section>
@@ -1179,6 +1325,193 @@ function MercadoCheckout({
         </aside>
       </main>
     </div>
+  );
+}
+
+function PaymentChoice({
+  selected,
+  onClick,
+  icon,
+  title,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  icon: ReactNode;
+  title: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-center gap-3 rounded-md border p-4 text-left text-[14px] font-semibold transition ${
+        selected ? "border-[#1675f8] bg-white" : "border-[#d9e0ea] bg-white hover:border-[#9dbcf7]"
+      }`}
+    >
+      <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full border ${selected ? "border-[#1675f8]" : "border-[#667085]"}`}>
+        {selected && <span className="h-2 w-2 rounded-full bg-[#1675f8]" />}
+      </span>
+      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f7fb]">{icon}</span>
+      {title}
+    </button>
+  );
+}
+
+function PixCelebrationScreen() {
+  return (
+    <div className="mercado-promo-page relative flex min-h-screen flex-col overflow-hidden bg-[#00a650] text-white">
+      <style>{`
+        @keyframes pixWash {
+          0% { transform: scale(0.9); opacity: 0; filter: blur(16px); }
+          45% { opacity: 0.95; }
+          100% { transform: scale(1.15); opacity: 1; filter: blur(0); }
+        }
+        @keyframes pixTextIn {
+          from { opacity: 0; transform: translateY(18px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,#55d98b_0%,#18b86b_36%,#079b55_68%,#007b43_100%)]" />
+      <div className="absolute -left-20 top-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" style={{ animation: "pixWash 1.4s ease forwards" }} />
+      <div className="absolute -right-16 bottom-16 h-80 w-80 rounded-full bg-white/10 blur-3xl" style={{ animation: "pixWash 1.7s ease forwards" }} />
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center" style={{ animation: "pixTextIn 0.8s ease 0.2s both" }}>
+        <img src={pixLogo} alt="Pix" className="mb-8 h-20 w-20 drop-shadow-lg" />
+        <h1 className="text-[30px] font-semibold leading-tight md:text-[42px]">
+          Tudo certo com a sua compra,
+          <br />
+          agora é só pagar!
+        </h1>
+      </div>
+      <div className="relative z-10 px-4 pb-8">
+        <PaymentFooter light />
+      </div>
+    </div>
+  );
+}
+
+function PixPaymentPanel({
+  pixCode,
+  pixImage,
+  copied,
+  onCopy,
+}: {
+  pixCode: string;
+  pixImage: string | null;
+  copied: boolean;
+  onCopy: () => void;
+}) {
+  return (
+    <div className="mt-6 text-center">
+      <h2 className="text-[28px] font-semibold text-[#333]">Quase lá...</h2>
+      <p className="mt-3 text-[14px] text-[#526173]">
+        Pague via pix em até <b>05:52</b> para confirmar seu pedido.
+      </p>
+      <div className="mx-auto mt-4 inline-flex rounded-full bg-[#fff3cd] px-6 py-2 text-[13px] font-semibold text-[#a36b00]">
+        Aguardando pagamento
+      </div>
+      <div className="mx-auto mt-8 flex h-28 w-28 items-center justify-center rounded-full bg-[#f5f5f5]">
+        <div className="relative h-20 w-12 rounded-[16px] border-[5px] border-[#111] bg-white shadow-sm">
+          <img src={pixLogo} alt="Pix" className="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2" />
+          <span className="absolute -left-8 top-7 h-8 w-8 rounded-full bg-[#ff977d]" />
+          <span className="absolute -right-7 top-10 h-5 w-8 rounded-full bg-[#ff977d]" />
+        </div>
+      </div>
+      <p className="mt-7 text-[14px] text-[#526173]">Aponte a câmera do seu celular</p>
+      {pixImage && (
+        <img src={pixImage} alt="QR Code Pix" className="mx-auto mt-3 h-56 w-56 bg-white object-contain md:h-64 md:w-64" />
+      )}
+      {pixCode && (
+        <>
+          <div className="mx-auto mt-5 max-h-14 max-w-[356px] overflow-hidden rounded-md border border-[#e1e6ef] bg-[#fafafa] px-3 py-3 text-left text-[12px] text-[#a0a8b8]">
+            {pixCode}
+          </div>
+          <button
+            type="button"
+            onClick={onCopy}
+            className="mx-auto mt-3 flex w-full max-w-[356px] items-center justify-center gap-2 rounded-md border border-[#d9e0ea] bg-white py-3 text-[14px] font-semibold text-[#111] shadow-sm"
+          >
+            <Copy className="h-4 w-4" />
+            {copied ? "Código copiado" : "Copiar código"}
+          </button>
+        </>
+      )}
+      <div className="mx-auto mt-8 max-w-[356px] text-left">
+        <h3 className="text-[18px] font-semibold text-[#1d2733]">Como pagar o pix</h3>
+        {[
+          "Clique em copiar o código, logo acima",
+          "Abra o aplicativo do seu banco",
+          "Selecione a opção PIX",
+          'Toque em "Pix Copia e Cola"',
+          "Insira o código copiado e finalize seu pagamento",
+        ].map((step, index) => (
+          <div key={step} className="mt-4 flex items-start gap-3 text-[13px] text-[#526173]">
+            <span className="grid h-5 w-5 flex-shrink-0 place-items-center rounded-full bg-[#16bf8f] text-[12px] font-semibold text-white">{index + 1}</span>
+            <span>{step}</span>
+          </div>
+        ))}
+      </div>
+      <div className="-mx-6 mt-10 border-t border-[#eef1f6] bg-[#f7f8fb] px-4 py-8">
+        <PaymentFooter />
+      </div>
+    </div>
+  );
+}
+
+function CardApprovedPanel({
+  status,
+  totalCents,
+  installments,
+}: {
+  status: string;
+  totalCents: number;
+  installments: number;
+}) {
+  return (
+    <div className="mt-6 rounded-md border border-[#00a650] bg-[#f8fff9] p-6 text-center">
+      <Check className="mx-auto h-12 w-12 rounded-full bg-[#00a650] p-2 text-white" />
+      <h2 className="mt-4 text-[22px] font-semibold text-[#001133]">Pagamento enviado!</h2>
+      <p className="mt-2 text-[14px] text-[#526173]">
+        Recebemos sua solicitação no cartão em {installments}x de {formatBRL(Math.ceil(totalCents / installments))}.
+      </p>
+      <p className="mt-1 text-[12px] text-[#667085]">Status da transação: {status}</p>
+      <div className="mt-6 border-t border-[#d8efdf] pt-5">
+        <PaymentFooter />
+      </div>
+    </div>
+  );
+}
+
+function PaymentFooter({ light = false }: { light?: boolean }) {
+  const textClass = light ? "text-white/85" : "text-[#9aa3b5]";
+  const boxClass = light ? "border-white/25 bg-white/15 text-white" : "border-[#e1e6ef] bg-white text-[#111]";
+  return (
+    <footer className={`text-center text-[12px] leading-relaxed ${textClass}`}>
+      <p>Mercado Livre | Todos os direitos reservados</p>
+      <p className="mt-2">Rua Elson Costa, 173 C - Bairro das indústrias Belo Horizonte - Minas Gerais</p>
+      <p>© 2026 Mercado Livre - CNPJ: 47.130.874/0001-05</p>
+      <p>Telefone: +55 (11) 3368-5599</p>
+      <p className="mt-3 text-[14px]">Formas de pagamento:</p>
+      <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+        {["Aura", "Discover", "Master", "Diners", "Visa", "Amex"].map((name) => (
+          <span key={name} className={`inline-flex h-6 min-w-10 items-center justify-center rounded border px-2 text-[9px] font-bold ${boxClass}`}>
+            {name}
+          </span>
+        ))}
+        <span className={`inline-flex h-6 min-w-10 items-center justify-center rounded border px-2 ${boxClass}`}>
+          <img src={pixLogo} alt="Pix" className="h-4 w-4" />
+        </span>
+        <span className={`inline-flex h-6 min-w-10 items-center justify-center rounded border px-2 text-[9px] font-bold ${boxClass}`}>
+          Elo
+        </span>
+      </div>
+      <div className="mt-5 inline-flex items-center gap-2 text-[12px] font-semibold">
+        <Lock className="h-4 w-4" />
+        <span>
+          PAGAMENTO
+          <br />
+          100% SEGURO
+        </span>
+      </div>
+    </footer>
   );
 }
 
