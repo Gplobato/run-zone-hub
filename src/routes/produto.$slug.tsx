@@ -471,11 +471,16 @@ function PartnersVideo() {
             aria-label="Reproduzir vídeo do parceiro"
           >
             <video
-              src={garminPartnersVideo.url}
+              src={`${garminPartnersVideo.url}#t=0.5`}
               preload="metadata"
               muted
               playsInline
-              className="h-full w-full object-cover opacity-80 transition-opacity group-hover:opacity-100"
+              onLoadedMetadata={(e) => {
+                // força o browser a renderizar o primeiro frame como thumb
+                const v = e.currentTarget;
+                try { v.currentTime = 0.5; } catch { /* noop */ }
+              }}
+              className="h-full w-full object-cover opacity-90 transition-opacity group-hover:opacity-100"
             />
             <span className="absolute inset-0 flex items-center justify-center">
               <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[color:var(--terracotta)] text-[color:var(--bone)] shadow-lg">
