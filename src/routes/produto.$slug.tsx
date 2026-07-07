@@ -5,7 +5,8 @@ import { ProductImage } from "@/components/paze/ProductImage";
 import { SignatureTrail } from "@/components/paze/SignatureTrail";
 import { formatBRL, getProduct, PRODUCTS } from "@/lib/products";
 import { useCart } from "@/context/CartContext";
-import { useState } from "react";
+import { fbqTrack } from "@/lib/pixel";
+import { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -64,9 +65,18 @@ function ProductPage() {
     .map((s) => PRODUCTS.find((p) => p.slug === s)!)
     .filter(Boolean);
 
+  useEffect(() => {
+    fbqTrack("ViewContent", {
+      content_ids: [product.slug],
+      content_name: product.name,
+      content_type: "product",
+      content_category: product.categoryLabel,
+      value: product.priceCents / 100,
+      currency: "BRL",
+    });
+  }, [product.slug, product.name, product.categoryLabel, product.priceCents]);
+
   const onAdd = () => {
-    // TODO: fbq('track','AddToCart',{content_ids:[product.slug],value:product.priceCents/100,currency:'BRL'})
-    // TODO: gtag('event','add_to_cart',{...}); ttq.track('AddToCart',{...})
     addItem(product.slug, qty, variant);
   };
 

@@ -1,11 +1,7 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { getProduct, type Product } from "@/lib/products";
+import { fbqTrack } from "@/lib/pixel";
 
-// ─── Analytics hooks (placeholders) ──────────────────────────────────────
-// TODO: Meta Pixel — fbq('track','AddToCart', {content_ids:[slug], value, currency:'BRL'})
-// TODO: GA4 — gtag('event','add_to_cart', { items:[{item_id:slug, price, quantity}] })
-// TODO: TikTok Pixel — ttq.track('AddToCart', { content_id:slug, value, currency:'BRL' })
-// ─────────────────────────────────────────────────────────────────────────
 
 export type CartItem = {
   slug: string;
@@ -57,6 +53,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }
           return [...prev, { slug, quantity, variant }];
         });
+        const p = getProduct(slug);
+        if (p) {
+          fbqTrack("AddToCart", {
+            content_ids: [slug],
+            content_name: p.name,
+            content_type: "product",
+            contents: [{ id: slug, quantity, item_price: p.priceCents / 100 }],
+            value: (p.priceCents * quantity) / 100,
+            currency: "BRL",
+          });
+        }
         setIsOpen(true);
       },
       removeItem: (slug) => setItems((prev) => prev.filter((i) => i.slug !== slug)),

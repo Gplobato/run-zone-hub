@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useCart } from "@/context/CartContext";
 import { formatBRL, getProduct, PRODUCTS } from "@/lib/products";
 import { ProductImage } from "./ProductImage";
+import { fbqTrack } from "@/lib/pixel";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 
@@ -205,7 +206,20 @@ export function CartDrawer() {
             <button
               onClick={() => {
                 closeCart();
-                // TODO: fbq('track','InitiateCheckout'); gtag('event','begin_checkout'); ttq.track('InitiateCheckout')
+                fbqTrack("InitiateCheckout", {
+                  content_ids: items.map((i) => i.slug),
+                  contents: items.map((i) => {
+                    const p = getProduct(i.slug);
+                    return {
+                      id: i.slug,
+                      quantity: i.quantity,
+                      item_price: (p?.priceCents ?? 0) / 100,
+                    };
+                  }),
+                  num_items: items.reduce((a, i) => a + i.quantity, 0),
+                  value: subtotalCents / 100,
+                  currency: "BRL",
+                });
                 navigate({ to: "/checkout" });
               }}
               className="mt-5 w-full rounded-sm bg-[color:var(--terracotta)] py-4 font-mono text-sm uppercase tracking-widest text-[color:var(--bone)] transition-opacity hover:opacity-90"
