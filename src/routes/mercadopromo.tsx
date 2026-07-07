@@ -1,11 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
+import type { FormEvent, ReactNode } from "react";
 import {
+  Check,
+  CircleAlert,
+  Copy,
+  CreditCard,
+  Edit3,
   Search,
   ShoppingCart,
   MapPin,
   Heart,
   ChevronDown,
+  Info,
+  Loader2,
+  Lock,
+  QrCode,
   Zap,
   ShieldCheck,
   Gift,
@@ -14,8 +25,10 @@ import {
   ZoomIn,
   X,
   Ruler,
+  Ticket,
 } from "lucide-react";
 import { fbqTrack } from "@/lib/pixel";
+import { createHypercashTransaction } from "@/lib/hypercash.functions";
 import mlLogo from "@/assets/mercadopromo/ml-logo.png";
 import review1 from "@/assets/mercadopromo/review-1.jpg";
 import review2 from "@/assets/mercadopromo/review-2.jpg";
@@ -32,7 +45,7 @@ const PRODUCT = {
   title: "Jaqueta Feminina Courino Slim Casaco Frio Zíper Motoqueiro",
   brand: "SKATHI",
   seller: "Skhati Wear",
-  sold: "+50 vendidos",
+  sold: "+800 vendidos",
   rating: 5.0,
   reviewsCount: 9,
   price: 20479, // centavos
@@ -49,7 +62,7 @@ const COLORS: {
 }[] = [
   {
     key: "marrom",
-    label: "Marrom-escuro",
+    label: "Marrom",
     thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp",
     gallery: [
       "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp",
@@ -60,7 +73,7 @@ const COLORS: {
   },
   {
     key: "preto",
-    label: "Preto",
+    label: "Branco",
     thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp",
     gallery: [
       "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp",
@@ -70,7 +83,7 @@ const COLORS: {
   },
   {
     key: "bege",
-    label: "Bege",
+    label: "Preto",
     thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp",
     gallery: [
       "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp",
@@ -184,6 +197,43 @@ function formatBRLSplit(cents: number) {
   return { int, dec };
 }
 
+const onlyDigits = (value: string) => value.replace(/\D+/g, "");
+const maskCPF = (value: string) =>
+  onlyDigits(value)
+    .slice(0, 11)
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+const maskPhone = (value: string) => {
+  const digits = onlyDigits(value).slice(0, 11);
+  if (digits.length <= 10) {
+    return digits.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3").trim();
+  }
+  return digits.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").trim();
+};
+const maskCEP = (value: string) =>
+  onlyDigits(value).slice(0, 8).replace(/(\d{5})(\d)/, "$1-$2");
+
+type CheckoutForm = {
+  name: string;
+  email: string;
+  document: string;
+  phone: string;
+  zipCode: string;
+  street: string;
+  streetNumber: string;
+  complement: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+};
+
+type PixData = {
+  qrcode?: string;
+  qrcodeBase64?: string;
+  qrcodeUrl?: string;
+};
+
 export const Route = createFileRoute("/mercadopromo")({
   head: () => ({
     meta: [
@@ -215,6 +265,7 @@ function MercadoPromoPage() {
   const [qty, setQty] = useState(1);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [zoomPhoto, setZoomPhoto] = useState<string | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
   const priceSplit = formatBRLSplit(PRODUCT.price);
 
   useEffect(() => {
@@ -239,6 +290,8 @@ function MercadoPromoPage() {
       num_items: qty,
       contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
     });
+    setCheckoutOpen(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const onAddToCart = () => {
@@ -247,7 +300,28 @@ function MercadoPromoPage() {
       value: PRODUCT.price / 100,
       currency: "BRL",
     });
+    fbqTrack("InitiateCheckout", {
+      content_ids: ["mercadopromo-jaqueta-courino"],
+      value: PRODUCT.price / 100,
+      currency: "BRL",
+      num_items: qty,
+      contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
+    });
+    setCheckoutOpen(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  if (checkoutOpen) {
+    return (
+      <MercadoCheckout
+        colorLabel={color.label}
+        productImage={activeImg}
+        quantity={qty}
+        selectedSize={size}
+        onBack={() => setCheckoutOpen(false)}
+      />
+    );
+  }
 
   return (
     <div className="mercado-promo-page min-h-screen bg-[#ededed] text-[#333]">
@@ -635,6 +709,610 @@ function MercadoPromoPage() {
   );
 }
 
+function MercadoCheckout({
+  colorLabel,
+  productImage,
+  quantity,
+  selectedSize,
+  onBack,
+}: {
+  colorLabel: string;
+  productImage: string;
+  quantity: number;
+  selectedSize: string | null;
+  onBack: () => void;
+}) {
+  const createTx = useServerFn(createHypercashTransaction);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [tx, setTx] = useState<{ id: string; status: string; pix: PixData | null } | null>(null);
+  const [form, setForm] = useState<CheckoutForm>({
+    name: "",
+    email: "",
+    document: "",
+    phone: "",
+    zipCode: "",
+    street: "",
+    streetNumber: "",
+    complement: "",
+    neighborhood: "",
+    city: "",
+    state: "",
+  });
+
+  const itemTitle = `${PRODUCT.title}${selectedSize ? ` - Tam. ${selectedSize}` : ""}`;
+  const subtotalCents = PRODUCT.price * quantity;
+  const shippingCents = 0;
+  const totalCents = subtotalCents + shippingCents;
+
+  const identityComplete =
+    form.name.trim().length > 2 &&
+    /.+@.+\..+/.test(form.email) &&
+    onlyDigits(form.document).length === 11 &&
+    onlyDigits(form.phone).length >= 10;
+
+  const addressComplete =
+    onlyDigits(form.zipCode).length === 8 &&
+    form.street.trim().length > 0 &&
+    form.streetNumber.trim().length > 0 &&
+    form.neighborhood.trim().length > 0 &&
+    form.city.trim().length > 0 &&
+    form.state.trim().length === 2;
+
+  useEffect(() => {
+    const cep = onlyDigits(form.zipCode);
+    if (cep.length !== 8) return;
+    let cancelled = false;
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+      .then((response) => response.json())
+      .then((data: {
+        logradouro?: string;
+        bairro?: string;
+        localidade?: string;
+        uf?: string;
+        erro?: boolean;
+      }) => {
+        if (cancelled || data.erro) return;
+        setForm((current) => ({
+          ...current,
+          street: data.logradouro || current.street,
+          neighborhood: data.bairro || current.neighborhood,
+          city: data.localidade || current.city,
+          state: data.uf || current.state,
+        }));
+      })
+      .catch(() => void 0);
+    return () => {
+      cancelled = true;
+    };
+  }, [form.zipCode]);
+
+  function goToDelivery(event: FormEvent) {
+    event.preventDefault();
+    if (!identityComplete) return;
+    setStep(2);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function goToPayment(event: FormEvent) {
+    event.preventDefault();
+    if (!addressComplete) return;
+    setStep(3);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function finishPurchase() {
+    if (!identityComplete || !addressComplete || loading) return;
+    setLoading(true);
+    setError(null);
+    fbqTrack("AddPaymentInfo", {
+      content_ids: ["mercadopromo-jaqueta-courino"],
+      value: totalCents / 100,
+      currency: "BRL",
+    });
+    try {
+      const result = await createTx({
+        data: {
+          paymentMethod: "PIX",
+          items: [
+            {
+              slug: "mercadopromo-jaqueta-courino",
+              title: itemTitle,
+              unitPriceCents: PRODUCT.price,
+              quantity,
+            },
+          ],
+          shippingFeeCents: shippingCents,
+          customer: {
+            name: form.name.trim(),
+            email: form.email.trim(),
+            document: form.document,
+            phone: form.phone,
+          },
+          address: {
+            street: form.street.trim(),
+            streetNumber: form.streetNumber.trim(),
+            complement: form.complement.trim() || undefined,
+            zipCode: form.zipCode,
+            neighborhood: form.neighborhood.trim(),
+            city: form.city.trim(),
+            state: form.state.toUpperCase(),
+          },
+          externalRef: `mercadopromo-${Date.now()}`,
+        },
+      });
+      setTx({
+        id: result.id,
+        status: result.status,
+        pix: (result.pix as PixData) ?? null,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Falha ao gerar o Pix. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const pixCode = tx?.pix?.qrcode || "";
+  const pixImage =
+    tx?.pix?.qrcodeBase64
+      ? tx.pix.qrcodeBase64.startsWith("data:")
+        ? tx.pix.qrcodeBase64
+        : `data:image/png;base64,${tx.pix.qrcodeBase64}`
+      : tx?.pix?.qrcodeUrl
+        ? tx.pix.qrcodeUrl
+        : pixCode
+          ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(pixCode)}`
+          : null;
+
+  async function copyPix() {
+    if (!pixCode) return;
+    try {
+      await navigator.clipboard.writeText(pixCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setError("Não foi possível copiar automaticamente. Selecione o código Pix na tela.");
+    }
+  }
+
+  return (
+    <div className="mercado-promo-page min-h-screen bg-white text-[#001133]">
+      <style>{`
+        .mercado-promo-page,
+        .mercado-promo-page h1,
+        .mercado-promo-page h2,
+        .mercado-promo-page h3 {
+          font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+          letter-spacing: 0 !important;
+          text-transform: none !important;
+        }
+      `}</style>
+      <CheckoutHeader onBack={onBack} />
+      <main className="mx-auto grid w-full max-w-[1040px] gap-4 px-3 py-4 md:grid-cols-[minmax(0,1fr)_340px] md:gap-6 md:px-4 md:py-6 lg:max-w-[1120px] lg:grid-cols-[338px_minmax(0,1fr)_340px]">
+        <div className="md:hidden">
+          <button
+            type="button"
+            onClick={() => setSummaryOpen((open) => !open)}
+            className="flex w-full items-center justify-between rounded-md border border-[#d9e0ea] bg-white px-4 py-3 text-left shadow-sm"
+          >
+            <span className="font-semibold">Resumo do pedido</span>
+            <span className="inline-flex items-center gap-2 font-semibold text-[#111]">
+              {formatBRL(totalCents)}
+              <ChevronDown className={`h-4 w-4 transition-transform ${summaryOpen ? "rotate-180" : ""}`} />
+            </span>
+          </button>
+          {summaryOpen && (
+            <div className="mt-2">
+              <OrderSummary
+                productImage={productImage}
+                itemTitle={itemTitle}
+                colorLabel={colorLabel}
+                quantity={quantity}
+                subtotalCents={subtotalCents}
+                shippingCents={shippingCents}
+                totalCents={totalCents}
+                compact
+              />
+            </div>
+          )}
+        </div>
+
+        <section className="space-y-4 lg:col-start-1">
+          {step > 1 && (
+            <CompletedCard title="Identificação" onEdit={() => setStep(1)}>
+              <strong>{form.name}</strong>
+              <span>{form.email}</span>
+              <span>{form.phone}</span>
+            </CompletedCard>
+          )}
+          {step > 2 && (
+            <CompletedCard title="Enviar para" onEdit={() => setStep(2)}>
+              <span>
+                {form.street}, {form.streetNumber}
+                {form.complement ? ` - ${form.complement}` : ""}
+              </span>
+              <span>
+                {form.neighborhood}, {form.city}/{form.state.toUpperCase()} {form.zipCode}
+              </span>
+              <span className="mt-3 font-semibold">Frete selecionado</span>
+              <span>Envio - Grátis</span>
+            </CompletedCard>
+          )}
+        </section>
+
+        <section className="md:col-start-1 lg:col-start-2">
+          {step === 1 && (
+            <form onSubmit={goToDelivery} className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
+              <StepTitle title="Identificação" step="1 de 3" subtitle="Preencha seus dados para envio do pedido." />
+              <div className="mt-8 space-y-5">
+                <CheckoutField label="Nome completo">
+                  <input
+                    value={form.name}
+                    onChange={(event) => setForm({ ...form, name: event.target.value })}
+                    placeholder="Digite seu nome completo"
+                    className={checkoutInputClass}
+                  />
+                </CheckoutField>
+                <CheckoutField label="E-mail">
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(event) => setForm({ ...form, email: event.target.value })}
+                    placeholder="Digite seu e-mail"
+                    className={checkoutInputClass}
+                  />
+                </CheckoutField>
+                <CheckoutField
+                  label={
+                    <span className="inline-flex items-center gap-1">
+                      CPF <Info className="h-4 w-4" />
+                    </span>
+                  }
+                >
+                  <input
+                    value={form.document}
+                    onChange={(event) => setForm({ ...form, document: maskCPF(event.target.value) })}
+                    placeholder="000.000.000-00"
+                    className={`${checkoutInputClass} max-w-[242px]`}
+                  />
+                </CheckoutField>
+                <CheckoutField label="Celular/Whatsapp">
+                  <input
+                    value={form.phone}
+                    onChange={(event) => setForm({ ...form, phone: maskPhone(event.target.value) })}
+                    placeholder="+55   (00) 00000-0000"
+                    className={`${checkoutInputClass} max-w-[242px]`}
+                  />
+                </CheckoutField>
+                <button
+                  type="submit"
+                  disabled={!identityComplete}
+                  className="w-full rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Ir Para Entrega
+                </button>
+              </div>
+            </form>
+          )}
+
+          {step === 2 && (
+            <form onSubmit={goToPayment} className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
+              <StepTitle title="Entrega" step="2 de 3" subtitle="Informe o endereço de entrega" />
+              <div className="mt-6 space-y-5">
+                <CheckoutField label="CEP">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="relative max-w-[180px] flex-1">
+                      <input
+                        value={form.zipCode}
+                        onChange={(event) => setForm({ ...form, zipCode: maskCEP(event.target.value) })}
+                        placeholder="00000-000"
+                        className={`${checkoutInputClass} bg-[#eef4ff] pr-10`}
+                      />
+                      {onlyDigits(form.zipCode).length === 8 && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00a650]" />}
+                    </div>
+                    {form.city && form.state && (
+                      <span className="text-[12px] font-semibold text-[#333]">{form.state}/{form.city}</span>
+                    )}
+                  </div>
+                </CheckoutField>
+
+                <CheckoutField label="Endereço">
+                  <div className="relative">
+                    <input
+                      value={form.street}
+                      onChange={(event) => setForm({ ...form, street: event.target.value })}
+                      placeholder="Rua, avenida ou travessa"
+                      className={`${checkoutInputClass} bg-[#eef4ff] pr-10`}
+                    />
+                    {form.street && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00a650]" />}
+                  </div>
+                </CheckoutField>
+
+                <div className="grid grid-cols-[68px_minmax(0,1fr)] gap-3">
+                  <CheckoutField label="N°">
+                    <input
+                      value={form.streetNumber}
+                      onChange={(event) => setForm({ ...form, streetNumber: event.target.value })}
+                      placeholder="Número"
+                      className={`${checkoutInputClass} ${form.streetNumber ? "bg-[#eef4ff]" : "border-[#ff8ba1] bg-[#ffe9ee] text-[#d62850]"}`}
+                    />
+                    {!form.streetNumber && <div className="mt-1 text-[11px] text-[#d62850]">Número é obrigatório</div>}
+                  </CheckoutField>
+                  <CheckoutField label="Bairro">
+                    <div className="relative">
+                      <input
+                        value={form.neighborhood}
+                        onChange={(event) => setForm({ ...form, neighborhood: event.target.value })}
+                        placeholder="Bairro"
+                        className={`${checkoutInputClass} bg-[#eef4ff] pr-10`}
+                      />
+                      {form.neighborhood && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00a650]" />}
+                    </div>
+                  </CheckoutField>
+                </div>
+
+                <CheckoutField label={<span>Complemento <span className="text-[11px] font-normal text-[#777]">(Opcional)</span></span>}>
+                  <input
+                    value={form.complement}
+                    onChange={(event) => setForm({ ...form, complement: event.target.value })}
+                    className={checkoutInputClass}
+                  />
+                </CheckoutField>
+
+                <div>
+                  <h3 className="text-[16px] font-semibold text-[#001133]">Escolha o frete:</h3>
+                  <button
+                    type="button"
+                    className="mt-3 flex w-full items-center justify-between rounded-md border border-[#1675f8] px-4 py-3 text-left"
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-[#1675f8]">
+                        <span className="h-2 w-2 rounded-full bg-[#1675f8]" />
+                      </span>
+                      <span>
+                        <span className="block text-[13px] font-semibold">Envio</span>
+                        <span className="text-[11px] text-[#667085]">2 a 5 dias <b className="text-[#00a650]">FULL</b></span>
+                      </span>
+                    </span>
+                    <span className="text-[13px] font-semibold">Grátis</span>
+                  </button>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={!addressComplete}
+                  className="w-full rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Ir Para Pagamento
+                </button>
+              </div>
+            </form>
+          )}
+
+          {step === 3 && (
+            <div className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
+              <StepTitle title="Pagamento" step="3 de 3" subtitle="Todas as transações são seguras e criptografadas." />
+              <div className="mt-6 space-y-5">
+                <div className="rounded-md border border-[#1675f8] p-3">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-[#1675f8]">
+                      <span className="h-2 w-2 rounded-full bg-[#1675f8]" />
+                    </span>
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f7fb]">
+                      <QrCode className="h-5 w-5 text-[#4db6ac]" />
+                    </span>
+                    <span className="font-semibold">PIX</span>
+                  </div>
+                  <div className="ml-7 mt-5 text-[14px] leading-relaxed text-[#667085]">
+                    <p>O código Pix expira em 30 minutos após finalizar a compra.</p>
+                    <p className="mt-4">Valor no Pix: <b>{formatBRL(totalCents)}</b></p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={finishPurchase}
+                    disabled={loading || !!tx}
+                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {tx ? "Pix Gerado" : "Finalizar Compra"}
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-3 rounded-md border border-[#d9e0ea] p-4 text-[14px] font-semibold">
+                  <span className="h-4 w-4 rounded-full border border-[#667085]" />
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f7fb]">
+                    <CreditCard className="h-4 w-4 text-[#667085]" />
+                  </span>
+                  Cartão de crédito
+                </div>
+
+                {error && (
+                  <div className="flex items-start gap-2 rounded-md bg-[#fff1f0] p-3 text-[13px] text-[#d93025]">
+                    <CircleAlert className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {tx && (
+                  <div className="rounded-md border border-[#d9e0ea] bg-[#f8fbff] p-4 text-center">
+                    <h3 className="text-[18px] font-semibold text-[#001133]">Pix pronto para pagamento</h3>
+                    <p className="mt-1 text-[13px] text-[#667085]">Escaneie o QR Code ou copie o código Pix no app do seu banco.</p>
+                    {pixImage && (
+                      <img src={pixImage} alt="QR Code Pix" className="mx-auto mt-4 h-56 w-56 rounded-md bg-white p-2" />
+                    )}
+                    {pixCode && (
+                      <>
+                        <div className="mt-4 max-h-24 overflow-auto break-all rounded border border-[#d9e0ea] bg-white p-3 text-left text-[11px] text-[#333]">
+                          {pixCode}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={copyPix}
+                          className="mt-3 inline-flex items-center justify-center gap-2 rounded-md bg-[#001133] px-4 py-2.5 text-[13px] font-semibold text-white"
+                        >
+                          <Copy className="h-4 w-4" />
+                          {copied ? "Copiado" : "Copiar código Pix"}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+
+        <aside className="hidden md:block lg:col-start-3">
+          <OrderSummary
+            productImage={productImage}
+            itemTitle={itemTitle}
+            colorLabel={colorLabel}
+            quantity={quantity}
+            subtotalCents={subtotalCents}
+            shippingCents={shippingCents}
+            totalCents={totalCents}
+          />
+        </aside>
+      </main>
+    </div>
+  );
+}
+
+function CheckoutHeader({ onBack }: { onBack: () => void }) {
+  return (
+    <header className="bg-[#fff159]">
+      <div className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-3 md:py-4">
+        <button type="button" onClick={onBack} className="flex items-center">
+          <img src={mlLogo} alt="Mercado Livre" className="h-9 w-auto md:h-11" draggable={false} />
+        </button>
+        <div className="flex items-center gap-2 text-right text-[11px] font-semibold leading-tight text-[#111]">
+          <Lock className="h-4 w-4" />
+          <span>
+            PAGAMENTO
+            <br />
+            <span className="font-normal">100% SEGURO</span>
+          </span>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function StepTitle({ title, step, subtitle }: { title: string; step: string; subtitle: string }) {
+  return (
+    <div className="flex items-start justify-between gap-3">
+      <div>
+        <h1 className="text-[20px] font-semibold text-[#001133]">{title}</h1>
+        <p className="mt-1 text-[14px] text-[#001133]">{subtitle}</p>
+      </div>
+      <span className="mt-1 whitespace-nowrap text-[13px] font-semibold text-[#001133]">{step}</span>
+    </div>
+  );
+}
+
+function CheckoutField({
+  label,
+  children,
+}: {
+  label: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-[14px] font-semibold text-[#001133]">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+const checkoutInputClass =
+  "h-[46px] w-full rounded-md border border-[#d4d9e2] bg-white px-3 text-[14px] text-[#001133] outline-none transition placeholder:text-[#667085] focus:border-[#1675f8]";
+
+function CompletedCard({
+  title,
+  children,
+  onEdit,
+}: {
+  title: string;
+  children: ReactNode;
+  onEdit: () => void;
+}) {
+  return (
+    <div className="rounded-md border border-[#00a650] bg-[#f8fff9] p-6 text-[13px] text-[#001133] shadow-sm">
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-[18px] font-semibold">{title}</h2>
+        <button type="button" onClick={onEdit} className="inline-flex items-center gap-1 text-[12px] text-[#667085]">
+          Editar <Edit3 className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="flex flex-col gap-1">{children}</div>
+    </div>
+  );
+}
+
+function OrderSummary({
+  productImage,
+  itemTitle,
+  colorLabel,
+  quantity,
+  subtotalCents,
+  shippingCents,
+  totalCents,
+  compact = false,
+}: {
+  productImage: string;
+  itemTitle: string;
+  colorLabel: string;
+  quantity: number;
+  subtotalCents: number;
+  shippingCents: number;
+  totalCents: number;
+  compact?: boolean;
+}) {
+  return (
+    <div className={`rounded-md border border-[#d9e0ea] bg-white p-5 shadow-sm ${compact ? "" : "sticky top-4"}`}>
+      <h2 className="text-[16px] font-semibold text-[#001133]">Resumo do pedido</h2>
+      <button type="button" className="mt-5 inline-flex items-center gap-2 text-[14px] text-[#00a650]">
+        <Ticket className="h-4 w-4" />
+        Inserir cupom de desconto
+      </button>
+      <div className="mt-4 space-y-2 border-b border-[#e5e9f0] pb-4 text-[14px]">
+        <div className="flex justify-between">
+          <span>Produtos</span>
+          <span>{formatBRL(subtotalCents)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Frete</span>
+          <span className="text-[#00a650]">{shippingCents ? formatBRL(shippingCents) : "Grátis"}</span>
+        </div>
+        <div className="flex justify-between pt-1 text-[16px] font-semibold">
+          <span>Total</span>
+          <span>{formatBRL(totalCents)}</span>
+        </div>
+      </div>
+      <div className="mt-4 flex items-center gap-3">
+        <img src={productImage} alt={itemTitle} className="h-12 w-12 rounded-md border border-[#e5e9f0] object-cover" />
+        <div className="min-w-0 flex-1">
+          <div className="line-clamp-2 text-[13px] leading-tight">{itemTitle}</div>
+          <div className="mt-1 text-[12px] text-[#667085]">Cor {colorLabel}</div>
+        </div>
+        <div className="text-right">
+          <div className="text-[13px] font-semibold">{formatBRL(totalCents)}</div>
+          <div className="mt-2 grid h-8 grid-cols-3 overflow-hidden rounded border border-[#d9e0ea] text-[13px] text-[#667085]">
+            <button type="button" className="px-2">-</button>
+            <span className="grid place-items-center px-2 text-[#001133]">{quantity}</span>
+            <button type="button" className="px-2">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ---------------- Header ----------------
 function MLHeader() {
   const [destination, setDestination] = useState("Casa");
@@ -691,8 +1369,8 @@ function MLHeader() {
 
   return (
     <header className="bg-[#fff159]">
-      <div className="mx-auto max-w-[1200px] px-4 pt-3">
-        <div className="flex items-center gap-3 md:gap-6">
+      <div className="mx-auto max-w-[1200px] px-3 pb-3 pt-3 md:px-4 md:pb-0">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 md:flex md:gap-6">
           {/* Logo */}
           <a href="/mercadopromo" className="flex-shrink-0">
             <img
@@ -704,11 +1382,11 @@ function MLHeader() {
           </a>
 
           {/* Search */}
-          <div className="flex flex-1 items-center rounded bg-white shadow-sm">
+          <div className="order-3 col-span-3 mt-1 flex min-w-0 flex-1 items-center rounded bg-white shadow-sm md:order-none md:col-span-1 md:mt-0">
             <input
               type="search"
               placeholder="Buscar produtos, marcas e muito mais..."
-              className="flex-1 rounded-l bg-transparent px-3 py-2.5 text-[14px] text-[#333] outline-none placeholder:text-[#999]"
+              className="min-w-0 flex-1 rounded-l bg-transparent px-3 py-3 text-[14px] text-[#333] outline-none placeholder:text-[#999] md:py-2.5"
             />
             <button className="p-2 pr-3 text-[#999]">
               <Search className="h-5 w-5" />
@@ -716,7 +1394,7 @@ function MLHeader() {
           </div>
 
           {/* CTA + cart */}
-          <div className="hidden items-center gap-4 md:flex">
+          <div className="contents md:flex md:items-center md:gap-4">
             <div className="hidden items-center gap-2 rounded-full border border-[#3483fa] bg-white px-3 py-1 text-[12px] text-[#333] lg:flex">
               <span className="font-semibold text-[#3483fa]">ASSINE AGORA</span>
               <span className="rounded-full bg-[#00c58f] px-1.5 text-[10px] font-bold text-white">GRÁTIS</span>
@@ -725,7 +1403,7 @@ function MLHeader() {
                 A PARTIR DE <b className="text-[#333]">R$ 9,90/MÊS</b>
               </span>
             </div>
-            <button className="text-[#333]">
+            <button className="justify-self-end text-[#333]">
               <ShoppingCart className="h-6 w-6" />
             </button>
           </div>
