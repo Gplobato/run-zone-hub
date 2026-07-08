@@ -834,6 +834,8 @@ function MercadoPromoPage() {
           </div>
         </div>
 
+        {PRODUCT.description && <ProductDescription d={PRODUCT.description} />}
+
         {/* Produtos relacionados + seller card */}
         <div className="grid gap-6 border-t border-[#eee] p-4 md:p-6 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div>
@@ -857,7 +859,6 @@ function MercadoPromoPage() {
           </div>
         </div>
 
-        {PRODUCT.description && <ProductDescription d={PRODUCT.description} />}
 
         {/* Opiniões */}
         <div className="border-t border-[#eee] p-4 md:p-6">
