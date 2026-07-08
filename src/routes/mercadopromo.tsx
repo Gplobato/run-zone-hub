@@ -1349,14 +1349,7 @@ function MercadoCheckout({
           {step === 3 && (
             <div className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
               <StepTitle title="Pagamento" step="3 de 3" subtitle="Todas as transações são seguras e criptografadas." />
-              {tx?.method === "PIX" ? (
-                <PixPaymentPanel
-                  pixCode={pixCode}
-                  pixImage={pixImage}
-                  copied={copied}
-                  onCopy={copyPix}
-                />
-              ) : tx?.method === "CREDIT_CARD" ? (
+              {tx?.method === "CREDIT_CARD" ? (
                 <CardApprovedPanel status={tx.status} totalCents={totalCents} installments={card.installments} />
               ) : (
                 <div className="mt-6 space-y-5">
