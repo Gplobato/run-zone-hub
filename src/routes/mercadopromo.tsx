@@ -1049,7 +1049,8 @@ function MercadoCheckout({
         method: "CREDIT_CARD",
       });
       fbqTrack("Purchase", {
-        content_ids: ["mercadopromo-jaqueta-courino"],
+        content_ids: [PRODUCT.id],
+        content_name: PRODUCT.title,
         value: totalCents / 100,
         currency: "BRL",
       });
