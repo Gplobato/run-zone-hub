@@ -479,9 +479,10 @@ const PRODUCT_SLUGS: Record<string, number> = {
   bota: 1,
   calca: 2,
   garmin: 3,
+  "jaqueta-masculina": 4,
 };
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT];
 
 const SIZE_GUIDE = [
   { label: "P", equivalent: "P", chest: 88, height: 55, shoulders: 37 },
