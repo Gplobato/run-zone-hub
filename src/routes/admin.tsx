@@ -2,10 +2,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { adminLogin, clearAdminSession, isAdminLoggedIn, setAdminLoggedIn } from "@/lib/admin-auth";
-import { hypercashPing } from "@/lib/hypercash.functions";
 import { PRODUCTS, formatBRL } from "@/lib/products";
 import logoUrl from "@/assets/paze-logo.png";
-import { Lock, LogOut, RefreshCcw, ShieldCheck, CircleAlert } from "lucide-react";
+import { Lock, LogOut, ShieldCheck, CircleAlert, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
