@@ -77,6 +77,17 @@ type Product = {
     gallery: GalleryMedia[];
   }[];
   sizes: string[];
+  description?: {
+    heading: string;
+    intro: string[];
+    steps: string[];
+    benefits: { title: string; result: string; feeling: string }[];
+    quotes: string[];
+    specs: string[];
+    tip: string;
+    closing: string[];
+    warranty: string;
+  };
 };
 
 const MAIN_PRODUCT: Product = {
