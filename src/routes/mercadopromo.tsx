@@ -47,14 +47,14 @@ import review2 from "@/assets/mercadopromo/review-2.jpg";
 import review3 from "@/assets/mercadopromo/review-3.jpg";
 
 // -----------------------------------------------------------------------------
-// /mercadopromo â€” pÃ¡gina standalone estilo Mercado Livre (produto Ãºnico).
+// /mercadopromo â€” página standalone estilo Mercado Livre (produto único).
 // Template baseado em modamolecapromos.lovable.app + PDP real do ML.
-// NÃ£o usa StoreLayout da Paze pra ficar 100% isolado. Pixel continua ativo
+// Não usa StoreLayout da Paze pra ficar 100% isolado. Pixel continua ativo
 // pelo __root.tsx global.
 // -----------------------------------------------------------------------------
 
 const PRODUCT = {
-  title: "Jaqueta Feminina Courino Slim Casaco Frio ZÃ­per Motoqueiro",
+  title: "Jaqueta Feminina Courino Slim Casaco Frio Zíper Motoqueiro",
   brand: "SKATHI",
   seller: "Skhati Wear",
   sold: "+800 vendidos",
@@ -63,7 +63,7 @@ const PRODUCT = {
   price: 7990, // centavos
   compareAt: null as number | null,
   installments: { count: 6, valueCents: 1332 },
-  categoryTrail: ["CalÃ§ados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
 };
 
 type GalleryMedia = {
@@ -181,24 +181,24 @@ const REVIEWS = [
     name: "juliana.m",
     verified: true,
     rating: 5,
-    text: "Chegou super rÃ¡pido, o couro sintÃ©tico Ã© firme e o caimento slim ficou perfeito. Comprei M e serviu certinho.",
-    when: "hÃ¡ 1 mÃªs",
+    text: "Chegou super rápido, o couro sintético é firme e o caimento slim ficou perfeito. Comprei M e serviu certinho.",
+    when: "há 1 mês",
     photo: review1,
   },
   {
     name: "carol.s",
     verified: true,
     rating: 5,
-    text: "Linda! Igual Ã  foto, cor marrom-escuro exatamente como aparece. Quente sem ser pesada.",
-    when: "hÃ¡ 2 meses",
+    text: "Linda! Igual à foto, cor marrom-escuro exatamente como aparece. Quente sem ser pesada.",
+    when: "há 2 meses",
     photo: review2,
   },
   {
     name: "priscila.f",
     verified: true,
     rating: 5,
-    text: "Recomendo demais. ZÃ­per de qualidade, costura reforÃ§ada. JÃ¡ Ã© a segunda que compro.",
-    when: "hÃ¡ 2 meses",
+    text: "Recomendo demais. Zíper de qualidade, costura reforçada. Já é a segunda que compro.",
+    when: "há 2 meses",
     photo: review3,
   },
 ];
@@ -272,12 +272,12 @@ export const Route = createFileRoute("/mercadopromo")({
       {
         name: "description",
         content:
-          "Jaqueta feminina slim em courino com zÃ­per estilo motoqueiro. Frete grÃ¡tis, 6x sem juros e devoluÃ§Ã£o grÃ¡tis em atÃ© 30 dias.",
+          "Jaqueta feminina slim em courino com zíper estilo motoqueiro. Frete grátis, 6x sem juros e devolução grátis em até 30 dias.",
       },
       { property: "og:title", content: PRODUCT.title },
       {
         property: "og:description",
-        content: "Frete grÃ¡tis e 6x sem juros no Mercado Livre.",
+        content: "Frete grátis e 6x sem juros no Mercado Livre.",
       },
       { property: "og:image", content: COLORS[0].gallery[0] },
     ],
@@ -372,7 +372,7 @@ function MercadoPromoPage() {
       <div className="mx-auto hidden max-w-[1200px] px-4 py-3 text-[13px] md:block">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <a href="#" className="text-[#3483fa] hover:underline">
-            Voltar Ã  lista
+            Voltar à lista
           </a>
           <span className="text-[#999]">|</span>
           {PRODUCT.categoryTrail.map((c, i) => (
@@ -473,7 +473,7 @@ function MercadoPromoPage() {
               MAIS VENDIDO
             </div>
             <div className="mb-1 text-[13px] text-[#666]">
-              1Âº em <a href="#" className="text-[#3483fa] hover:underline">Casacos e Jaquetas {PRODUCT.brand}</a>
+              1º em <a href="#" className="text-[#3483fa] hover:underline">Casacos e Jaquetas {PRODUCT.brand}</a>
             </div>
             <h1 className="mb-2 text-[22px] font-semibold leading-tight text-[#333] md:text-[24px]">
               {PRODUCT.title}
@@ -561,10 +561,10 @@ function MercadoPromoPage() {
           <div className="rounded-md border border-[#e6e6e6] p-4">
             <div className="mb-3 inline-flex items-center gap-1 rounded bg-[#00a650] px-2 py-1 text-[12px] font-semibold text-white">
               <Zap className="h-3 w-3 fill-white" strokeWidth={0} />
-              FRETE GRÃTIS ACIMA DE R$ 19
+              FRETE GRÁTIS ACIMA DE R$ 19
             </div>
             <p className="text-[14px]">
-              <span className="text-[#00a650]">ChegarÃ¡ grÃ¡tis</span> entre{" "}
+              <span className="text-[#00a650]">Chegará grátis</span> entre{" "}
               <span className="text-[#00a650]">quinta-feira e sexta-feira</span> por ser sua primeira compra
             </p>
             <a href="#" className="mt-1 inline-block text-[13px] text-[#3483fa] hover:underline">
@@ -572,17 +572,17 @@ function MercadoPromoPage() {
             </a>
 
             <p className="mt-4 text-[14px]">
-              <span className="text-[#00a650]">Retire grÃ¡tis</span> a partir de segunda-feira em uma agÃªncia Mercado Livre
+              <span className="text-[#00a650]">Retire grátis</span> a partir de segunda-feira em uma agência Mercado Livre
             </p>
             <a href="#" className="text-[13px] text-[#3483fa] hover:underline">
               Ver no mapa
             </a>
 
             <p className="mt-4 text-[14px]">
-              <span className="text-[#00a650]">DevoluÃ§Ã£o grÃ¡tis.</span> VocÃª tem 30 dias a partir da data de recebimento.
+              <span className="text-[#00a650]">Devolução grátis.</span> Você tem 30 dias a partir da data de recebimento.
             </p>
 
-            <div className="mt-5 text-[14px] text-[#333]">Estoque disponÃ­vel</div>
+            <div className="mt-5 text-[14px] text-[#333]">Estoque disponível</div>
             <div className="mt-1 flex items-center gap-2 text-[14px]">
               <span>Quantidade:</span>
               <button
@@ -608,7 +608,7 @@ function MercadoPromoPage() {
                 </select>
                 <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[#666]" />
               </div>
-              <span className="text-[#666]">(2 disponÃ­veis)</span>
+              <span className="text-[#666]">(2 disponíveis)</span>
             </div>
 
             <button
@@ -633,20 +633,20 @@ function MercadoPromoPage() {
                   {PRODUCT.seller}
                 </a>
               </div>
-              <div className="text-[13px] text-[#666]">MercadoLÃ­der | +10 mil vendas</div>
+              <div className="text-[13px] text-[#666]">MercadoLíder | +10 mil vendas</div>
             </div>
 
             <ul className="mt-4 space-y-3 text-[13px]">
               <li className="flex gap-2">
                 <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#3483fa]" />
                 <span>
-                  <a href="#" className="text-[#3483fa] hover:underline">Compra Garantida</a>. Receba o produto que estÃ¡ esperando ou devolvemos o dinheiro.
+                  <a href="#" className="text-[#3483fa] hover:underline">Compra Garantida</a>. Receba o produto que está esperando ou devolvemos o dinheiro.
                 </span>
               </li>
               <li className="flex gap-2">
                 <Gift className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#3483fa]" />
                 <span>
-                  <a href="#" className="text-[#3483fa] hover:underline">Vale-troca para presente</a>. A pessoa que o receber poderÃ¡ trocÃ¡-lo.
+                  <a href="#" className="text-[#3483fa] hover:underline">Vale-troca para presente</a>. A pessoa que o receber poderá trocá-lo.
                 </span>
               </li>
             </ul>
@@ -672,9 +672,9 @@ function MercadoPromoPage() {
           </div>
         </div>
 
-        {/* OpiniÃµes */}
+        {/* Opiniões */}
         <div className="border-t border-[#eee] p-4 md:p-6">
-          <h2 className="mb-4 text-[22px] font-semibold">OpiniÃµes do produto</h2>
+          <h2 className="mb-4 text-[22px] font-semibold">Opiniões do produto</h2>
           <div className="grid gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
             <div>
               <div className="text-[48px] font-light leading-none">{PRODUCT.rating.toFixed(1)}</div>
@@ -683,7 +683,7 @@ function MercadoPromoPage() {
                   <Star key={i} className="h-4 w-4 fill-[#3483fa] text-[#3483fa]" strokeWidth={0} />
                 ))}
               </div>
-              <div className="mt-1 text-[13px] text-[#666]">{PRODUCT.reviewsCount} avaliaÃ§Ãµes</div>
+              <div className="mt-1 text-[13px] text-[#666]">{PRODUCT.reviewsCount} avaliações</div>
               <div className="mt-4 space-y-1">
                 {[
                   [5, 8],
@@ -968,7 +968,7 @@ function MercadoCheckout({
         currency: "BRL",
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Falha ao processar o cartÃ£o. Confira os dados e tente novamente.");
+      setError(err instanceof Error ? err.message : "Falha ao processar o cartão. Confira os dados e tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -993,7 +993,7 @@ function MercadoCheckout({
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
-      setError("NÃ£o foi possÃ­vel copiar automaticamente. Selecione o cÃ³digo Pix na tela.");
+      setError("Não foi possível copiar automaticamente. Selecione o código Pix na tela.");
     }
   }
   return (
@@ -1040,7 +1040,7 @@ function MercadoCheckout({
 
         <section className="space-y-4 lg:col-start-1">
           {step > 1 && (
-            <CompletedCard title="IdentificaÃ§Ã£o" onEdit={() => setStep(1)}>
+            <CompletedCard title="Identificação" onEdit={() => setStep(1)}>
               <strong>{form.name}</strong>
               <span>{form.email}</span>
               <span>{form.phone}</span>
@@ -1056,7 +1056,7 @@ function MercadoCheckout({
                 {form.neighborhood}, {form.city}/{form.state.toUpperCase()} {form.zipCode}
               </span>
               <span className="mt-3 font-semibold">Frete selecionado</span>
-              <span>Envio - GrÃ¡tis</span>
+              <span>Envio - Grátis</span>
             </CompletedCard>
           )}
         </section>
@@ -1064,7 +1064,7 @@ function MercadoCheckout({
         <section className="md:col-start-1 lg:col-start-2">
           {step === 1 && (
             <form onSubmit={goToDelivery} className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
-              <StepTitle title="IdentificaÃ§Ã£o" step="1 de 3" subtitle="Preencha seus dados para envio do pedido." />
+              <StepTitle title="Identificação" step="1 de 3" subtitle="Preencha seus dados para envio do pedido." />
               <div className="mt-8 space-y-5">
                 <CheckoutField label="Nome completo">
                   <input
@@ -1118,7 +1118,7 @@ function MercadoCheckout({
 
           {step === 2 && (
             <form onSubmit={goToPayment} className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
-              <StepTitle title="Entrega" step="2 de 3" subtitle="Informe o endereÃ§o de entrega" />
+              <StepTitle title="Entrega" step="2 de 3" subtitle="Informe o endereço de entrega" />
               <div className="mt-6 space-y-5">
                 <CheckoutField label="CEP">
                   <div className="flex flex-wrap items-center gap-3">
@@ -1137,7 +1137,7 @@ function MercadoCheckout({
                   </div>
                 </CheckoutField>
 
-                <CheckoutField label="EndereÃ§o">
+                <CheckoutField label="Endereço">
                   <div className="relative">
                     <input
                       value={form.street}
@@ -1150,14 +1150,14 @@ function MercadoCheckout({
                 </CheckoutField>
 
                 <div className="grid grid-cols-[68px_minmax(0,1fr)] gap-3">
-                  <CheckoutField label="NÂ°">
+                  <CheckoutField label="N°">
                     <input
                       value={form.streetNumber}
                       onChange={(event) => setForm({ ...form, streetNumber: event.target.value })}
-                      placeholder="NÃºmero"
+                      placeholder="Número"
                       className={`${checkoutInputClass} ${form.streetNumber ? "bg-[#eef4ff]" : "border-[#ff8ba1] bg-[#ffe9ee] text-[#d62850]"}`}
                     />
-                    {!form.streetNumber && <div className="mt-1 text-[11px] text-[#d62850]">NÃºmero Ã© obrigatÃ³rio</div>}
+                    {!form.streetNumber && <div className="mt-1 text-[11px] text-[#d62850]">Número é obrigatório</div>}
                   </CheckoutField>
                   <CheckoutField label="Bairro">
                     <div className="relative">
@@ -1195,7 +1195,7 @@ function MercadoCheckout({
                         <span className="text-[11px] text-[#667085]">2 a 5 dias <b className="text-[#00a650]">FULL</b></span>
                       </span>
                     </span>
-                    <span className="text-[13px] font-semibold">GrÃ¡tis</span>
+                    <span className="text-[13px] font-semibold">Grátis</span>
                   </button>
                 </div>
 
@@ -1212,7 +1212,7 @@ function MercadoCheckout({
 
           {step === 3 && (
             <div className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
-              <StepTitle title="Pagamento" step="3 de 3" subtitle="Todas as transaÃ§Ãµes sÃ£o seguras e criptografadas." />
+              <StepTitle title="Pagamento" step="3 de 3" subtitle="Todas as transações são seguras e criptografadas." />
               {tx?.method === "PIX" ? (
                 <PixPaymentPanel
                   pixCode={pixCode}
@@ -1233,7 +1233,7 @@ function MercadoCheckout({
                   {paymentMethod === "PIX" && (
                     <div className="rounded-md border border-[#1675f8] p-4">
                       <div className="text-[14px] leading-relaxed text-[#667085]">
-                        <p>O cÃ³digo Pix expira em 30 minutos apÃ³s finalizar a compra.</p>
+                        <p>O código Pix expira em 30 minutos após finalizar a compra.</p>
                         <p className="mt-4">Valor no Pix: <b>{formatBRL(totalCents)}</b></p>
                       </div>
                       <button
@@ -1252,12 +1252,12 @@ function MercadoCheckout({
                     selected={paymentMethod === "CREDIT_CARD"}
                     onClick={() => setPaymentMethod("CREDIT_CARD")}
                     icon={<CreditCard className="h-4 w-4 text-[#667085]" />}
-                    title="CartÃ£o de crÃ©dito"
+                    title="Cartão de crédito"
                   />
                   {paymentMethod === "CREDIT_CARD" && (
                     <div className="rounded-md border border-[#1675f8] p-4">
                       <div className="grid gap-4">
-                        <CheckoutField label="Nome impresso no cartÃ£o">
+                        <CheckoutField label="Nome impresso no cartão">
                           <input
                             value={card.holderName}
                             onChange={(event) => setCard({ ...card, holderName: event.target.value.toUpperCase() })}
@@ -1265,7 +1265,7 @@ function MercadoCheckout({
                             className={checkoutInputClass}
                           />
                         </CheckoutField>
-                        <CheckoutField label="NÃºmero do cartÃ£o">
+                        <CheckoutField label="Número do cartão">
                           <input
                             inputMode="numeric"
                             value={card.number}
@@ -1319,7 +1319,7 @@ function MercadoCheckout({
                         className="mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                        Pagar com cartÃ£o
+                        Pagar com cartão
                       </button>
                     </div>
                   )}
@@ -1395,9 +1395,9 @@ function PixPaymentPanel({
 }) {
   return (
     <div className="mt-6 text-center">
-      <h2 className="text-[28px] font-semibold text-[#333]">Quase lÃ¡...</h2>
+      <h2 className="text-[28px] font-semibold text-[#333]">Quase lá...</h2>
       <p className="mt-3 text-[14px] text-[#526173]">
-        Pague via pix em atÃ© <b>05:52</b> para confirmar seu pedido.
+        Pague via pix em até <b>05:52</b> para confirmar seu pedido.
       </p>
       <div className="mx-auto mt-4 inline-flex rounded-full bg-[#fff3cd] px-6 py-2 text-[13px] font-semibold text-[#a36b00]">
         Aguardando pagamento
@@ -1409,7 +1409,7 @@ function PixPaymentPanel({
           <span className="absolute -right-7 top-10 h-5 w-8 rounded-full bg-[#ff977d]" />
         </div>
       </div>
-      <p className="mt-7 text-[14px] text-[#526173]">Aponte a cÃ¢mera do seu celular</p>
+      <p className="mt-7 text-[14px] text-[#526173]">Aponte a câmera do seu celular</p>
       {pixImage && (
         <img src={pixImage} alt="QR Code Pix" className="mx-auto mt-3 h-56 w-56 bg-white object-contain md:h-64 md:w-64" />
       )}
@@ -1424,18 +1424,18 @@ function PixPaymentPanel({
             className="mx-auto mt-3 flex w-full max-w-[356px] items-center justify-center gap-2 rounded-md border border-[#d9e0ea] bg-white py-3 text-[14px] font-semibold text-[#111] shadow-sm"
           >
             <Copy className="h-4 w-4" />
-            {copied ? "CÃ³digo copiado" : "Copiar cÃ³digo"}
+            {copied ? "Código copiado" : "Copiar código"}
           </button>
         </>
       )}
       <div className="mx-auto mt-8 max-w-[356px] text-left">
         <h3 className="text-[18px] font-semibold text-[#1d2733]">Como pagar o pix</h3>
         {[
-          "Clique em copiar o cÃ³digo, logo acima",
+          "Clique em copiar o código, logo acima",
           "Abra o aplicativo do seu banco",
-          "Selecione a opÃ§Ã£o PIX",
+          "Selecione a opção PIX",
           'Toque em "Pix Copia e Cola"',
-          "Insira o cÃ³digo copiado e finalize seu pagamento",
+          "Insira o código copiado e finalize seu pagamento",
         ].map((step, index) => (
           <div key={step} className="mt-4 flex items-start gap-3 text-[13px] text-[#526173]">
             <span className="grid h-5 w-5 flex-shrink-0 place-items-center rounded-full bg-[#16bf8f] text-[12px] font-semibold text-white">{index + 1}</span>
@@ -1464,9 +1464,9 @@ function CardApprovedPanel({
       <Check className="mx-auto h-12 w-12 rounded-full bg-[#00a650] p-2 text-white" />
       <h2 className="mt-4 text-[22px] font-semibold text-[#001133]">Pagamento enviado!</h2>
       <p className="mt-2 text-[14px] text-[#526173]">
-        Recebemos sua solicitaÃ§Ã£o no cartÃ£o em {installments}x de {formatBRL(Math.ceil(totalCents / installments))}.
+        Recebemos sua solicitação no cartão em {installments}x de {formatBRL(Math.ceil(totalCents / installments))}.
       </p>
-      <p className="mt-1 text-[12px] text-[#667085]">Status da transaÃ§Ã£o: {status}</p>
+      <p className="mt-1 text-[12px] text-[#667085]">Status da transação: {status}</p>
       <div className="mt-6 border-t border-[#d8efdf] pt-5">
         <PaymentFooter />
       </div>
@@ -1608,7 +1608,7 @@ function OrderSummary({
         </div>
         <div className="flex justify-between">
           <span>Frete</span>
-          <span className="text-[#00a650]">{shippingCents ? formatBRL(shippingCents) : "GrÃ¡tis"}</span>
+          <span className="text-[#00a650]">{shippingCents ? formatBRL(shippingCents) : "Grátis"}</span>
         </div>
         <div className="flex justify-between pt-1 text-[16px] font-semibold">
           <span>Total</span>
@@ -1718,7 +1718,7 @@ function MLHeader() {
           <div className="contents md:flex md:items-center md:gap-4">
             <div className="hidden items-center gap-2 rounded-full border border-[#3483fa] bg-white px-3 py-1 text-[12px] text-[#333] lg:flex">
               <span className="font-semibold text-[#3483fa]">ASSINE AGORA</span>
-              <span className="rounded-full bg-[#00c58f] px-1.5 text-[10px] font-bold text-white">GRÃTIS</span>
+              <span className="rounded-full bg-[#00c58f] px-1.5 text-[10px] font-bold text-white">GRÁTIS</span>
               <span className="font-semibold">MELI+</span>
               <span className="text-[10px] text-[#666]">
                 A PARTIR DE <b className="text-[#333]">R$ 9,90/MÃŠS</b>
@@ -1750,7 +1750,7 @@ function MLHeader() {
           <a href="#" className="hover:underline">Moda</a>
           <a href="#" className="relative hover:underline">
             Mercado Play
-            <span className="absolute -top-3 right-0 rounded-sm bg-[#00c58f] px-1 text-[9px] font-bold text-white">GRÃTIS</span>
+            <span className="absolute -top-3 right-0 rounded-sm bg-[#00c58f] px-1 text-[9px] font-bold text-white">GRÁTIS</span>
           </a>
           <a href="#" className="hover:underline">Vender</a>
           <a href="#" className="hover:underline">Contato</a>
@@ -1812,15 +1812,15 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
             <div className="pb-2 text-[#bbb]">
               Do corpo
               <div className="mx-auto mt-1 w-fit rounded-full bg-[#eee] px-3 py-0.5 text-[10px] text-[#777]">
-                Guia nÃ£o disponÃ­vel
+                Guia não disponível
               </div>
             </div>
-            <div className="border-b-2 border-[#3483fa] pb-3 font-medium text-[#3483fa]">Da peÃ§a</div>
+            <div className="border-b-2 border-[#3483fa] pb-3 font-medium text-[#3483fa]">Da peça</div>
           </div>
 
-          <h3 className="text-[16px] font-semibold text-[#333]">Tabela de medidas para peÃ§as</h3>
+          <h3 className="text-[16px] font-semibold text-[#333]">Tabela de medidas para peças</h3>
           <p className="mt-2 text-[13px] text-[#777]">
-            As medidas estÃ£o em centÃ­metros e podem variar conforme o modelo.
+            As medidas estão em centímetros e podem variar conforme o modelo.
           </p>
 
           <div className="mt-4 overflow-hidden rounded-md border border-[#ddd]">
@@ -1828,9 +1828,9 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
               <thead>
                 <tr className="bg-[#f5f5f5]">
                   <th className="bg-[#dce9fb] px-3 py-4 font-semibold">Tamanho na etiqueta</th>
-                  <th className="px-3 py-4 font-semibold">EquivalÃªncias</th>
+                  <th className="px-3 py-4 font-semibold">Equivalências</th>
                   <th className="px-3 py-4 font-semibold">Largura do peito</th>
-                  <th className="px-3 py-4 font-semibold">Altura da peÃ§a</th>
+                  <th className="px-3 py-4 font-semibold">Altura da peça</th>
                   <th className="px-3 py-4 font-semibold">Largura dos ombros</th>
                 </tr>
               </thead>
@@ -1849,10 +1849,10 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="mt-7">
-            <h3 className="text-[16px] font-semibold text-[#333]">Como medir suas peÃ§as</h3>
+            <h3 className="text-[16px] font-semibold text-[#333]">Como medir suas peças</h3>
             <p className="mt-2 text-[13px] leading-relaxed text-[#777]">
-              Coloque a peÃ§a sobre uma superfÃ­cie plana. MeÃ§a a largura do peito de axila a axila,
-              a altura da peÃ§a do ombro atÃ© a barra e a largura dos ombros de ponta a ponta.
+              Coloque a peça sobre uma superfície plana. Meça a largura do peito de axila a axila,
+              a altura da peça do ombro até a barra e a largura dos ombros de ponta a ponta.
             </p>
           </div>
         </div>
@@ -1913,7 +1913,7 @@ function SellerCard() {
       </div>
       <div className="mt-3 flex items-center gap-2 text-[13px] text-[#00a650]">
         <img src={SELLER.medal} alt="" className="h-5 w-5" loading="lazy" />
-        MercadoLÃ­der Platinum
+        MercadoLíder Platinum
       </div>
       <div className="mt-1 text-[12px] text-[#666]">Ã‰ um dos melhores do site!</div>
       <div className="mt-3 grid grid-cols-4 gap-1">
@@ -1937,7 +1937,7 @@ function SellerCard() {
         </div>
       </div>
       <button className="mt-4 w-full rounded-md bg-[#e6f0ff] py-2 text-[13px] font-semibold text-[#3483fa] hover:bg-[#d5e4fc]">
-        Ir para a pÃ¡gina do vendedor
+        Ir para a página do vendedor
       </button>
     </aside>
   );
@@ -1947,7 +1947,7 @@ function PaymentMethodsCard() {
   return (
     <aside className="rounded-md border border-[#e6e6e6] p-4">
       <div className="mb-3 text-[16px] font-semibold text-[#333]">Meios de pagamento</div>
-      <div className="text-[13px] text-[#333]">CartÃµes de crÃ©dito</div>
+      <div className="text-[13px] text-[#333]">Cartões de crédito</div>
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {PAYMENT_METHODS.credit.map((method) => (
           <span key={method.name} className="inline-flex h-8 items-center justify-center rounded border border-[#eee] bg-white px-2">
