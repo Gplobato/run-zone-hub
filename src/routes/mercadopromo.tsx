@@ -764,7 +764,11 @@ function MercadoPromoPage() {
             </div>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
               {RELATED.map((p) => (
-                <RelatedCard key={p.title} {...p} />
+                <RelatedCard
+                  key={p.title}
+                  {...p}
+                  onSelect={() => selectProduct(p.productIdx)}
+                />
               ))}
             </div>
           </div>
