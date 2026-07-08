@@ -745,8 +745,7 @@ function MercadoPromoPage() {
               FRETE GRÁTIS ACIMA DE R$ 19
             </div>
             <p className="text-[14px]">
-              <span className="text-[#00a650]">Chegará grátis</span> entre{" "}
-              <span className="text-[#00a650]">quinta-feira e sexta-feira</span> por ser sua primeira compra
+              <span className="text-[#00a650]">Chegará grátis amanhã</span> por ser sua primeira compra
             </p>
             <a href="#" className="mt-1 inline-block text-[13px] text-[#3483fa] hover:underline">
               Mais detalhes e formas de entrega
