@@ -48,6 +48,8 @@ import review3 from "@/assets/mercadopromo/review-3.jpg";
 import garmin1 from "@/assets/mercadopromo/garmin-1.jpg";
 import garmin2 from "@/assets/mercadopromo/garmin-2.jpg";
 import garmin3 from "@/assets/mercadopromo/garmin-3.jpg";
+import garminBlack from "@/assets/mercadopromo/garmin-product-black.jpg";
+import garminWhite from "@/assets/mercadopromo/garmin-product-white.jpg";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
