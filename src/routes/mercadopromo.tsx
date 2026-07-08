@@ -279,7 +279,7 @@ export const Route = createFileRoute("/mercadopromo")({
         property: "og:description",
         content: "Frete grátis e 6x sem juros no Mercado Livre.",
       },
-      { property: "og:image", content: COLORS[0].gallery[0] },
+      { property: "og:image", content: COLORS[0].gallery[0].src },
     ],
   }),
   component: MercadoPromoPage,
