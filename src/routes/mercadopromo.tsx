@@ -45,11 +45,14 @@ import pants3 from "@/assets/mercadopromo/pants-3.jpg";
 import review1 from "@/assets/mercadopromo/review-1.jpg";
 import review2 from "@/assets/mercadopromo/review-2.jpg";
 import review3 from "@/assets/mercadopromo/review-3.jpg";
-import garmin1 from "@/assets/mercadopromo/garmin-1.jpg";
-import garmin2 from "@/assets/mercadopromo/garmin-2.jpg";
-import garmin3 from "@/assets/mercadopromo/garmin-3.jpg";
 import garminBlack from "@/assets/mercadopromo/garmin-product-black.jpg";
 import garminWhite from "@/assets/mercadopromo/garmin-product-white.jpg";
+import garminRef1 from "@/assets/mercadopromo/garmin-ref-1.jpg";
+import garminRef2 from "@/assets/mercadopromo/garmin-ref-2.jpg";
+import garminReviewA from "@/assets/mercadopromo/garmin-review-a.jpg";
+import garminReviewB from "@/assets/mercadopromo/garmin-review-b.jpg";
+import garminReviewC from "@/assets/mercadopromo/garmin-review-c.jpg";
+import garminReviewD from "@/assets/mercadopromo/garmin-review-d.jpg";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
@@ -266,15 +269,15 @@ const PANTS_PRODUCT: Product = {
 };
 
 const GARMIN_PRODUCT: Product = {
-  id: "mercadopromo-garmin-forerunner-55",
-  title: "Relógio Garmin Forerunner 55 GPS Monitor Cardíaco Corrida",
+  id: "mercadopromo-garmin-forerunner-965",
+  title: "Garmin Forerunner 965 Amoled 47mm Touchscreen",
   brand: "GARMIN",
   seller: "Skhati Wear",
   sold: "+150 vendidos",
   rating: 4.9,
-  reviewsCount: 3,
+  reviewsCount: 4,
   price: 7990,
-  compareAt: null,
+  compareAt: 12800,
   installments: { count: 10, valueCents: 799 },
   categoryTrail: ["Esportes e Fitness", "Corrida", "Relógios GPS"],
   colors: [
@@ -284,6 +287,8 @@ const GARMIN_PRODUCT: Product = {
       thumb: garminBlack,
       gallery: [
         { src: garminBlack, kind: "image" },
+        { src: garminRef1, kind: "image" },
+        { src: garminRef2, kind: "image" },
         { src: garminWhite, kind: "image" },
       ],
     },
@@ -298,6 +303,62 @@ const GARMIN_PRODUCT: Product = {
     },
   ],
   sizes: ["Único"],
+  description: {
+    heading: "Garmin Forerunner 965 · corra, treine e monitore sem depender do celular",
+    intro: [
+      "Você já saiu pra correr e sentiu que o celular no braço atrapalha mais do que ajuda? Ou terminou o treino sem saber ao certo seu ritmo, VO₂ máx. ou tempo de recuperação?",
+      "O Forerunner 965 é o relógio esportivo topo de linha da Garmin: tela AMOLED de 1,4”, caixa de 47 mm em titânio, GPS multibanda e todas as métricas avançadas de corrida, ciclismo e triatlo no seu pulso.",
+    ],
+    steps: [
+      "Coloque no pulso e sincronize com o Garmin Connect em menos de 2 minutos.",
+      "Escolha o esporte (corrida, trilha, bike, natação, força) e o GPS trava em segundos.",
+      "Ao final do treino, veja ritmo, FC, VO₂ máx., tempo de recuperação e sugestão do próximo treino.",
+    ],
+    benefits: [
+      {
+        title: "Tela AMOLED sempre visível",
+        result: "1,4” com toque, brilho automático e visibilidade perfeita ao sol.",
+        feeling: "Você lê o ritmo num relance, sem tirar o foco da passada.",
+      },
+      {
+        title: "GPS multibanda de precisão",
+        result: "Distância, ritmo e traçado corretos mesmo em cidade densa ou trilha.",
+        feeling: "Confiança total nos seus tempos e recordes pessoais.",
+      },
+      {
+        title: "Bateria de até 23 dias",
+        result: "Até 31h em GPS contínuo. Você treina a semana toda sem carregar.",
+        feeling: "Menos preocupação com tomada, mais foco no treino.",
+      },
+      {
+        title: "Treinos guiados + Garmin Coach",
+        result: "Planos de 5k, 10k, meia e maratona ajustados ao seu condicionamento.",
+        feeling: "Sensação de ter um treinador no pulso todo dia.",
+      },
+    ],
+    quotes: [
+      "“Migrei do celular pro Garmin e nunca mais voltei. Ritmo, FC e trajeto batendo certinho.” — corredor de 10k",
+      "“A tela AMOLED é outro nível. Leio no sol forte sem esforço.” — triatleta amadora",
+    ],
+    specs: [
+      "Tela AMOLED 1,4” touchscreen, vidro Corning Gorilla",
+      "Caixa 47 mm em titânio, pulseira de silicone",
+      "GPS multibanda (L1 + L5), GLONASS, Galileo",
+      "Monitor cardíaco no pulso + oxímetro (SpO₂)",
+      "VO₂ máx., tempo de recuperação, treinos sugeridos",
+      "Bateria: até 23 dias smartwatch / 31h GPS contínuo",
+      "Resistência à água 5 ATM",
+      "Pagamentos por aproximação (Garmin Pay)",
+      "Notificações do celular e controle de música",
+    ],
+    tip: "Combine com o app Garmin Connect no celular para acompanhar histórico, gráficos e desafios semanais.",
+    closing: [
+      "O Forerunner 965 normalmente custa R$ 3.000+ nas lojas oficiais. Nessa promoção especial, você garante por uma fração do preço — enquanto durar o estoque.",
+      "Compra 100% protegida pelo Mercado Livre. Não gostou? Devolução garantida.",
+      "Adicione ao carrinho agora e leve pro pulso o relógio que vai mudar seus treinos.",
+    ],
+    warranty: "Garantia do vendedor: 30 dias",
+  },
 };
 
 // Slug -> índice em PRODUCTS. Usado para URLs de anúncio: /mercadopromo?p=<slug>
@@ -360,7 +421,7 @@ const RELATED = [
   {
     productIdx: 3,
     img: garminBlack,
-    gallery: [garminBlack, garminWhite],
+    gallery: [garminBlack, garminRef1, garminRef2, garminWhite],
     title: GARMIN_PRODUCT.title,
     description:
       "Relógio esportivo com GPS integrado, monitor cardíaco no pulso, VO₂ máx., sugestões diárias de treino e bateria de até 2 semanas. Ideal para corrida e triatlo.",
@@ -413,17 +474,17 @@ const GARMIN_REVIEWS: Review[] = [
     name: "rafael.p",
     verified: true,
     rating: 5,
-    text: "Chegou rapidinho e lacrado na caixa. Peguei o preto — visor nítido, leve no pulso e o GPS pega em menos de 10 segundos. Já usei em 3 treinos de rua e não perdeu sinal em nenhum.",
+    text: "Chegou rapidinho e lacrado na caixa. Visor AMOLED nítido, leve no pulso e o GPS multibanda pega em menos de 10 segundos. Já usei em 3 treinos de rua e não perdeu sinal em nenhum.",
     when: "há 3 semanas",
-    photo: garmin3,
+    photo: garminReviewA,
   },
   {
     name: "camila.r",
     verified: true,
     rating: 5,
-    text: "Amei! Uso o dia inteiro, bateria dura tranquilamente mais de uma semana com treino diário. O monitor cardíaco bate certinho com meu cinta. Custo-benefício absurdo por esse preço.",
+    text: "Amei! Uso o dia inteiro, bateria dura tranquilamente mais de duas semanas com treino diário. O monitor cardíaco bate certinho com meu cinta. Custo-benefício absurdo por esse preço.",
     when: "há 1 mês",
-    photo: garmin1,
+    photo: garminReviewB,
   },
   {
     name: "diego.s",
@@ -431,7 +492,15 @@ const GARMIN_REVIEWS: Review[] = [
     rating: 5,
     text: "Sincroniza direitinho com o Garmin Connect e manda pro Strava sem enrolação. Distância e ritmo bateram com meu antigo relógio na prova. Recomendo demais.",
     when: "há 1 mês",
-    photo: garmin2,
+    photo: garminReviewC,
+  },
+  {
+    name: "juliana.m",
+    verified: true,
+    rating: 5,
+    text: "Comprei pra minha primeira meia maratona e virou item essencial. Os treinos sugeridos me ajudaram muito a evoluir o pace. A tela AMOLED no sol é outro nível.",
+    when: "há 2 semanas",
+    photo: garminReviewD,
   },
 ];
 
