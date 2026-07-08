@@ -281,15 +281,31 @@ const GARMIN_PRODUCT: Product = {
     {
       key: "preto",
       label: "Preto",
-      thumb: garmin3,
+      thumb: garminBlack,
       gallery: [
-        { src: garmin3, kind: "image" },
-        { src: garmin1, kind: "image" },
-        { src: garmin2, kind: "image" },
+        { src: garminBlack, kind: "image" },
+        { src: garminWhite, kind: "image" },
+      ],
+    },
+    {
+      key: "branco",
+      label: "Branco",
+      thumb: garminWhite,
+      gallery: [
+        { src: garminWhite, kind: "image" },
+        { src: garminBlack, kind: "image" },
       ],
     },
   ],
   sizes: ["Único"],
+};
+
+// Slug -> índice em PRODUCTS. Usado para URLs de anúncio: /mercadopromo?p=<slug>
+const PRODUCT_SLUGS: Record<string, number> = {
+  jaqueta: 0,
+  bota: 1,
+  calca: 2,
+  garmin: 3,
 };
 
 const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT];
