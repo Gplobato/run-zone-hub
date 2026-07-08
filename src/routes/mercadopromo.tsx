@@ -27,7 +27,7 @@ import {
   Ticket,
 } from "lucide-react";
 import { fbqTrack } from "@/lib/pixel";
-import { createHypercashTransaction } from "@/lib/hypercash.functions";
+import { createZedyCheckout } from "@/lib/zedy.functions";
 import mlLogo from "@/assets/mercadopromo/ml-logo.png";
 import pixLogo from "@/assets/mercadopromo/pix-logo.png";
 import payAmex from "@/assets/mercadopromo/pay-amex.png";
