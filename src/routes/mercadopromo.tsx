@@ -977,7 +977,7 @@ function MercadoPromoPage() {
               </div>
             </div>
             <div className="space-y-5">
-              {REVIEWS.map((r) => (
+              {(REVIEWS_BY_ID[PRODUCT.id] ?? JAQUETA_REVIEWS).map((r) => (
                 <div key={r.name} className="border-b border-[#eee] pb-4 last:border-0">
                   <div className="mb-1 flex items-center gap-2 text-[13px] text-[#666]">
                     <span>{r.when}</span>
