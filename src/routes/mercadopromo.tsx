@@ -1003,7 +1003,7 @@ function MercadoPromoPage() {
                   {r.photo && (
                     <button
                       type="button"
-                      onClick={() => setZoomPhoto(r.photo)}
+                      onClick={() => r.photo && setZoomPhoto(r.photo)}
                       className="group relative inline-block overflow-hidden rounded border border-[#eee]"
                     >
                       <img
