@@ -338,6 +338,7 @@ const RELATED = [
     priceCents: PANTS_PRODUCT.price,
     installments: "até 6x sem juros",
     freeShip: true,
+  },
   {
     productIdx: 3,
     img: garmin3,
