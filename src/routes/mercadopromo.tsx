@@ -857,6 +857,8 @@ function MercadoPromoPage() {
           </div>
         </div>
 
+        {PRODUCT.description && <ProductDescription d={PRODUCT.description} />}
+
         {/* Opiniões */}
         <div className="border-t border-[#eee] p-4 md:p-6">
           <h2 className="mb-4 text-[22px] font-semibold">Opiniões do produto</h2>
