@@ -47,7 +47,7 @@ import review2 from "@/assets/mercadopromo/review-2.jpg";
 import review3 from "@/assets/mercadopromo/review-3.jpg";
 
 // -----------------------------------------------------------------------------
-// /mercadopromo â€” página standalone estilo Mercado Livre (produto único).
+// /mercadopromo "” página standalone estilo Mercado Livre (produto único).
 // Template baseado em modamolecapromos.lovable.app + PDP real do ML.
 // Não usa StoreLayout da Paze pra ficar 100% isolado. Pixel continua ativo
 // pelo __root.tsx global.
