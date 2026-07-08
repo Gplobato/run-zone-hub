@@ -477,18 +477,79 @@ function MercadoPromoPage() {
         </div>
       </div>
 
+      {/* Sub-tabs: navegação entre produtos dentro da mercadopromo */}
+      <div className="mx-auto max-w-[1200px] px-3 pt-3 md:px-4">
+        <div className="flex gap-2 overflow-x-auto border-b border-[#e6e6e6]">
+          {PRODUCTS.map((p, i) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => selectProduct(i)}
+              className={`whitespace-nowrap border-b-2 px-3 py-2 text-[13px] transition ${
+                activeIdx === i
+                  ? "border-[#3483fa] text-[#3483fa]"
+                  : "border-transparent text-[#666] hover:text-[#333]"
+              }`}
+            >
+              {p.title.split(" ").slice(0, 3).join(" ")}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Main card */}
       <div className="mx-auto max-w-[1200px] bg-white md:my-2 md:rounded-md md:shadow-sm">
         <div className="grid gap-4 p-3 md:grid-cols-[minmax(0,1fr)_320px] md:p-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)_320px]">
-          {/* Gallery */}
-          <div className="flex gap-3">
-            <div className="hidden w-14 flex-col gap-2 lg:flex">
+          {/* Gallery column (image + mobile thumbnails) */}
+          <div className="min-w-0">
+            <div className="flex gap-3">
+              <div className="hidden w-14 flex-col gap-2 lg:flex">
+                {color.gallery.map((media) => (
+                  <button
+                    key={media.src}
+                    onMouseEnter={() => setActiveImg(media.src)}
+                    onClick={() => setActiveImg(media.src)}
+                    className={`aspect-square overflow-hidden rounded border bg-white ${
+                      activeImg === media.src ? "border-[#3483fa]" : "border-[#e0e0e0]"
+                    }`}
+                  >
+                    {media.kind === "video" ? (
+                      <video src={media.src} muted playsInline className="h-full w-full object-cover" />
+                    ) : (
+                      <img src={media.src} alt="" className="h-full w-full object-cover" loading="lazy" />
+                    )}
+                  </button>
+                ))}
+              </div>
+              <div className="relative min-w-0 flex-1 overflow-hidden rounded bg-white">
+                {activeImg === jacketMarromVideo ? (
+                  <video
+                    src={activeImg}
+                    className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src={activeImg}
+                    alt={PRODUCT.title}
+                    className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
+                  />
+                )}
+                <button className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow hover:bg-white">
+                  <Heart className="h-5 w-5 text-[#3483fa]" />
+                </button>
+              </div>
+            </div>
+            {/* Mobile thumbnails row */}
+            <div className="mt-2 flex gap-2 overflow-x-auto lg:hidden">
               {color.gallery.map((media) => (
                 <button
                   key={media.src}
-                  onMouseEnter={() => setActiveImg(media.src)}
                   onClick={() => setActiveImg(media.src)}
-                  className={`aspect-square overflow-hidden rounded border bg-white ${
+                  className={`h-14 w-14 flex-shrink-0 overflow-hidden rounded border ${
                     activeImg === media.src ? "border-[#3483fa]" : "border-[#e0e0e0]"
                   }`}
                 >
@@ -500,48 +561,8 @@ function MercadoPromoPage() {
                 </button>
               ))}
             </div>
-            <div className="relative flex-1 overflow-hidden rounded bg-white">
-              {activeImg === jacketMarromVideo ? (
-                <video
-                  src={activeImg}
-                  className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                />
-              ) : (
-                <img
-                  src={activeImg}
-                  alt={PRODUCT.title}
-                  className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
-                />
-              )}
-              <button className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow hover:bg-white">
-                <Heart className="h-5 w-5 text-[#3483fa]" />
-              </button>
-            </div>
-            {/* Mobile strip */}
-            <div className="absolute" />
           </div>
-          {/* Mobile thumbnails row */}
-          <div className="-mt-2 flex gap-2 overflow-x-auto lg:hidden">
-            {color.gallery.map((media) => (
-              <button
-                key={media.src}
-                onClick={() => setActiveImg(media.src)}
-                className={`h-14 w-14 flex-shrink-0 overflow-hidden rounded border ${
-                  activeImg === media.src ? "border-[#3483fa]" : "border-[#e0e0e0]"
-                }`}
-              >
-                {media.kind === "video" ? (
-                  <video src={media.src} muted playsInline className="h-full w-full object-cover" />
-                ) : (
-                  <img src={media.src} alt="" className="h-full w-full object-cover" loading="lazy" />
-                )}
-              </button>
-            ))}
-          </div>
+
 
           {/* Info */}
           <div className="min-w-0">
