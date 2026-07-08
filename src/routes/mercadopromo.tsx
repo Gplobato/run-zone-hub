@@ -326,28 +326,33 @@ type CardForm = {
 export const Route = createFileRoute("/mercadopromo")({
   head: () => ({
     meta: [
-      { title: `${PRODUCT.title} | Mercado Livre` },
+      { title: `${MAIN_PRODUCT.title} | Mercado Livre` },
       {
         name: "description",
         content:
           "Jaqueta feminina slim em courino com zíper estilo motoqueiro. Frete grátis, 6x sem juros e devolução grátis em até 30 dias.",
       },
-      { property: "og:title", content: PRODUCT.title },
+      { property: "og:title", content: MAIN_PRODUCT.title },
       {
         property: "og:description",
         content: "Frete grátis e 6x sem juros no Mercado Livre.",
       },
-      { property: "og:image", content: COLORS[0].gallery[0].src },
+      { property: "og:image", content: MAIN_PRODUCT.colors[0].gallery[0].src },
     ],
   }),
   component: MercadoPromoPage,
 });
 
 function MercadoPromoPage() {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const PRODUCT = PRODUCTS[activeIdx];
+  const COLORS = PRODUCT.colors;
+  const SIZES = PRODUCT.sizes;
+
   const [colorKey, setColorKey] = useState(COLORS[0].key);
   const color = useMemo(
     () => COLORS.find((c) => c.key === colorKey) ?? COLORS[0],
-    [colorKey],
+    [colorKey, COLORS],
   );
   const [activeImg, setActiveImg] = useState(color.gallery[0].src);
   const [size, setSize] = useState<string | null>(null);
@@ -361,19 +366,34 @@ function MercadoPromoPage() {
     setActiveImg(color.gallery[0].src);
   }, [color]);
 
+  // Reset selection when switching products via sub-tabs
+  useEffect(() => {
+    setColorKey(PRODUCTS[activeIdx].colors[0].key);
+    setSize(null);
+    setQty(1);
+  }, [activeIdx]);
+
+  // Pixel: ViewContent fires per active product
   useEffect(() => {
     fbqTrack("ViewContent", {
-      content_ids: ["mercadopromo-jaqueta-courino"],
+      content_ids: [PRODUCT.id],
       content_name: PRODUCT.title,
       content_type: "product",
       value: PRODUCT.price / 100,
       currency: "BRL",
     });
-  }, []);
+  }, [PRODUCT.id, PRODUCT.price, PRODUCT.title]);
+
+  const selectProduct = (idx: number) => {
+    if (idx === activeIdx) return;
+    setActiveIdx(idx);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const onBuy = () => {
     fbqTrack("InitiateCheckout", {
-      content_ids: ["mercadopromo-jaqueta-courino"],
+      content_ids: [PRODUCT.id],
+      content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
       num_items: qty,
@@ -385,12 +405,14 @@ function MercadoPromoPage() {
 
   const onAddToCart = () => {
     fbqTrack("AddToCart", {
-      content_ids: ["mercadopromo-jaqueta-courino"],
+      content_ids: [PRODUCT.id],
+      content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
     });
     fbqTrack("InitiateCheckout", {
-      content_ids: ["mercadopromo-jaqueta-courino"],
+      content_ids: [PRODUCT.id],
+      content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
       num_items: qty,
@@ -403,6 +425,7 @@ function MercadoPromoPage() {
   if (checkoutOpen) {
     return (
       <MercadoCheckout
+        product={PRODUCT}
         colorLabel={color.label}
         productImage={activeImg}
         quantity={qty}
