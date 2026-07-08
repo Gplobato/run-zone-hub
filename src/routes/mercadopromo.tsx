@@ -614,8 +614,11 @@ function MercadoPromoPage() {
   const [qty, setQty] = useState(1);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [zoomPhoto, setZoomPhoto] = useState<string | null>(null);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const priceSplit = formatBRLSplit(PRODUCT.price);
+
+  const createCheckout = useServerFn(createZedyCheckout);
 
   useEffect(() => {
     setActiveImg(color.gallery[0].src);
@@ -626,6 +629,7 @@ function MercadoPromoPage() {
     setColorKey(PRODUCTS[activeIdx].colors[0].key);
     setSize(null);
     setQty(1);
+    setCheckoutError(null);
   }, [activeIdx]);
 
   // Pixel: ViewContent fires per active product
@@ -645,6 +649,25 @@ function MercadoPromoPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  async function goToZedy() {
+    if (checkoutLoading) return;
+    setCheckoutLoading(true);
+    setCheckoutError(null);
+    try {
+      const { url } = await createCheckout({
+        data: { items: [{ slug: PRODUCT.id, quantity: qty }] },
+      });
+      window.location.href = url;
+    } catch (err) {
+      setCheckoutError(
+        err instanceof Error
+          ? err.message
+          : "Falha ao abrir o pagamento. Tente novamente.",
+      );
+      setCheckoutLoading(false);
+    }
+  }
+
   const onBuy = () => {
     fbqTrack("InitiateCheckout", {
       content_ids: [PRODUCT.id],
@@ -654,8 +677,7 @@ function MercadoPromoPage() {
       num_items: qty,
       contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
     });
-    setCheckoutOpen(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    void goToZedy();
   };
 
   const onAddToCart = () => {
@@ -673,22 +695,9 @@ function MercadoPromoPage() {
       num_items: qty,
       contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
     });
-    setCheckoutOpen(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    void goToZedy();
   };
 
-  if (checkoutOpen) {
-    return (
-      <MercadoCheckout
-        product={PRODUCT}
-        colorLabel={color.label}
-        productImage={activeImg}
-        quantity={qty}
-        selectedSize={size}
-        onBack={() => setCheckoutOpen(false)}
-      />
-    );
-  }
 
   return (
     <div className="mercado-promo-page min-h-screen bg-[#ededed] text-[#333]">
