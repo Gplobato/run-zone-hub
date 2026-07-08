@@ -53,64 +53,135 @@ import review3 from "@/assets/mercadopromo/review-3.jpg";
 // pelo __root.tsx global.
 // -----------------------------------------------------------------------------
 
-const PRODUCT = {
+type GalleryMedia = {
+  src: string;
+  kind: "image" | "video";
+};
+
+type Product = {
+  id: string;
+  title: string;
+  brand: string;
+  seller: string;
+  sold: string;
+  rating: number;
+  reviewsCount: number;
+  price: number;
+  compareAt: number | null;
+  installments: { count: number; valueCents: number };
+  categoryTrail: string[];
+  colors: {
+    key: string;
+    label: string;
+    thumb: string;
+    gallery: GalleryMedia[];
+  }[];
+  sizes: string[];
+};
+
+const MAIN_PRODUCT: Product = {
+  id: "mercadopromo-jaqueta-courino",
   title: "Jaqueta Feminina Courino Slim Casaco Frio Zíper Motoqueiro",
   brand: "SKATHI",
   seller: "Skhati Wear",
   sold: "+800 vendidos",
   rating: 5.0,
   reviewsCount: 9,
-  price: 7990, // centavos
-  compareAt: null as number | null,
+  price: 7990,
+  compareAt: null,
   installments: { count: 6, valueCents: 1332 },
   categoryTrail: ["Calçados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
+  colors: [
+    {
+      key: "marrom",
+      label: "Marrom",
+      thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp",
+      gallery: [
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_662783-MLB111271156807_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_683019-MLB111271096821_052026-F.webp", kind: "image" },
+        { src: jacketMarromVideo, kind: "video" },
+      ],
+    },
+    {
+      key: "preto",
+      label: "Branco",
+      thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp",
+      gallery: [
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_698571-MLB111273241677_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_789158-MLB111273927385_052026-F.webp", kind: "image" },
+      ],
+    },
+    {
+      key: "bege",
+      label: "Preto",
+      thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp",
+      gallery: [
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_695488-MLB111273241551_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_992725-MLB110339498342_052026-F.webp", kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["P", "M", "G", "GG", "EXG"],
 };
 
-type GalleryMedia = {
-  src: string;
-  kind: "image" | "video";
+const BOOT_PRODUCT: Product = {
+  id: "mercadopromo-bota-montaria",
+  title: "Montaria Feminina Cano Longo Coturno Cadarço Atrás",
+  brand: "SKATHI",
+  seller: "Skhati Wear",
+  sold: "+300 vendidos",
+  rating: 4.9,
+  reviewsCount: 12,
+  price: 4990,
+  compareAt: null,
+  installments: { count: 6, valueCents: 832 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Calçados", "Botas"],
+  colors: [
+    {
+      key: "preto",
+      label: "Preto",
+      thumb: boots1,
+      gallery: [
+        { src: boots1, kind: "image" },
+        { src: boots2, kind: "image" },
+        { src: boots3, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["34", "35", "36", "37", "38", "39"],
 };
 
-const COLORS: {
-  key: string;
-  label: string;
-  thumb: string;
-  gallery: GalleryMedia[];
-}[] = [
-  {
-    key: "marrom",
-    label: "Marrom",
-    thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp",
-    gallery: [
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_662783-MLB111271156807_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_683019-MLB111271096821_052026-F.webp", kind: "image" },
-      { src: jacketMarromVideo, kind: "video" },
-    ],
-  },
-  {
-    key: "preto",
-    label: "Branco",
-    thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp",
-    gallery: [
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_698571-MLB111273241677_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_789158-MLB111273927385_052026-F.webp", kind: "image" },
-    ],
-  },
-  {
-    key: "bege",
-    label: "Preto",
-    thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp",
-    gallery: [
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_695488-MLB111273241551_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_992725-MLB110339498342_052026-F.webp", kind: "image" },
-    ],
-  },
-];
+const PANTS_PRODUCT: Product = {
+  id: "mercadopromo-calca-hiperlipo",
+  title: "Calça Hiperlipo Modeladora Chapa Barriga Suplex e Poliam Leg",
+  brand: "SKATHI",
+  seller: "Skhati Wear",
+  sold: "+500 vendidos",
+  rating: 4.8,
+  reviewsCount: 21,
+  price: 5990,
+  compareAt: null,
+  installments: { count: 6, valueCents: 998 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Roupas", "Calças"],
+  colors: [
+    {
+      key: "preto",
+      label: "Preto",
+      thumb: pants1,
+      gallery: [
+        { src: pants1, kind: "image" },
+        { src: pants2, kind: "image" },
+        { src: pants3, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["P", "M", "G", "GG"],
+};
 
-const SIZES = ["P", "M", "G", "GG", "EXG"];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT];
 
 const SIZE_GUIDE = [
   { label: "P", equivalent: "P", chest: 88, height: 55, shoulders: 37 },
@@ -122,27 +193,12 @@ const SIZE_GUIDE = [
 
 const PAYMENT_METHODS = {
   credit: [
-    {
-      name: "American Express",
-      src: payAmex,
-    },
-    {
-      name: "Elo",
-      src: payElo,
-    },
-    {
-      name: "Visa",
-      src: payVisa,
-    },
-    {
-      name: "Mastercard",
-      src: payMastercard,
-    },
+    { name: "American Express", src: payAmex },
+    { name: "Elo", src: payElo },
+    { name: "Visa", src: payVisa },
+    { name: "Mastercard", src: payMastercard },
   ],
-  pix: {
-    name: "Pix",
-    src: payPix,
-  },
+  pix: { name: "Pix", src: payPix },
 };
 
 const SELLER = {
@@ -153,22 +209,24 @@ const SELLER = {
 
 const RELATED = [
   {
+    productIdx: 1,
     img: boots1,
     gallery: [boots1, boots2, boots3],
-    title: "Montaria Feminina Cano Longo Coturno Cadarço Atrás",
+    title: BOOT_PRODUCT.title,
     description:
       "Bota montaria de cano longo com acabamento liso, fechamento por cadarço atrás e sola firme para uso diário. Visual elegante para compor looks urbanos e de inverno.",
-    priceCents: 4990,
+    priceCents: BOOT_PRODUCT.price,
     installments: "até 6x sem juros",
     freeShip: true,
   },
   {
+    productIdx: 2,
     img: pants1,
     gallery: [pants1, pants2, pants3],
-    title: "Calça Hiperlipo Modeladora Chapa Barriga Suplex e Poliam Leg",
+    title: PANTS_PRODUCT.title,
     description:
       "Calça modeladora com cintura alta, tecido encorpado e elasticidade confortável, pensada para valorizar a silhueta com firmeza e conforto no uso diário.",
-    priceCents: 5990,
+    priceCents: PANTS_PRODUCT.price,
     installments: "até 6x sem juros",
     freeShip: true,
   },
