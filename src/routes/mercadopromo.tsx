@@ -1721,7 +1721,7 @@ function MLHeader() {
               <span className="rounded-full bg-[#00c58f] px-1.5 text-[10px] font-bold text-white">GRÁTIS</span>
               <span className="font-semibold">MELI+</span>
               <span className="text-[10px] text-[#666]">
-                A PARTIR DE <b className="text-[#333]">R$ 9,90/MÃŠS</b>
+                A PARTIR DE <b className="text-[#333]">R$ 9,90/MÊS</b>
               </span>
             </div>
             <button className="justify-self-end text-[#333]">
@@ -1915,7 +1915,7 @@ function SellerCard() {
         <img src={SELLER.medal} alt="" className="h-5 w-5" loading="lazy" />
         MercadoLíder Platinum
       </div>
-      <div className="mt-1 text-[12px] text-[#666]">Ã‰ um dos melhores do site!</div>
+      <div className="mt-1 text-[12px] text-[#666]">É um dos melhores do site!</div>
       <div className="mt-3 grid grid-cols-4 gap-1">
         <div className="h-1.5 rounded bg-[#f9d0d0]" />
         <div className="h-1.5 rounded bg-[#fce9c0]" />
