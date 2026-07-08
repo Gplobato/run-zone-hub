@@ -841,18 +841,21 @@ function MercadoPromoPage() {
 }
 
 function MercadoCheckout({
+  product,
   colorLabel,
   productImage,
   quantity,
   selectedSize,
   onBack,
 }: {
+  product: Product;
   colorLabel: string;
   productImage: string;
   quantity: number;
   selectedSize: string | null;
   onBack: () => void;
 }) {
+  const PRODUCT = product;
   const createTx = useServerFn(createHypercashTransaction);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [summaryOpen, setSummaryOpen] = useState(false);
