@@ -269,15 +269,15 @@ const PANTS_PRODUCT: Product = {
 };
 
 const GARMIN_PRODUCT: Product = {
-  id: "mercadopromo-garmin-forerunner-55",
-  title: "Relógio Garmin Forerunner 55 GPS Monitor Cardíaco Corrida",
+  id: "mercadopromo-garmin-forerunner-965",
+  title: "Garmin Forerunner 965 Amoled 47mm Touchscreen",
   brand: "GARMIN",
   seller: "Skhati Wear",
   sold: "+150 vendidos",
   rating: 4.9,
-  reviewsCount: 3,
+  reviewsCount: 4,
   price: 7990,
-  compareAt: null,
+  compareAt: 12800,
   installments: { count: 10, valueCents: 799 },
   categoryTrail: ["Esportes e Fitness", "Corrida", "Relógios GPS"],
   colors: [
@@ -287,6 +287,8 @@ const GARMIN_PRODUCT: Product = {
       thumb: garminBlack,
       gallery: [
         { src: garminBlack, kind: "image" },
+        { src: garminRef1, kind: "image" },
+        { src: garminRef2, kind: "image" },
         { src: garminWhite, kind: "image" },
       ],
     },
@@ -301,6 +303,62 @@ const GARMIN_PRODUCT: Product = {
     },
   ],
   sizes: ["Único"],
+  description: {
+    heading: "Garmin Forerunner 965 · corra, treine e monitore sem depender do celular",
+    intro: [
+      "Você já saiu pra correr e sentiu que o celular no braço atrapalha mais do que ajuda? Ou terminou o treino sem saber ao certo seu ritmo, VO₂ máx. ou tempo de recuperação?",
+      "O Forerunner 965 é o relógio esportivo topo de linha da Garmin: tela AMOLED de 1,4”, caixa de 47 mm em titânio, GPS multibanda e todas as métricas avançadas de corrida, ciclismo e triatlo no seu pulso.",
+    ],
+    steps: [
+      "Coloque no pulso e sincronize com o Garmin Connect em menos de 2 minutos.",
+      "Escolha o esporte (corrida, trilha, bike, natação, força) e o GPS trava em segundos.",
+      "Ao final do treino, veja ritmo, FC, VO₂ máx., tempo de recuperação e sugestão do próximo treino.",
+    ],
+    benefits: [
+      {
+        title: "Tela AMOLED sempre visível",
+        result: "1,4” com toque, brilho automático e visibilidade perfeita ao sol.",
+        feeling: "Você lê o ritmo num relance, sem tirar o foco da passada.",
+      },
+      {
+        title: "GPS multibanda de precisão",
+        result: "Distância, ritmo e traçado corretos mesmo em cidade densa ou trilha.",
+        feeling: "Confiança total nos seus tempos e recordes pessoais.",
+      },
+      {
+        title: "Bateria de até 23 dias",
+        result: "Até 31h em GPS contínuo. Você treina a semana toda sem carregar.",
+        feeling: "Menos preocupação com tomada, mais foco no treino.",
+      },
+      {
+        title: "Treinos guiados + Garmin Coach",
+        result: "Planos de 5k, 10k, meia e maratona ajustados ao seu condicionamento.",
+        feeling: "Sensação de ter um treinador no pulso todo dia.",
+      },
+    ],
+    quotes: [
+      "“Migrei do celular pro Garmin e nunca mais voltei. Ritmo, FC e trajeto batendo certinho.” — corredor de 10k",
+      "“A tela AMOLED é outro nível. Leio no sol forte sem esforço.” — triatleta amadora",
+    ],
+    specs: [
+      "Tela AMOLED 1,4” touchscreen, vidro Corning Gorilla",
+      "Caixa 47 mm em titânio, pulseira de silicone",
+      "GPS multibanda (L1 + L5), GLONASS, Galileo",
+      "Monitor cardíaco no pulso + oxímetro (SpO₂)",
+      "VO₂ máx., tempo de recuperação, treinos sugeridos",
+      "Bateria: até 23 dias smartwatch / 31h GPS contínuo",
+      "Resistência à água 5 ATM",
+      "Pagamentos por aproximação (Garmin Pay)",
+      "Notificações do celular e controle de música",
+    ],
+    tip: "Combine com o app Garmin Connect no celular para acompanhar histórico, gráficos e desafios semanais.",
+    closing: [
+      "O Forerunner 965 normalmente custa R$ 3.000+ nas lojas oficiais. Nessa promoção especial, você garante por uma fração do preço — enquanto durar o estoque.",
+      "Compra 100% protegida pelo Mercado Livre. Não gostou? Devolução garantida.",
+      "Adicione ao carrinho agora e leve pro pulso o relógio que vai mudar seus treinos.",
+    ],
+    warranty: "Garantia do vendedor: 30 dias",
+  },
 };
 
 // Slug -> índice em PRODUCTS. Usado para URLs de anúncio: /mercadopromo?p=<slug>
