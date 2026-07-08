@@ -359,8 +359,8 @@ const RELATED = [
   },
   {
     productIdx: 3,
-    img: garmin3,
-    gallery: [garmin3, garmin1, garmin2],
+    img: garminBlack,
+    gallery: [garminBlack, garminWhite],
     title: GARMIN_PRODUCT.title,
     description:
       "Relógio esportivo com GPS integrado, monitor cardíaco no pulso, VO₂ máx., sugestões diárias de treino e bateria de até 2 semanas. Ideal para corrida e triatlo.",
