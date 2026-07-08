@@ -50,6 +50,12 @@ import garmin2 from "@/assets/mercadopromo/garmin-2.jpg";
 import garmin3 from "@/assets/mercadopromo/garmin-3.jpg";
 import garminBlack from "@/assets/mercadopromo/garmin-product-black.jpg";
 import garminWhite from "@/assets/mercadopromo/garmin-product-white.jpg";
+import garminRef1 from "@/assets/mercadopromo/garmin-ref-1.jpg";
+import garminRef2 from "@/assets/mercadopromo/garmin-ref-2.jpg";
+import garminReviewA from "@/assets/mercadopromo/garmin-review-a.jpg";
+import garminReviewB from "@/assets/mercadopromo/garmin-review-b.jpg";
+import garminReviewC from "@/assets/mercadopromo/garmin-review-c.jpg";
+import garminReviewD from "@/assets/mercadopromo/garmin-review-d.jpg";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
