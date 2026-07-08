@@ -114,9 +114,9 @@ const MAIN_PRODUCT: Product = {
   sold: "+800 vendidos",
   rating: 5.0,
   reviewsCount: 9,
-  price: 7990,
+  price: 6990,
   compareAt: null,
-  installments: { count: 6, valueCents: 1332 },
+  installments: { count: 6, valueCents: 1165 },
   categoryTrail: ["Calçados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
   colors: [
     {
