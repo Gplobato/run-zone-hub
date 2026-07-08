@@ -27,7 +27,7 @@ import {
   Ticket,
 } from "lucide-react";
 import { fbqTrack } from "@/lib/pixel";
-import { createHypercashTransaction } from "@/lib/hypercash.functions";
+import { createZedyCheckout } from "@/lib/zedy.functions";
 import mlLogo from "@/assets/mercadopromo/ml-logo.png";
 import pixLogo from "@/assets/mercadopromo/pix-logo.png";
 import payAmex from "@/assets/mercadopromo/pay-amex.png";
@@ -614,8 +614,11 @@ function MercadoPromoPage() {
   const [qty, setQty] = useState(1);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [zoomPhoto, setZoomPhoto] = useState<string | null>(null);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const priceSplit = formatBRLSplit(PRODUCT.price);
+
+  const createCheckout = useServerFn(createZedyCheckout);
 
   useEffect(() => {
     setActiveImg(color.gallery[0].src);
@@ -626,6 +629,7 @@ function MercadoPromoPage() {
     setColorKey(PRODUCTS[activeIdx].colors[0].key);
     setSize(null);
     setQty(1);
+    setCheckoutError(null);
   }, [activeIdx]);
 
   // Pixel: ViewContent fires per active product
@@ -645,6 +649,25 @@ function MercadoPromoPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  async function goToZedy() {
+    if (checkoutLoading) return;
+    setCheckoutLoading(true);
+    setCheckoutError(null);
+    try {
+      const { url } = await createCheckout({
+        data: { items: [{ slug: PRODUCT.id, quantity: qty }] },
+      });
+      window.location.href = url;
+    } catch (err) {
+      setCheckoutError(
+        err instanceof Error
+          ? err.message
+          : "Falha ao abrir o pagamento. Tente novamente.",
+      );
+      setCheckoutLoading(false);
+    }
+  }
+
   const onBuy = () => {
     fbqTrack("InitiateCheckout", {
       content_ids: [PRODUCT.id],
@@ -654,8 +677,7 @@ function MercadoPromoPage() {
       num_items: qty,
       contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
     });
-    setCheckoutOpen(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    void goToZedy();
   };
 
   const onAddToCart = () => {
@@ -673,22 +695,9 @@ function MercadoPromoPage() {
       num_items: qty,
       contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
     });
-    setCheckoutOpen(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    void goToZedy();
   };
 
-  if (checkoutOpen) {
-    return (
-      <MercadoCheckout
-        product={PRODUCT}
-        colorLabel={color.label}
-        productImage={activeImg}
-        quantity={qty}
-        selectedSize={size}
-        onBack={() => setCheckoutOpen(false)}
-      />
-    );
-  }
 
   return (
     <div className="mercado-promo-page min-h-screen bg-[#ededed] text-[#333]">
@@ -969,18 +978,32 @@ function MercadoPromoPage() {
 
             <button
               onClick={onBuy}
-              className="mt-5 w-full rounded-md bg-[#3483fa] py-3 text-[16px] font-semibold text-white hover:bg-[#2968c8]"
+              disabled={checkoutLoading}
+              className="mt-5 w-full rounded-md bg-[#3483fa] py-3 text-[16px] font-semibold text-white hover:bg-[#2968c8] disabled:opacity-70"
             >
-              Comprar agora
+              {checkoutLoading ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Abrindo pagamento…
+                </span>
+              ) : (
+                "Comprar agora"
+              )}
             </button>
             <button
               onClick={onAddToCart}
-              className="mt-2 w-full rounded-md bg-[#e6f0ff] py-3 text-[16px] font-semibold text-[#3483fa] hover:bg-[#d5e4fc]"
+              disabled={checkoutLoading}
+              className="mt-2 w-full rounded-md bg-[#e6f0ff] py-3 text-[16px] font-semibold text-[#3483fa] hover:bg-[#d5e4fc] disabled:opacity-70"
             >
               <span className="inline-flex items-center gap-2">
                 <ShoppingCart className="h-4 w-4" /> Adicionar ao carrinho
               </span>
             </button>
+            {checkoutError && (
+              <div className="mt-2 flex items-start gap-2 rounded-sm bg-red-50 px-3 py-2 text-[12px] text-red-700">
+                <CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>{checkoutError}</span>
+              </div>
+            )}
 
             <div className="mt-5 border-t border-[#eee] pt-4 text-[14px]">
               <div>
@@ -1122,903 +1145,9 @@ function MercadoPromoPage() {
   );
 }
 
-function MercadoCheckout({
-  product,
-  colorLabel,
-  productImage,
-  quantity,
-  selectedSize,
-  onBack,
-}: {
-  product: Product;
-  colorLabel: string;
-  productImage: string;
-  quantity: number;
-  selectedSize: string | null;
-  onBack: () => void;
-}) {
-  const PRODUCT = product;
-  const createTx = useServerFn(createHypercashTransaction);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [summaryOpen, setSummaryOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"PIX" | "CREDIT_CARD">("PIX");
-  const [tx, setTx] = useState<{ id: string; status: string; pix: PixData | null; method: "PIX" | "CREDIT_CARD" } | null>(null);
-  const [card, setCard] = useState<CardForm>({
-    holderName: "",
-    number: "",
-    expiry: "",
-    cvv: "",
-    installments: 1,
-  });
-  const [form, setForm] = useState<CheckoutForm>({
-    name: "",
-    email: "",
-    document: "",
-    phone: "",
-    zipCode: "",
-    street: "",
-    streetNumber: "",
-    complement: "",
-    neighborhood: "",
-    city: "",
-    state: "",
-  });
+// MercadoCheckout e sub-componentes removidos: /mercadopromo agora redireciona
+// pro checkout hospedado da Zedy (via createZedyCheckout no server).
 
-  const itemTitle = `${PRODUCT.title}${selectedSize ? ` - Tam. ${selectedSize}` : ""}`;
-  const subtotalCents = PRODUCT.price * quantity;
-  const shippingCents = 0;
-  const totalCents = subtotalCents + shippingCents;
-
-  const identityComplete =
-    form.name.trim().length > 2 &&
-    /.+@.+\..+/.test(form.email) &&
-    onlyDigits(form.document).length === 11 &&
-    onlyDigits(form.phone).length >= 10;
-
-  const addressComplete =
-    onlyDigits(form.zipCode).length === 8 &&
-    form.street.trim().length > 0 &&
-    form.streetNumber.trim().length > 0 &&
-    form.neighborhood.trim().length > 0 &&
-    form.city.trim().length > 0 &&
-    form.state.trim().length === 2;
-
-  const [expiryMonth, expiryYear] = card.expiry.split("/");
-  const cardComplete =
-    card.holderName.trim().length > 3 &&
-    onlyDigits(card.number).length >= 13 &&
-    Number(expiryMonth) >= 1 &&
-    Number(expiryMonth) <= 12 &&
-    onlyDigits(expiryYear || "").length === 2 &&
-    onlyDigits(card.cvv).length >= 3;
-
-  useEffect(() => {
-    const cep = onlyDigits(form.zipCode);
-    if (cep.length !== 8) return;
-    let cancelled = false;
-    fetch(`https://viacep.com.br/ws/${cep}/json/`)
-      .then((response) => response.json())
-      .then((data: {
-        logradouro?: string;
-        bairro?: string;
-        localidade?: string;
-        uf?: string;
-        erro?: boolean;
-      }) => {
-        if (cancelled || data.erro) return;
-        setForm((current) => ({
-          ...current,
-          street: data.logradouro || current.street,
-          neighborhood: data.bairro || current.neighborhood,
-          city: data.localidade || current.city,
-          state: data.uf || current.state,
-        }));
-      })
-      .catch(() => void 0);
-    return () => {
-      cancelled = true;
-    };
-  }, [form.zipCode]);
-
-  function goToDelivery(event: FormEvent) {
-    event.preventDefault();
-    if (!identityComplete) return;
-    setStep(2);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function goToPayment(event: FormEvent) {
-    event.preventDefault();
-    if (!addressComplete) return;
-    setStep(3);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  const baseTransactionData = {
-    items: [
-      {
-        slug: PRODUCT.id,
-        title: itemTitle,
-        unitPriceCents: PRODUCT.price,
-        quantity,
-      },
-    ],
-    shippingFeeCents: shippingCents,
-    customer: {
-      name: form.name.trim(),
-      email: form.email.trim(),
-      document: form.document,
-      phone: form.phone,
-    },
-    address: {
-      street: form.street.trim(),
-      streetNumber: form.streetNumber.trim(),
-      complement: form.complement.trim() || undefined,
-      zipCode: form.zipCode,
-      neighborhood: form.neighborhood.trim(),
-      city: form.city.trim(),
-      state: form.state.toUpperCase(),
-    },
-  };
-
-  async function finishPixPurchase() {
-    if (!identityComplete || !addressComplete || loading) return;
-    setLoading(true);
-    setError(null);
-    fbqTrack("AddPaymentInfo", {
-      content_ids: [PRODUCT.id],
-      content_name: PRODUCT.title,
-      value: totalCents / 100,
-      currency: "BRL",
-      payment_method: "pix",
-    });
-    try {
-      const result = await createTx({
-        data: {
-          ...baseTransactionData,
-          paymentMethod: "PIX",
-          externalRef: `mercadopromo-${Date.now()}`,
-        },
-      });
-      setTx({
-        id: result.id,
-        status: result.status,
-        pix: (result.pix as PixData) ?? null,
-        method: "PIX",
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Falha ao gerar o Pix. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function finishCardPurchase() {
-    if (!identityComplete || !addressComplete || !cardComplete || loading) return;
-    setLoading(true);
-    setError(null);
-    fbqTrack("AddPaymentInfo", {
-      content_ids: [PRODUCT.id],
-      content_name: PRODUCT.title,
-      value: totalCents / 100,
-      currency: "BRL",
-      payment_method: "credit_card",
-    });
-    try {
-      const year = 2000 + Number(expiryYear);
-      const result = await createTx({
-        data: {
-          ...baseTransactionData,
-          paymentMethod: "CREDIT_CARD",
-          card: {
-            number: card.number,
-            holderName: card.holderName.trim(),
-            expirationMonth: Number(expiryMonth),
-            expirationYear: year,
-            cvv: card.cvv,
-            installments: card.installments,
-          },
-          externalRef: `mercadopromo-card-${Date.now()}`,
-        },
-      });
-      setTx({
-        id: result.id,
-        status: result.status,
-        pix: null,
-        method: "CREDIT_CARD",
-      });
-      fbqTrack("Purchase", {
-        content_ids: [PRODUCT.id],
-        content_name: PRODUCT.title,
-        value: totalCents / 100,
-        currency: "BRL",
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Falha ao processar o cartão. Confira os dados e tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const pixCode = tx?.pix?.qrcode || "";
-  const pixImage =
-    tx?.pix?.qrcodeBase64
-      ? tx.pix.qrcodeBase64.startsWith("data:")
-        ? tx.pix.qrcodeBase64
-        : `data:image/png;base64,${tx.pix.qrcodeBase64}`
-      : tx?.pix?.qrcodeUrl
-        ? tx.pix.qrcodeUrl
-        : pixCode
-          ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(pixCode)}`
-          : null;
-
-  async function copyPix() {
-    if (!pixCode) return;
-    try {
-      await navigator.clipboard.writeText(pixCode);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      setError("Não foi possível copiar automaticamente. Selecione o código Pix na tela.");
-    }
-  }
-  const promoStyle = (
-    <style>{`
-      .mercado-promo-page,
-      .mercado-promo-page h1,
-      .mercado-promo-page h2,
-      .mercado-promo-page h3 {
-        font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-        letter-spacing: 0 !important;
-        text-transform: none !important;
-      }
-    `}</style>
-  );
-
-  // Pix gerado → tela dedicada, sem sidebar/summary, só header ML + painel PIX
-  if (tx?.method === "PIX") {
-    return (
-      <div className="mercado-promo-page min-h-screen bg-white text-[#001133]">
-        {promoStyle}
-        <CheckoutHeader onBack={onBack} />
-        <main className="mx-auto w-full max-w-[640px] px-4 py-6 md:py-10">
-          <div className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm md:p-8">
-            <PixPaymentPanel
-              pixCode={pixCode}
-              pixImage={pixImage}
-              copied={copied}
-              onCopy={copyPix}
-            />
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mercado-promo-page min-h-screen bg-white text-[#001133]">
-      {promoStyle}
-      <CheckoutHeader onBack={onBack} />
-      <main className="mx-auto grid w-full max-w-[1040px] gap-4 px-3 py-4 md:grid-cols-[minmax(0,1fr)_340px] md:gap-6 md:px-4 md:py-6 lg:max-w-[1120px] lg:grid-cols-[338px_minmax(0,1fr)_340px]">
-        <div className="md:hidden">
-          <button
-            type="button"
-            onClick={() => setSummaryOpen((open) => !open)}
-            className="flex w-full items-center justify-between rounded-md border border-[#d9e0ea] bg-white px-4 py-3 text-left shadow-sm"
-          >
-            <span className="font-semibold">Resumo do pedido</span>
-            <span className="inline-flex items-center gap-2 font-semibold text-[#111]">
-              {formatBRL(totalCents)}
-              <ChevronDown className={`h-4 w-4 transition-transform ${summaryOpen ? "rotate-180" : ""}`} />
-            </span>
-          </button>
-          {summaryOpen && (
-            <div className="mt-2">
-              <OrderSummary
-                productImage={productImage}
-                itemTitle={itemTitle}
-                colorLabel={colorLabel}
-                quantity={quantity}
-                subtotalCents={subtotalCents}
-                shippingCents={shippingCents}
-                totalCents={totalCents}
-                compact
-              />
-            </div>
-          )}
-        </div>
-
-        <section className="space-y-4 lg:col-start-1">
-          {step > 1 && (
-            <CompletedCard title="Identificação" onEdit={() => setStep(1)}>
-              <strong>{form.name}</strong>
-              <span>{form.email}</span>
-              <span>{form.phone}</span>
-            </CompletedCard>
-          )}
-          {step > 2 && (
-            <CompletedCard title="Enviar para" onEdit={() => setStep(2)}>
-              <span>
-                {form.street}, {form.streetNumber}
-                {form.complement ? ` - ${form.complement}` : ""}
-              </span>
-              <span>
-                {form.neighborhood}, {form.city}/{form.state.toUpperCase()} {form.zipCode}
-              </span>
-              <span className="mt-3 font-semibold">Frete selecionado</span>
-              <span>Envio - Grátis</span>
-            </CompletedCard>
-          )}
-        </section>
-
-        <section className="md:col-start-1 lg:col-start-2">
-          {step === 1 && (
-            <form onSubmit={goToDelivery} className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
-              <StepTitle title="Identificação" step="1 de 3" subtitle="Preencha seus dados para envio do pedido." />
-              <div className="mt-8 space-y-5">
-                <CheckoutField label="Nome completo">
-                  <input
-                    value={form.name}
-                    onChange={(event) => setForm({ ...form, name: event.target.value })}
-                    placeholder="Digite seu nome completo"
-                    className={checkoutInputClass}
-                  />
-                </CheckoutField>
-                <CheckoutField label="E-mail">
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(event) => setForm({ ...form, email: event.target.value })}
-                    placeholder="Digite seu e-mail"
-                    className={checkoutInputClass}
-                  />
-                </CheckoutField>
-                <CheckoutField
-                  label={
-                    <span className="inline-flex items-center gap-1">
-                      CPF <Info className="h-4 w-4" />
-                    </span>
-                  }
-                >
-                  <input
-                    value={form.document}
-                    onChange={(event) => setForm({ ...form, document: maskCPF(event.target.value) })}
-                    placeholder="000.000.000-00"
-                    className={`${checkoutInputClass} max-w-[242px]`}
-                  />
-                </CheckoutField>
-                <CheckoutField label="Celular/Whatsapp">
-                  <input
-                    value={form.phone}
-                    onChange={(event) => setForm({ ...form, phone: maskPhone(event.target.value) })}
-                    placeholder="+55   (00) 00000-0000"
-                    className={`${checkoutInputClass} max-w-[242px]`}
-                  />
-                </CheckoutField>
-                <button
-                  type="submit"
-                  disabled={!identityComplete}
-                  className="w-full rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Ir Para Entrega
-                </button>
-              </div>
-            </form>
-          )}
-
-          {step === 2 && (
-            <form onSubmit={goToPayment} className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
-              <StepTitle title="Entrega" step="2 de 3" subtitle="Informe o endereço de entrega" />
-              <div className="mt-6 space-y-5">
-                <CheckoutField label="CEP">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="relative max-w-[180px] flex-1">
-                      <input
-                        value={form.zipCode}
-                        onChange={(event) => setForm({ ...form, zipCode: maskCEP(event.target.value) })}
-                        placeholder="00000-000"
-                        className={`${checkoutInputClass} bg-[#eef4ff] pr-10`}
-                      />
-                      {onlyDigits(form.zipCode).length === 8 && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00a650]" />}
-                    </div>
-                    {form.city && form.state && (
-                      <span className="text-[12px] font-semibold text-[#333]">{form.state}/{form.city}</span>
-                    )}
-                  </div>
-                </CheckoutField>
-
-                <CheckoutField label="Endereço">
-                  <div className="relative">
-                    <input
-                      value={form.street}
-                      onChange={(event) => setForm({ ...form, street: event.target.value })}
-                      placeholder="Rua, avenida ou travessa"
-                      className={`${checkoutInputClass} bg-[#eef4ff] pr-10`}
-                    />
-                    {form.street && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00a650]" />}
-                  </div>
-                </CheckoutField>
-
-                <div className="grid grid-cols-[68px_minmax(0,1fr)] gap-3">
-                  <CheckoutField label="N°">
-                    <input
-                      value={form.streetNumber}
-                      onChange={(event) => setForm({ ...form, streetNumber: event.target.value })}
-                      placeholder="Número"
-                      className={`${checkoutInputClass} ${form.streetNumber ? "bg-[#eef4ff]" : "border-[#ff8ba1] bg-[#ffe9ee] text-[#d62850]"}`}
-                    />
-                    {!form.streetNumber && <div className="mt-1 text-[11px] text-[#d62850]">Número é obrigatório</div>}
-                  </CheckoutField>
-                  <CheckoutField label="Bairro">
-                    <div className="relative">
-                      <input
-                        value={form.neighborhood}
-                        onChange={(event) => setForm({ ...form, neighborhood: event.target.value })}
-                        placeholder="Bairro"
-                        className={`${checkoutInputClass} bg-[#eef4ff] pr-10`}
-                      />
-                      {form.neighborhood && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#00a650]" />}
-                    </div>
-                  </CheckoutField>
-                </div>
-
-                <CheckoutField label={<span>Complemento <span className="text-[11px] font-normal text-[#777]">(Opcional)</span></span>}>
-                  <input
-                    value={form.complement}
-                    onChange={(event) => setForm({ ...form, complement: event.target.value })}
-                    className={checkoutInputClass}
-                  />
-                </CheckoutField>
-
-                <div>
-                  <h3 className="text-[16px] font-semibold text-[#001133]">Escolha o frete:</h3>
-                  <button
-                    type="button"
-                    className="mt-3 flex w-full items-center justify-between rounded-md border border-[#1675f8] px-4 py-3 text-left"
-                  >
-                    <span className="flex items-center gap-3">
-                      <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-[#1675f8]">
-                        <span className="h-2 w-2 rounded-full bg-[#1675f8]" />
-                      </span>
-                      <span>
-                        <span className="block text-[13px] font-semibold">Envio</span>
-                        <span className="text-[11px] text-[#667085]">2 a 5 dias <b className="text-[#00a650]">FULL</b></span>
-                      </span>
-                    </span>
-                    <span className="text-[13px] font-semibold">Grátis</span>
-                  </button>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={!addressComplete}
-                  className="w-full rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Ir Para Pagamento
-                </button>
-              </div>
-            </form>
-          )}
-
-          {step === 3 && (
-            <div className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
-              <StepTitle title="Pagamento" step="3 de 3" subtitle="Todas as transações são seguras e criptografadas." />
-              {tx?.method === "CREDIT_CARD" ? (
-                <CardApprovedPanel status={tx.status} totalCents={totalCents} installments={card.installments} />
-              ) : (
-                <div className="mt-6 space-y-5">
-                  <PaymentChoice
-                    selected={paymentMethod === "PIX"}
-                    onClick={() => setPaymentMethod("PIX")}
-                    icon={<img src={pixLogo} alt="" className="h-5 w-5" />}
-                    title="PIX"
-                  />
-                  {paymentMethod === "PIX" && (
-                    <div className="rounded-md border border-[#1675f8] p-4">
-                      <div className="text-[14px] leading-relaxed text-[#667085]">
-                        <p>O código Pix expira em 30 minutos após finalizar a compra.</p>
-                        <p className="mt-4">Valor no Pix: <b>{formatBRL(totalCents)}</b></p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={finishPixPurchase}
-                        disabled={loading}
-                        className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                        Finalizar Compra
-                      </button>
-                    </div>
-                  )}
-
-                  <PaymentChoice
-                    selected={paymentMethod === "CREDIT_CARD"}
-                    onClick={() => setPaymentMethod("CREDIT_CARD")}
-                    icon={<CreditCard className="h-4 w-4 text-[#667085]" />}
-                    title="Cartão de crédito"
-                  />
-                  {paymentMethod === "CREDIT_CARD" && (
-                    <div className="rounded-md border border-[#1675f8] p-4">
-                      <div className="grid gap-4">
-                        <CheckoutField label="Nome impresso no cartão">
-                          <input
-                            value={card.holderName}
-                            onChange={(event) => setCard({ ...card, holderName: event.target.value.toUpperCase() })}
-                            placeholder="NOME COMPLETO"
-                            className={checkoutInputClass}
-                          />
-                        </CheckoutField>
-                        <CheckoutField label="Número do cartão">
-                          <input
-                            inputMode="numeric"
-                            value={card.number}
-                            onChange={(event) => setCard({ ...card, number: maskCardNumber(event.target.value) })}
-                            placeholder="0000 0000 0000 0000"
-                            className={checkoutInputClass}
-                          />
-                        </CheckoutField>
-                        <div className="grid grid-cols-2 gap-3">
-                          <CheckoutField label="Validade">
-                            <input
-                              inputMode="numeric"
-                              value={card.expiry}
-                              onChange={(event) => setCard({ ...card, expiry: maskCardExpiry(event.target.value) })}
-                              placeholder="MM/AA"
-                              className={checkoutInputClass}
-                            />
-                          </CheckoutField>
-                          <CheckoutField label="CVV">
-                            <input
-                              inputMode="numeric"
-                              value={card.cvv}
-                              onChange={(event) => setCard({ ...card, cvv: onlyDigits(event.target.value).slice(0, 4) })}
-                              placeholder="000"
-                              className={checkoutInputClass}
-                            />
-                          </CheckoutField>
-                        </div>
-                        <CheckoutField label="Parcelas">
-                          <select
-                            value={card.installments}
-                            onChange={(event) => setCard({ ...card, installments: Number(event.target.value) })}
-                            className={checkoutInputClass}
-                          >
-                            {Array.from({ length: 12 }).map((_, index) => {
-                              const installments = index + 1;
-                              const installmentValue = Math.ceil(totalCents / installments);
-                              return (
-                                <option key={installments} value={installments}>
-                                  {installments}x de {formatBRL(installmentValue)}
-                                </option>
-                              );
-                            })}
-                          </select>
-                        </CheckoutField>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={finishCardPurchase}
-                        disabled={!cardComplete || loading}
-                        className="mt-5 flex w-full items-center justify-center gap-2 rounded-md bg-[#1675f8] py-3.5 text-[16px] font-semibold text-white transition hover:bg-[#0b63d8] disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                        Pagar com cartão
-                      </button>
-                    </div>
-                  )}
-
-                  {error && (
-                    <div className="flex items-start gap-2 rounded-md bg-[#fff1f0] p-3 text-[13px] text-[#d93025]">
-                      <CircleAlert className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                      <span>{error}</span>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </section>
-
-        <aside className="hidden md:block lg:col-start-3">
-          <OrderSummary
-            productImage={productImage}
-            itemTitle={itemTitle}
-            colorLabel={colorLabel}
-            quantity={quantity}
-            subtotalCents={subtotalCents}
-            shippingCents={shippingCents}
-            totalCents={totalCents}
-          />
-        </aside>
-      </main>
-    </div>
-  );
-}
-
-function PaymentChoice({
-  selected,
-  onClick,
-  icon,
-  title,
-}: {
-  selected: boolean;
-  onClick: () => void;
-  icon: ReactNode;
-  title: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex w-full items-center gap-3 rounded-md border p-4 text-left text-[14px] font-semibold transition ${
-        selected ? "border-[#1675f8] bg-white" : "border-[#d9e0ea] bg-white hover:border-[#9dbcf7]"
-      }`}
-    >
-      <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full border ${selected ? "border-[#1675f8]" : "border-[#667085]"}`}>
-        {selected && <span className="h-2 w-2 rounded-full bg-[#1675f8]" />}
-      </span>
-      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#f5f7fb]">{icon}</span>
-      {title}
-    </button>
-  );
-}
-
-
-
-function PixPaymentPanel({
-  pixCode,
-  pixImage,
-  copied,
-  onCopy,
-}: {
-  pixCode: string;
-  pixImage: string | null;
-  copied: boolean;
-  onCopy: () => void;
-}) {
-  return (
-    <div className="mt-6 text-center">
-      <h2 className="text-[28px] font-semibold text-[#333]">Quase lá...</h2>
-      <p className="mt-3 text-[14px] text-[#526173]">
-        Pague via pix em até <b>05:52</b> para confirmar seu pedido.
-      </p>
-      <div className="mx-auto mt-4 inline-flex rounded-full bg-[#fff3cd] px-6 py-2 text-[13px] font-semibold text-[#a36b00]">
-        Aguardando pagamento
-      </div>
-      <div className="mx-auto mt-8 flex h-28 w-28 items-center justify-center rounded-full bg-[#f5f5f5]">
-        <div className="relative h-20 w-12 rounded-[16px] border-[5px] border-[#111] bg-white shadow-sm">
-          <img src={pixLogo} alt="Pix" className="absolute left-1/2 top-1/2 h-8 w-8 -translate-x-1/2 -translate-y-1/2" />
-          <span className="absolute -left-8 top-7 h-8 w-8 rounded-full bg-[#ff977d]" />
-          <span className="absolute -right-7 top-10 h-5 w-8 rounded-full bg-[#ff977d]" />
-        </div>
-      </div>
-      <p className="mt-7 text-[14px] text-[#526173]">Aponte a câmera do seu celular</p>
-      {pixImage && (
-        <img src={pixImage} alt="QR Code Pix" className="mx-auto mt-3 h-56 w-56 bg-white object-contain md:h-64 md:w-64" />
-      )}
-      {pixCode && (
-        <>
-          <div className="mx-auto mt-5 max-h-14 max-w-[356px] overflow-hidden rounded-md border border-[#e1e6ef] bg-[#fafafa] px-3 py-3 text-left text-[12px] text-[#a0a8b8]">
-            {pixCode}
-          </div>
-          <button
-            type="button"
-            onClick={onCopy}
-            className="mx-auto mt-3 flex w-full max-w-[356px] items-center justify-center gap-2 rounded-md border border-[#d9e0ea] bg-white py-3 text-[14px] font-semibold text-[#111] shadow-sm"
-          >
-            <Copy className="h-4 w-4" />
-            {copied ? "Código copiado" : "Copiar código"}
-          </button>
-        </>
-      )}
-      <div className="mx-auto mt-8 max-w-[356px] text-left">
-        <h3 className="text-[18px] font-semibold text-[#1d2733]">Como pagar o pix</h3>
-        {[
-          "Clique em copiar o código, logo acima",
-          "Abra o aplicativo do seu banco",
-          "Selecione a opção PIX",
-          'Toque em "Pix Copia e Cola"',
-          "Insira o código copiado e finalize seu pagamento",
-        ].map((step, index) => (
-          <div key={step} className="mt-4 flex items-start gap-3 text-[13px] text-[#526173]">
-            <span className="grid h-5 w-5 flex-shrink-0 place-items-center rounded-full bg-[#16bf8f] text-[12px] font-semibold text-white">{index + 1}</span>
-            <span>{step}</span>
-          </div>
-        ))}
-      </div>
-      <div className="-mx-6 mt-10 border-t border-[#eef1f6] bg-[#f7f8fb] px-4 py-8">
-        <PaymentFooter />
-      </div>
-    </div>
-  );
-}
-
-function CardApprovedPanel({
-  status,
-  totalCents,
-  installments,
-}: {
-  status: string;
-  totalCents: number;
-  installments: number;
-}) {
-  return (
-    <div className="mt-6 rounded-md border border-[#00a650] bg-[#f8fff9] p-6 text-center">
-      <Check className="mx-auto h-12 w-12 rounded-full bg-[#00a650] p-2 text-white" />
-      <h2 className="mt-4 text-[22px] font-semibold text-[#001133]">Pagamento enviado!</h2>
-      <p className="mt-2 text-[14px] text-[#526173]">
-        Recebemos sua solicitação no cartão em {installments}x de {formatBRL(Math.ceil(totalCents / installments))}.
-      </p>
-      <p className="mt-1 text-[12px] text-[#667085]">Status da transação: {status}</p>
-      <div className="mt-6 border-t border-[#d8efdf] pt-5">
-        <PaymentFooter />
-      </div>
-    </div>
-  );
-}
-
-function PaymentFooter({ light = false }: { light?: boolean }) {
-  const textClass = light ? "text-white/85" : "text-[#9aa3b5]";
-  const boxClass = light ? "border-white/25 bg-white/15 text-white" : "border-[#e1e6ef] bg-white text-[#111]";
-  return (
-    <footer className={`text-center text-[12px] leading-relaxed ${textClass}`}>
-      <p>Mercado Livre | Todos os direitos reservados</p>
-      <p className="mt-2">Rua Elson Costa, 173 C - Bairro das indústrias Belo Horizonte - Minas Gerais</p>
-      <p>© 2026 Mercado Livre - CNPJ: 47.130.874/0001-05</p>
-      <p>Telefone: +55 (11) 3368-5599</p>
-      <p className="mt-3 text-[14px]">Formas de pagamento:</p>
-      <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
-        {[ { name: "American Express", src: payAmex }, { name: "Elo", src: payElo }, { name: "Visa", src: payVisa }, { name: "Mastercard", src: payMastercard }, { name: "Pix", src: payPix } ].map((method) => (
-          <span key={method.name} className={`inline-flex h-6 min-w-10 items-center justify-center rounded border px-2 ${boxClass}`}>
-            <img src={method.src} alt={method.name} className="h-4 w-auto" />
-          </span>
-        ))}
-      </div>
-      <div className="mt-5 inline-flex items-center gap-2 text-[12px] font-semibold">
-        <Lock className="h-4 w-4" />
-        <span>
-          PAGAMENTO
-          <br />
-          100% SEGURO
-        </span>
-      </div>
-    </footer>
-  );
-}
-
-function CheckoutHeader({ onBack }: { onBack: () => void }) {
-  return (
-    <header className="bg-[#fff159]">
-      <div className="mx-auto flex max-w-[1120px] items-center justify-between px-4 py-3 md:py-4">
-        <button type="button" onClick={onBack} className="flex items-center">
-          <img src={mlLogo} alt="Mercado Livre" className="h-9 w-auto md:h-11" draggable={false} />
-        </button>
-        <div className="flex items-center gap-2 text-right text-[11px] font-semibold leading-tight text-[#111]">
-          <Lock className="h-4 w-4" />
-          <span>
-            PAGAMENTO
-            <br />
-            <span className="font-normal">100% SEGURO</span>
-          </span>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function StepTitle({ title, step, subtitle }: { title: string; step: string; subtitle: string }) {
-  return (
-    <div className="flex items-start justify-between gap-3">
-      <div>
-        <h1 className="text-[20px] font-semibold text-[#001133]">{title}</h1>
-        <p className="mt-1 text-[14px] text-[#001133]">{subtitle}</p>
-      </div>
-      <span className="mt-1 whitespace-nowrap text-[13px] font-semibold text-[#001133]">{step}</span>
-    </div>
-  );
-}
-
-function CheckoutField({
-  label,
-  children,
-}: {
-  label: ReactNode;
-  children: ReactNode;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-[14px] font-semibold text-[#001133]">{label}</span>
-      {children}
-    </label>
-  );
-}
-
-const checkoutInputClass =
-  "h-[46px] w-full rounded-md border border-[#d4d9e2] bg-white px-3 text-[14px] text-[#001133] outline-none transition placeholder:text-[#667085] focus:border-[#1675f8]";
-
-function CompletedCard({
-  title,
-  children,
-  onEdit,
-}: {
-  title: string;
-  children: ReactNode;
-  onEdit: () => void;
-}) {
-  return (
-    <div className="rounded-md border border-[#00a650] bg-[#f8fff9] p-6 text-[13px] text-[#001133] shadow-sm">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-[18px] font-semibold">{title}</h2>
-        <button type="button" onClick={onEdit} className="inline-flex items-center gap-1 text-[12px] text-[#667085]">
-          Editar <Edit3 className="h-4 w-4" />
-        </button>
-      </div>
-      <div className="flex flex-col gap-1">{children}</div>
-    </div>
-  );
-}
-
-function OrderSummary({
-  productImage,
-  itemTitle,
-  colorLabel,
-  quantity,
-  subtotalCents,
-  shippingCents,
-  totalCents,
-  compact = false,
-}: {
-  productImage: string;
-  itemTitle: string;
-  colorLabel: string;
-  quantity: number;
-  subtotalCents: number;
-  shippingCents: number;
-  totalCents: number;
-  compact?: boolean;
-}) {
-  return (
-    <div className={`rounded-md border border-[#d9e0ea] bg-white p-5 shadow-sm ${compact ? "" : "sticky top-4"}`}>
-      <h2 className="text-[16px] font-semibold text-[#001133]">Resumo do pedido</h2>
-      <button type="button" className="mt-5 inline-flex items-center gap-2 text-[14px] text-[#00a650]">
-        <Ticket className="h-4 w-4" />
-        Inserir cupom de desconto
-      </button>
-      <div className="mt-4 space-y-2 border-b border-[#e5e9f0] pb-4 text-[14px]">
-        <div className="flex justify-between">
-          <span>Produtos</span>
-          <span>{formatBRL(subtotalCents)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Frete</span>
-          <span className="text-[#00a650]">{shippingCents ? formatBRL(shippingCents) : "Grátis"}</span>
-        </div>
-        <div className="flex justify-between pt-1 text-[16px] font-semibold">
-          <span>Total</span>
-          <span>{formatBRL(totalCents)}</span>
-        </div>
-      </div>
-      <div className="mt-4 flex items-center gap-3">
-        <img src={productImage} alt={itemTitle} className="h-12 w-12 rounded-md border border-[#e5e9f0] object-cover" />
-        <div className="min-w-0 flex-1">
-          <div className="line-clamp-2 text-[13px] leading-tight">{itemTitle}</div>
-          <div className="mt-1 text-[12px] text-[#667085]">Cor {colorLabel}</div>
-        </div>
-        <div className="text-right">
-          <div className="text-[13px] font-semibold">{formatBRL(totalCents)}</div>
-          <div className="mt-2 grid h-8 grid-cols-3 overflow-hidden rounded border border-[#d9e0ea] text-[13px] text-[#667085]">
-            <button type="button" className="px-2">-</button>
-            <span className="grid place-items-center px-2 text-[#001133]">{quantity}</span>
-            <button type="button" className="px-2">+</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ---------------- Header ----------------
 function MLHeader() {

@@ -2,10 +2,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { adminLogin, clearAdminSession, isAdminLoggedIn, setAdminLoggedIn } from "@/lib/admin-auth";
-import { hypercashPing } from "@/lib/hypercash.functions";
 import { PRODUCTS, formatBRL } from "@/lib/products";
 import logoUrl from "@/assets/paze-logo.png";
-import { Lock, LogOut, RefreshCcw, ShieldCheck, CircleAlert } from "lucide-react";
+import { Lock, LogOut, ShieldCheck, CircleAlert, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -102,26 +101,6 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const navigate = useNavigate();
-  const ping = useServerFn(hypercashPing);
-  const [status, setStatus] = useState<
-    | { state: "loading" }
-    | { state: "ok"; balanceCents: number; withheldCents: number }
-    | { state: "error"; message: string }
-  >({ state: "loading" });
-
-  async function refresh() {
-    setStatus({ state: "loading" });
-    try {
-      const r = await ping();
-      setStatus({ state: "ok", balanceCents: r.balanceCents, withheldCents: r.withheldCents });
-    } catch (e) {
-      setStatus({ state: "error", message: e instanceof Error ? e.message : "Erro" });
-    }
-  }
-
-  useEffect(() => {
-    refresh();
-  }, []);
 
   const totalSku = PRODUCTS.length;
   const catalogValue = PRODUCTS.reduce((a, p) => a + p.priceCents, 0);
@@ -164,35 +143,23 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
         <section className="mt-8 grid gap-4 md:grid-cols-3">
           <div className="rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--graphite)] p-6 text-[color:var(--bone)]">
-            <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-widest text-[color:var(--bone)]/60">
-              Gateway Hypercash
-              <button
-                onClick={refresh}
-                aria-label="Atualizar saldo"
-                className="rounded-sm border border-[color:var(--bone)]/20 p-1.5 hover:bg-[color:var(--bone)]/10"
-              >
-                <RefreshCcw className="h-3.5 w-3.5" />
-              </button>
+            <div className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--bone)]/60">
+              Gateway Zedy
             </div>
-            {status.state === "loading" && (
-              <div className="mt-4 font-mono text-sm text-[color:var(--bone)]/60">Verificando…</div>
-            )}
-            {status.state === "error" && (
-              <div className="mt-4 flex items-center gap-2 font-mono text-xs text-[color:var(--terracotta)]">
-                <CircleAlert className="h-4 w-4" /> {status.message}
-              </div>
-            )}
-            {status.state === "ok" && (
-              <>
-                <div className="mt-4 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-[color:var(--sage)]">
-                  <ShieldCheck className="h-4 w-4" /> Conectado
-                </div>
-                <div className="mt-3 font-display text-4xl">{formatBRL(status.balanceCents)}</div>
-                <div className="mt-1 font-mono text-[11px] uppercase tracking-widest text-[color:var(--bone)]/50">
-                  Retido: {formatBRL(status.withheldCents)}
-                </div>
-              </>
-            )}
+            <div className="mt-4 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-[color:var(--sage)]">
+              <ShieldCheck className="h-4 w-4" /> Checkout hospedado
+            </div>
+            <p className="mt-3 font-mono text-[11px] leading-relaxed text-[color:var(--bone)]/60">
+              Todo /checkout e /mercadopromo redirecionam pra sessão da Zedy. Pixels de Purchase são disparados dentro da Zedy.
+            </p>
+            <a
+              href="https://app.zedy.com.br/admin"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="mt-4 inline-flex items-center gap-2 rounded-sm border border-[color:var(--bone)]/20 px-3 py-2 font-mono text-[11px] uppercase tracking-widest hover:bg-[color:var(--bone)]/10"
+            >
+              <ExternalLink className="h-3.5 w-3.5" /> Abrir painel Zedy
+            </a>
           </div>
 
           <div className="rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--bone)] p-6">
@@ -206,9 +173,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           <div className="rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--bone)] p-6">
             <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">Pixels</div>
             <div className="mt-4 space-y-1 font-mono text-xs">
-              <div>Meta Pixel: <span className="text-muted-foreground">defina VITE_META_PIXEL_ID</span></div>
-              <div>GA4: <span className="text-muted-foreground">TODO</span></div>
-              <div>TikTok: <span className="text-muted-foreground">TODO</span></div>
+              <div>Meta Pixel: <span className="text-muted-foreground">ativo no site (ViewContent / AddToCart / InitiateCheckout)</span></div>
+              <div>Purchase: <span className="text-muted-foreground">configurar dentro da Zedy</span></div>
             </div>
           </div>
         </section>
@@ -240,10 +206,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         </section>
 
         <p className="mt-8 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          Credenciais Hypercash e admin ficam no cofre de secrets do servidor.
+          Credenciais Zedy e admin ficam no cofre de secrets do servidor.
           Nunca aparecem no bundle do navegador.
         </p>
       </main>
     </div>
   );
 }
+
