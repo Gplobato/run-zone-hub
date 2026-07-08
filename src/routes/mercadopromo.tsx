@@ -136,6 +136,74 @@ const MAIN_PRODUCT: Product = {
     },
   ],
   sizes: ["P", "M", "G", "GG", "EXG"],
+  description: {
+    heading: "Jaqueta Feminina Couro Sintético Forrada Luxo Rock",
+    intro: [
+      "Você já olhou pro seu guarda-roupa e sentiu que faltava aquela peça que transforma qualquer look? Aquela que você coloca e já sai de casa diferente — com mais atitude, mais presença, mais você.",
+      "A maioria das jaquetas ou custa caro demais, ou chega e decepciona: material fino, sem forro, sem caimento. Você compra animada e na hora de usar... não é bem o que esperava.",
+      "E o pior? Aquela sensação de que seu look está apagado enquanto outras mulheres chegam em algum lugar e param o ambiente só pela peça que escolheram usar. Você merece se sentir assim. Toda vez que sair.",
+      'A gente entende essa frustração — e foi exatamente por isso que essa jaqueta foi desenvolvida. Com mais de 5 estrelas em dezenas de avaliações reais e clientes que afirmam "parece que paguei o triplo em loja cara — ninguém acreditou que comprei no Mercado Livre", ela entrega o que promete: estilo de boutique com preço acessível.',
+    ],
+    steps: [
+      "Escolha seu tamanho pela tabela de medidas (dica: se quiser um caimento mais folgado, suba um número)",
+      "Receba em casa com frete rápido e compra 100% protegida",
+      "Vista e sinta a diferença — no espelho e nos elogios que vão chegar",
+    ],
+    benefits: [
+      {
+        title: "Material sintético macio e resistente",
+        result: "Aparência de couro legítimo sem pagar por isso",
+        feeling: "Você parece ter gastado muito mais do que gastou",
+      },
+      {
+        title: "Forro interno completo",
+        result: "Conforto real por dentro, estilo real por fora",
+        feeling: "Sem aquela sensação de peça barata que incomoda na pele",
+      },
+      {
+        title: "Modelagem ajustada que valoriza o corpo",
+        result: "Caimento feminino que abraça na medida certa",
+        feeling: "Você se sente poderosa desde o momento em que veste",
+      },
+      {
+        title: "Detalhes de costura nas mangas estilo moto",
+        result: "Design urbano com personalidade",
+        feeling: 'A jaqueta que as pessoas perguntam "onde você comprou?"',
+      },
+      {
+        title: "Zíper frontal + bolsos laterais funcionais",
+        result: "Praticidade sem abrir mão do estilo",
+        feeling: "Sai para qualquer programa sem precisar trocar de roupa",
+      },
+      {
+        title: "Peça atemporal — combina com tudo",
+        result: "Jeans, vestido, saia, legging",
+        feeling: "Um investimento que você vai usar por anos, não por uma temporada",
+      },
+    ],
+    quotes: [
+      "Linda, adorei — parece que paguei o triplo em loja cara. Ninguém acreditou que comprei no Mercado Livre.",
+      "Minha esposa adorou. Caimento perfeito e tamanho preciso com a numeração. A qualidade do material também é muito boa.",
+      "Muito incrível essa jaqueta — confortável e de ótima qualidade.",
+    ],
+    specs: [
+      "Material: Couro sintético (PU) — macio, resistente e fácil de limpar",
+      "Forro: Interno completo — conforto e acabamento premium",
+      "Fechamento: Zíper frontal",
+      "Detalhes: Costura decorativa nas mangas + bolsos laterais com zíper",
+      "Gola: Padre (sem lapela) — estilo moto/rock feminino",
+      "Cores disponíveis: Preto",
+      "Tamanhos: P ao GG (consulte a tabela de medidas na publicação)",
+      "Cuidados: Lavar à mão ou a seco — não torcer",
+    ],
+    tip: "Se você tem estatura acima de 1,70m ou prefere manga no comprimento exato, considere subir um tamanho. Se é mais baixinha e quer caimento justo, siga a tabela normalmente.",
+    closing: [
+      "Compra 100% protegida pelo Mercado Livre. Não ficou do jeito que esperava? A política de devolução garante sua tranquilidade — você não corre risco nenhum.",
+      "Compre com a confiança de quem já viu centenas de mulheres satisfeitas com essa mesma escolha.",
+      "Adicione ao carrinho agora e receba a jaqueta que vai transformar seu guarda-roupa — e a forma como você se sente ao sair de casa. Seu estilo está esperando por essa peça.",
+    ],
+    warranty: "30 dias",
+  },
 };
 
 const BOOT_PRODUCT: Product = {
