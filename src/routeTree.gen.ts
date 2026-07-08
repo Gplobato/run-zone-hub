@@ -16,7 +16,6 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
-import { Route as ApiPublicWebhooksHypercashRouteImport } from './routes/api/public/webhooks/hypercash'
 
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
@@ -53,12 +52,6 @@ const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   path: '/categoria/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicWebhooksHypercashRoute =
-  ApiPublicWebhooksHypercashRouteImport.update({
-    id: '/api/public/webhooks/hypercash',
-    path: '/api/public/webhooks/hypercash',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,7 +61,6 @@ export interface FileRoutesByFullPath {
   '/produtos': typeof ProdutosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
-  '/api/public/webhooks/hypercash': typeof ApiPublicWebhooksHypercashRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,7 +70,6 @@ export interface FileRoutesByTo {
   '/produtos': typeof ProdutosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
-  '/api/public/webhooks/hypercash': typeof ApiPublicWebhooksHypercashRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,7 +80,6 @@ export interface FileRoutesById {
   '/produtos': typeof ProdutosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
-  '/api/public/webhooks/hypercash': typeof ApiPublicWebhooksHypercashRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,7 +91,6 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/categoria/$slug'
     | '/produto/$slug'
-    | '/api/public/webhooks/hypercash'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,7 +100,6 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/categoria/$slug'
     | '/produto/$slug'
-    | '/api/public/webhooks/hypercash'
   id:
     | '__root__'
     | '/'
@@ -121,7 +109,6 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/categoria/$slug'
     | '/produto/$slug'
-    | '/api/public/webhooks/hypercash'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,7 +119,6 @@ export interface RootRouteChildren {
   ProdutosRoute: typeof ProdutosRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   ProdutoSlugRoute: typeof ProdutoSlugRoute
-  ApiPublicWebhooksHypercashRoute: typeof ApiPublicWebhooksHypercashRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -186,13 +172,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/webhooks/hypercash': {
-      id: '/api/public/webhooks/hypercash'
-      path: '/api/public/webhooks/hypercash'
-      fullPath: '/api/public/webhooks/hypercash'
-      preLoaderRoute: typeof ApiPublicWebhooksHypercashRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -204,7 +183,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProdutosRoute: ProdutosRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   ProdutoSlugRoute: ProdutoSlugRoute,
-  ApiPublicWebhooksHypercashRoute: ApiPublicWebhooksHypercashRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
