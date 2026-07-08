@@ -714,7 +714,7 @@ function MercadoPromoPage() {
                   <div className="mb-1 flex items-center gap-1 text-[14px]">
                     <span className="text-[#333]">{r.name}</span>
                     {r.verified && (
-                      <span className="text-[12px] text-[#00a650]">âœ“ Verificado</span>
+                      <span className="text-[12px] text-[#00a650]">✓ Verificado</span>
                     )}
                   </div>
                   <div className="mb-2 flex">
