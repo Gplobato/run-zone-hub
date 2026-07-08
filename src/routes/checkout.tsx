@@ -479,7 +479,7 @@ function Checkout() {
                         onClick={() => setShippingMethod("sedex")}
                         icon={<Zap className="h-5 w-5 text-[color:var(--terracotta)]" />}
                         title="SEDEX"
-                        subtitle="Entrega em 1 a 3 dias úteis"
+                        subtitle="Chega amanhã · 1ª compra"
                         badge="Recomendado"
                         strikePrice="R$ 39,90"
                         price="Grátis"
@@ -489,7 +489,7 @@ function Checkout() {
                         onClick={() => setShippingMethod("pac")}
                         icon={<Package className="h-5 w-5 text-[color:var(--sage)]" />}
                         title="PAC"
-                        subtitle="Entrega em 3 a 7 dias úteis"
+                        subtitle="Chega amanhã · 1ª compra"
                         strikePrice="R$ 19,90"
                         price="Grátis"
                       />
@@ -587,7 +587,7 @@ function Checkout() {
                   🎉 Frete SEDEX grátis desbloqueado
                 </div>
                 <p className="mt-1 font-mono text-[11px] leading-relaxed text-muted-foreground">
-                  Você ganhou envio gratuito via SEDEX — promoção 1 compra por CPF, entrega em 3–7 dias úteis para todo o Brasil.
+                  Você ganhou envio gratuito via SEDEX — promoção 1 compra por CPF, chega amanhã por ser sua primeira compra.
                 </p>
               </div>
             </div>
