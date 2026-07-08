@@ -1873,9 +1873,13 @@ function MLHeader() {
 }
 
 // ---------------- Related product cards ----------------
-function RelatedCard(p: RelatedProduct) {
+function RelatedCard(p: RelatedProduct & { onSelect: () => void }) {
   return (
-    <div className="flex flex-col overflow-hidden rounded border border-[#eee] bg-white p-3">
+    <button
+      type="button"
+      onClick={p.onSelect}
+      className="flex flex-col overflow-hidden rounded border border-[#eee] bg-white p-3 text-left transition hover:border-[#3483fa] hover:shadow-sm"
+    >
       <div className="aspect-square overflow-hidden rounded">
         <img src={p.img} alt={p.title} loading="lazy" className="h-full w-full object-cover" />
       </div>
@@ -1891,9 +1895,10 @@ function RelatedCard(p: RelatedProduct) {
       <div className="mt-2 text-[18px] text-[#333]">{formatBRL(p.priceCents)}</div>
       <div className="text-[12px] text-[#00a650]">{p.installments}</div>
       {p.freeShip && <div className="mt-1 text-[12px] font-semibold text-[#00a650]">Frete grátis</div>}
-    </div>
+    </button>
   );
 }
+
 
 function SizeGuideModal({ onClose }: { onClose: () => void }) {
   useEffect(() => {
