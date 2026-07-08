@@ -542,6 +542,17 @@ const RELATED = [
     installments: "até 10x sem juros",
     freeShip: true,
   },
+  {
+    productIdx: 4,
+    img: jaqmascMarrom1,
+    gallery: [jaqmascMarrom1, jaqmascMarrom2, jaqmascBege, jaqmascCinza, jaqmascPreto],
+    title: JAQMASC_PRODUCT.title,
+    description:
+      "Jaqueta térmica masculina com acabamento suede, forro peluciado ultra macio, ombros acolchoados e gola padre com botão. Estilo robusto e conforto absoluto pro inverno.",
+    priceCents: JAQMASC_PRODUCT.price,
+    installments: "até 6x sem juros",
+    freeShip: true,
+  },
 ];
 
 type RelatedProduct = (typeof RELATED)[number];
