@@ -48,6 +48,8 @@ import review3 from "@/assets/mercadopromo/review-3.jpg";
 import garmin1 from "@/assets/mercadopromo/garmin-1.jpg";
 import garmin2 from "@/assets/mercadopromo/garmin-2.jpg";
 import garmin3 from "@/assets/mercadopromo/garmin-3.jpg";
+import garminBlack from "@/assets/mercadopromo/garmin-product-black.jpg";
+import garminWhite from "@/assets/mercadopromo/garmin-product-white.jpg";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
@@ -279,15 +281,31 @@ const GARMIN_PRODUCT: Product = {
     {
       key: "preto",
       label: "Preto",
-      thumb: garmin3,
+      thumb: garminBlack,
       gallery: [
-        { src: garmin3, kind: "image" },
-        { src: garmin1, kind: "image" },
-        { src: garmin2, kind: "image" },
+        { src: garminBlack, kind: "image" },
+        { src: garminWhite, kind: "image" },
+      ],
+    },
+    {
+      key: "branco",
+      label: "Branco",
+      thumb: garminWhite,
+      gallery: [
+        { src: garminWhite, kind: "image" },
+        { src: garminBlack, kind: "image" },
       ],
     },
   ],
   sizes: ["Único"],
+};
+
+// Slug -> índice em PRODUCTS. Usado para URLs de anúncio: /mercadopromo?p=<slug>
+const PRODUCT_SLUGS: Record<string, number> = {
+  jaqueta: 0,
+  bota: 1,
+  calca: 2,
+  garmin: 3,
 };
 
 const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT];
@@ -341,8 +359,8 @@ const RELATED = [
   },
   {
     productIdx: 3,
-    img: garmin3,
-    gallery: [garmin3, garmin1, garmin2],
+    img: garminBlack,
+    gallery: [garminBlack, garminWhite],
     title: GARMIN_PRODUCT.title,
     description:
       "Relógio esportivo com GPS integrado, monitor cardíaco no pulso, VO₂ máx., sugestões diárias de treino e bateria de até 2 semanas. Ideal para corrida e triatlo.",
@@ -487,6 +505,9 @@ type CardForm = {
 };
 
 export const Route = createFileRoute("/mercadopromo")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    p: typeof search.p === "string" ? search.p : undefined,
+  }),
   head: () => ({
     meta: [
       { title: `${MAIN_PRODUCT.title} | Mercado Livre` },
@@ -507,7 +528,9 @@ export const Route = createFileRoute("/mercadopromo")({
 });
 
 function MercadoPromoPage() {
-  const [activeIdx, setActiveIdx] = useState(0);
+  const { p } = Route.useSearch();
+  const initialIdx = p && PRODUCT_SLUGS[p] !== undefined ? PRODUCT_SLUGS[p] : 0;
+  const [activeIdx, setActiveIdx] = useState(initialIdx);
   const PRODUCT = PRODUCTS[activeIdx];
   const COLORS = PRODUCT.colors;
   const SIZES = PRODUCT.sizes;
