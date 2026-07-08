@@ -608,6 +608,17 @@ const RELATED = [
     installments: "até 6x sem juros",
     freeShip: true,
   },
+  {
+    productIdx: 5,
+    img: softMarrom,
+    gallery: [softMarrom, softRosa, softAmarelo, softAzul, softBranco, softMarromClaro],
+    title: SOFT_PRODUCT.title,
+    description:
+      "Conjunto homewear em soft teddy peluciado premium, blusa com capuz e bolso canguru + calça com cós elástico. Toque aveludado que não pinica, quentinho e confortável.",
+    priceCents: SOFT_PRODUCT.price,
+    installments: "até 12x sem juros",
+    freeShip: true,
+  },
 ];
 
 type RelatedProduct = (typeof RELATED)[number];
@@ -716,6 +727,7 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [PANTS_PRODUCT.id]: JAQUETA_REVIEWS,
   [GARMIN_PRODUCT.id]: GARMIN_REVIEWS,
   [JAQMASC_PRODUCT.id]: JAQMASC_REVIEWS,
+  [SOFT_PRODUCT.id]: JAQUETA_REVIEWS,
 };
 
 function formatBRL(cents: number) {
