@@ -45,6 +45,9 @@ import pants3 from "@/assets/mercadopromo/pants-3.jpg";
 import review1 from "@/assets/mercadopromo/review-1.jpg";
 import review2 from "@/assets/mercadopromo/review-2.jpg";
 import review3 from "@/assets/mercadopromo/review-3.jpg";
+import garmin1 from "@/assets/mercadopromo/garmin-1.jpg";
+import garmin2 from "@/assets/mercadopromo/garmin-2.jpg";
+import garmin3 from "@/assets/mercadopromo/garmin-3.jpg";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
@@ -260,7 +263,34 @@ const PANTS_PRODUCT: Product = {
   sizes: ["P", "M", "G", "GG"],
 };
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT];
+const GARMIN_PRODUCT: Product = {
+  id: "mercadopromo-garmin-forerunner-55",
+  title: "Relógio Garmin Forerunner 55 GPS Monitor Cardíaco Corrida",
+  brand: "GARMIN",
+  seller: "Skhati Wear",
+  sold: "+150 vendidos",
+  rating: 4.9,
+  reviewsCount: 3,
+  price: 7990,
+  compareAt: null,
+  installments: { count: 10, valueCents: 799 },
+  categoryTrail: ["Esportes e Fitness", "Corrida", "Relógios GPS"],
+  colors: [
+    {
+      key: "preto",
+      label: "Preto",
+      thumb: garmin3,
+      gallery: [
+        { src: garmin3, kind: "image" },
+        { src: garmin1, kind: "image" },
+        { src: garmin2, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["Único"],
+};
+
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT];
 
 const SIZE_GUIDE = [
   { label: "P", equivalent: "P", chest: 88, height: 55, shoulders: 37 },
