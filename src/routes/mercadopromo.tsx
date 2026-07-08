@@ -964,8 +964,6 @@ function MercadoCheckout({
         quantity,
       },
     ],
-      },
-    ],
     shippingFeeCents: shippingCents,
     customer: {
       name: form.name.trim(),
