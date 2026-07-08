@@ -214,5 +214,3 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   );
 }
 
-// (unused import guard)
-void CircleAlert;
