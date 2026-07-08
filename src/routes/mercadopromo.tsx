@@ -628,11 +628,39 @@ const GARMIN_REVIEWS: Review[] = [
   },
 ];
 
+const JAQMASC_REVIEWS: Review[] = [
+  {
+    name: "marcos.a",
+    verified: true,
+    rating: 5,
+    text: "Chegou rápido, embalada certinho. O suede parece muito mais caro do que custou e o forro peluciado é absurdo de quente. Comprei o marrom no G e caiu perfeito.",
+    when: "há 3 semanas",
+    photo: jaqmascReview1,
+  },
+  {
+    name: "rafael.c",
+    verified: true,
+    rating: 5,
+    text: "Uso praticamente todo dia desde que chegou. Costura reforçada, zíper firme, gola com botão bloqueia o vento. Já pedi a segunda na cor preta.",
+    when: "há 1 mês",
+    photo: jaqmascReview2,
+  },
+  {
+    name: "vinicius.p",
+    verified: true,
+    rating: 5,
+    text: "Nota 10. Combina com jeans, moletom, calça social. Bolso interno é ótimo pro celular. Recomendo demais pelo preço.",
+    when: "há 2 meses",
+    photo: jaqmascReview3,
+  },
+];
+
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
   [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
   [PANTS_PRODUCT.id]: JAQUETA_REVIEWS,
   [GARMIN_PRODUCT.id]: GARMIN_REVIEWS,
+  [JAQMASC_PRODUCT.id]: JAQMASC_REVIEWS,
 };
 
 function formatBRL(cents: number) {
