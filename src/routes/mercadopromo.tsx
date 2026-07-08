@@ -505,6 +505,9 @@ type CardForm = {
 };
 
 export const Route = createFileRoute("/mercadopromo")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    p: typeof search.p === "string" ? search.p : undefined,
+  }),
   head: () => ({
     meta: [
       { title: `${MAIN_PRODUCT.title} | Mercado Livre` },
@@ -525,7 +528,9 @@ export const Route = createFileRoute("/mercadopromo")({
 });
 
 function MercadoPromoPage() {
-  const [activeIdx, setActiveIdx] = useState(0);
+  const { p } = Route.useSearch();
+  const initialIdx = p && PRODUCT_SLUGS[p] !== undefined ? PRODUCT_SLUGS[p] : 0;
+  const [activeIdx, setActiveIdx] = useState(initialIdx);
   const PRODUCT = PRODUCTS[activeIdx];
   const COLORS = PRODUCT.colors;
   const SIZES = PRODUCT.sizes;
