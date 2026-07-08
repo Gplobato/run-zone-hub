@@ -36,12 +36,12 @@ import payVisa from "@/assets/mercadopromo/pay-visa.png";
 import payMastercard from "@/assets/mercadopromo/pay-mastercard.png";
 import payPix from "@/assets/mercadopromo/pay-pix.png";
 import jacketMarromVideo from "@/assets/mercadopromo/jaqueta-marrom-video.mp4";
-import boots1 from "@/assets/mercadopromo/boots-1.png";
-import boots2 from "@/assets/mercadopromo/boots-2.png";
-import boots3 from "@/assets/mercadopromo/boots-3.png";
-import pants1 from "@/assets/mercadopromo/pants-1.png";
-import pants2 from "@/assets/mercadopromo/pants-2.png";
-import pants3 from "@/assets/mercadopromo/pants-3.png";
+import boots1 from "@/assets/mercadopromo/boots-1.jpg";
+import boots2 from "@/assets/mercadopromo/boots-2.jpg";
+import boots3 from "@/assets/mercadopromo/boots-3.jpg";
+import pants1 from "@/assets/mercadopromo/pants-1.jpg";
+import pants2 from "@/assets/mercadopromo/pants-2.jpg";
+import pants3 from "@/assets/mercadopromo/pants-3.jpg";
 import review1 from "@/assets/mercadopromo/review-1.jpg";
 import review2 from "@/assets/mercadopromo/review-2.jpg";
 import review3 from "@/assets/mercadopromo/review-3.jpg";
@@ -1108,18 +1108,42 @@ function MercadoCheckout({
       setError("Não foi possível copiar automaticamente. Selecione o código Pix na tela.");
     }
   }
+  const promoStyle = (
+    <style>{`
+      .mercado-promo-page,
+      .mercado-promo-page h1,
+      .mercado-promo-page h2,
+      .mercado-promo-page h3 {
+        font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+        letter-spacing: 0 !important;
+        text-transform: none !important;
+      }
+    `}</style>
+  );
+
+  // Pix gerado → tela dedicada, sem sidebar/summary, só header ML + painel PIX
+  if (tx?.method === "PIX") {
+    return (
+      <div className="mercado-promo-page min-h-screen bg-white text-[#001133]">
+        {promoStyle}
+        <CheckoutHeader onBack={onBack} />
+        <main className="mx-auto w-full max-w-[640px] px-4 py-6 md:py-10">
+          <div className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm md:p-8">
+            <PixPaymentPanel
+              pixCode={pixCode}
+              pixImage={pixImage}
+              copied={copied}
+              onCopy={copyPix}
+            />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="mercado-promo-page min-h-screen bg-white text-[#001133]">
-      <style>{`
-        .mercado-promo-page,
-        .mercado-promo-page h1,
-        .mercado-promo-page h2,
-        .mercado-promo-page h3 {
-          font-family: "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
-          letter-spacing: 0 !important;
-          text-transform: none !important;
-        }
-      `}</style>
+      {promoStyle}
       <CheckoutHeader onBack={onBack} />
       <main className="mx-auto grid w-full max-w-[1040px] gap-4 px-3 py-4 md:grid-cols-[minmax(0,1fr)_340px] md:gap-6 md:px-4 md:py-6 lg:max-w-[1120px] lg:grid-cols-[338px_minmax(0,1fr)_340px]">
         <div className="md:hidden">
@@ -1325,14 +1349,7 @@ function MercadoCheckout({
           {step === 3 && (
             <div className="rounded-md border border-[#d9e0ea] bg-white p-6 shadow-sm">
               <StepTitle title="Pagamento" step="3 de 3" subtitle="Todas as transações são seguras e criptografadas." />
-              {tx?.method === "PIX" ? (
-                <PixPaymentPanel
-                  pixCode={pixCode}
-                  pixImage={pixImage}
-                  copied={copied}
-                  onCopy={copyPix}
-                />
-              ) : tx?.method === "CREDIT_CARD" ? (
+              {tx?.method === "CREDIT_CARD" ? (
                 <CardApprovedPanel status={tx.status} totalCents={totalCents} installments={card.installments} />
               ) : (
                 <div className="mt-6 space-y-5">
