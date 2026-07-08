@@ -958,10 +958,12 @@ function MercadoCheckout({
   const baseTransactionData = {
     items: [
       {
-        slug: "mercadopromo-jaqueta-courino",
+        slug: PRODUCT.id,
         title: itemTitle,
         unitPriceCents: PRODUCT.price,
         quantity,
+      },
+    ],
       },
     ],
     shippingFeeCents: shippingCents,
