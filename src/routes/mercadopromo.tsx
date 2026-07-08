@@ -77,6 +77,17 @@ type Product = {
     gallery: GalleryMedia[];
   }[];
   sizes: string[];
+  description?: {
+    heading: string;
+    intro: string[];
+    steps: string[];
+    benefits: { title: string; result: string; feeling: string }[];
+    quotes: string[];
+    specs: string[];
+    tip: string;
+    closing: string[];
+    warranty: string;
+  };
 };
 
 const MAIN_PRODUCT: Product = {
@@ -125,6 +136,74 @@ const MAIN_PRODUCT: Product = {
     },
   ],
   sizes: ["P", "M", "G", "GG", "EXG"],
+  description: {
+    heading: "Jaqueta Feminina Couro Sintético Forrada Luxo Rock",
+    intro: [
+      "Você já olhou pro seu guarda-roupa e sentiu que faltava aquela peça que transforma qualquer look? Aquela que você coloca e já sai de casa diferente — com mais atitude, mais presença, mais você.",
+      "A maioria das jaquetas ou custa caro demais, ou chega e decepciona: material fino, sem forro, sem caimento. Você compra animada e na hora de usar... não é bem o que esperava.",
+      "E o pior? Aquela sensação de que seu look está apagado enquanto outras mulheres chegam em algum lugar e param o ambiente só pela peça que escolheram usar. Você merece se sentir assim. Toda vez que sair.",
+      'A gente entende essa frustração — e foi exatamente por isso que essa jaqueta foi desenvolvida. Com mais de 5 estrelas em dezenas de avaliações reais e clientes que afirmam "parece que paguei o triplo em loja cara — ninguém acreditou que comprei no Mercado Livre", ela entrega o que promete: estilo de boutique com preço acessível.',
+    ],
+    steps: [
+      "Escolha seu tamanho pela tabela de medidas (dica: se quiser um caimento mais folgado, suba um número)",
+      "Receba em casa com frete rápido e compra 100% protegida",
+      "Vista e sinta a diferença — no espelho e nos elogios que vão chegar",
+    ],
+    benefits: [
+      {
+        title: "Material sintético macio e resistente",
+        result: "Aparência de couro legítimo sem pagar por isso",
+        feeling: "Você parece ter gastado muito mais do que gastou",
+      },
+      {
+        title: "Forro interno completo",
+        result: "Conforto real por dentro, estilo real por fora",
+        feeling: "Sem aquela sensação de peça barata que incomoda na pele",
+      },
+      {
+        title: "Modelagem ajustada que valoriza o corpo",
+        result: "Caimento feminino que abraça na medida certa",
+        feeling: "Você se sente poderosa desde o momento em que veste",
+      },
+      {
+        title: "Detalhes de costura nas mangas estilo moto",
+        result: "Design urbano com personalidade",
+        feeling: 'A jaqueta que as pessoas perguntam "onde você comprou?"',
+      },
+      {
+        title: "Zíper frontal + bolsos laterais funcionais",
+        result: "Praticidade sem abrir mão do estilo",
+        feeling: "Sai para qualquer programa sem precisar trocar de roupa",
+      },
+      {
+        title: "Peça atemporal — combina com tudo",
+        result: "Jeans, vestido, saia, legging",
+        feeling: "Um investimento que você vai usar por anos, não por uma temporada",
+      },
+    ],
+    quotes: [
+      "Linda, adorei — parece que paguei o triplo em loja cara. Ninguém acreditou que comprei no Mercado Livre.",
+      "Minha esposa adorou. Caimento perfeito e tamanho preciso com a numeração. A qualidade do material também é muito boa.",
+      "Muito incrível essa jaqueta — confortável e de ótima qualidade.",
+    ],
+    specs: [
+      "Material: Couro sintético (PU) — macio, resistente e fácil de limpar",
+      "Forro: Interno completo — conforto e acabamento premium",
+      "Fechamento: Zíper frontal",
+      "Detalhes: Costura decorativa nas mangas + bolsos laterais com zíper",
+      "Gola: Padre (sem lapela) — estilo moto/rock feminino",
+      "Cores disponíveis: Preto",
+      "Tamanhos: P ao GG (consulte a tabela de medidas na publicação)",
+      "Cuidados: Lavar à mão ou a seco — não torcer",
+    ],
+    tip: "Se você tem estatura acima de 1,70m ou prefere manga no comprimento exato, considere subir um tamanho. Se é mais baixinha e quer caimento justo, siga a tabela normalmente.",
+    closing: [
+      "Compra 100% protegida pelo Mercado Livre. Não ficou do jeito que esperava? A política de devolução garante sua tranquilidade — você não corre risco nenhum.",
+      "Compre com a confiança de quem já viu centenas de mulheres satisfeitas com essa mesma escolha.",
+      "Adicione ao carrinho agora e receba a jaqueta que vai transformar seu guarda-roupa — e a forma como você se sente ao sair de casa. Seu estilo está esperando por essa peça.",
+    ],
+    warranty: "30 dias",
+  },
 };
 
 const BOOT_PRODUCT: Product = {
@@ -777,6 +856,8 @@ function MercadoPromoPage() {
             <PaymentMethodsCard />
           </div>
         </div>
+
+        {PRODUCT.description && <ProductDescription d={PRODUCT.description} />}
 
         {/* Opiniões */}
         <div className="border-t border-[#eee] p-4 md:p-6">
@@ -1886,6 +1967,93 @@ function MLHeader() {
         </div>
       </div>
     </header>
+  );
+}
+
+// ---------------- Product description ----------------
+function ProductDescription({
+  d,
+}: {
+  d: NonNullable<Product["description"]>;
+}) {
+  return (
+    <section className="border-t border-[#eee] p-4 md:p-6">
+      <h2 className="mb-4 text-[22px] font-semibold text-[#333]">Descrição</h2>
+      <div className="max-w-[820px] space-y-4 text-[15px] leading-relaxed text-[#333]">
+        <h3 className="text-[18px] font-semibold text-[#333]">{d.heading}</h3>
+        {d.intro.map((p) => (
+          <p key={p}>{p}</p>
+        ))}
+
+        <div className="pt-2">
+          <h4 className="mb-2 text-[16px] font-semibold text-[#333]">Como funciona:</h4>
+          <ol className="space-y-2">
+            {d.steps.map((step, i) => (
+              <li key={step} className="flex gap-2">
+                <span className="font-semibold text-[#3483fa]">Passo {i + 1} —</span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="pt-2">
+          <h4 className="mb-3 text-[16px] font-semibold text-[#333]">Benefícios transformacionais</h4>
+          <ol className="space-y-3">
+            {d.benefits.map((b, i) => (
+              <li key={b.title} className="rounded-md border border-[#eee] bg-[#fafafa] p-3">
+                <div className="text-[14px] font-semibold text-[#333]">
+                  {i + 1}. {b.title}
+                </div>
+                <div className="mt-1 text-[14px] text-[#555]">
+                  <span className="text-[#3483fa]">›› </span>
+                  {b.result}
+                </div>
+                <div className="mt-1 text-[14px] text-[#00a650]">
+                  <span>›› </span>
+                  {b.feeling}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="space-y-2 pt-2">
+          {d.quotes.map((q) => (
+            <blockquote
+              key={q}
+              className="border-l-4 border-[#3483fa] bg-[#f2f7ff] px-4 py-2 text-[14px] italic text-[#333]"
+            >
+              "{q}"
+            </blockquote>
+          ))}
+          <p className="text-[13px] text-[#666]">
+            Avaliação 5 estrelas pela maioria absoluta das compradoras · Qualidade comprovada por quem já recebeu.
+          </p>
+        </div>
+
+        <div className="pt-2">
+          <h4 className="mb-2 text-[16px] font-semibold text-[#333]">Especificações relevantes</h4>
+          <ul className="list-disc space-y-1 pl-5 text-[14px]">
+            {d.specs.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ul>
+        </div>
+
+        <p className="rounded-md bg-[#fff8e1] px-4 py-3 text-[14px] text-[#7a5a00]">
+          <b>Dica de tamanho:</b> {d.tip}
+        </p>
+
+        {d.closing.map((p) => (
+          <p key={p}>{p}</p>
+        ))}
+
+        <p className="pt-2 text-[13px] text-[#666]">
+          <b>Garantia do vendedor:</b> {d.warranty}
+        </p>
+      </div>
+    </section>
   );
 }
 
