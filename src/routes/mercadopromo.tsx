@@ -354,7 +354,16 @@ const RELATED = [
 
 type RelatedProduct = (typeof RELATED)[number];
 
-const REVIEWS = [
+type Review = {
+  name: string;
+  verified: boolean;
+  rating: number;
+  text: string;
+  when: string;
+  photo?: string;
+};
+
+const JAQUETA_REVIEWS: Review[] = [
   {
     name: "juliana.m",
     verified: true,
@@ -380,6 +389,40 @@ const REVIEWS = [
     photo: review3,
   },
 ];
+
+const GARMIN_REVIEWS: Review[] = [
+  {
+    name: "rafael.p",
+    verified: true,
+    rating: 5,
+    text: "Chegou rapidinho e lacrado na caixa. Peguei o preto — visor nítido, leve no pulso e o GPS pega em menos de 10 segundos. Já usei em 3 treinos de rua e não perdeu sinal em nenhum.",
+    when: "há 3 semanas",
+    photo: garmin3,
+  },
+  {
+    name: "camila.r",
+    verified: true,
+    rating: 5,
+    text: "Amei! Uso o dia inteiro, bateria dura tranquilamente mais de uma semana com treino diário. O monitor cardíaco bate certinho com meu cinta. Custo-benefício absurdo por esse preço.",
+    when: "há 1 mês",
+    photo: garmin1,
+  },
+  {
+    name: "diego.s",
+    verified: true,
+    rating: 5,
+    text: "Sincroniza direitinho com o Garmin Connect e manda pro Strava sem enrolação. Distância e ritmo bateram com meu antigo relógio na prova. Recomendo demais.",
+    when: "há 1 mês",
+    photo: garmin2,
+  },
+];
+
+const REVIEWS_BY_ID: Record<string, Review[]> = {
+  [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
+  [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
+  [PANTS_PRODUCT.id]: JAQUETA_REVIEWS,
+  [GARMIN_PRODUCT.id]: GARMIN_REVIEWS,
+};
 
 function formatBRL(cents: number) {
   return `R$ ${(cents / 100).toFixed(2).replace(".", ",")}`;
