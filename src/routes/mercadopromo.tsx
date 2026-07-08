@@ -978,18 +978,32 @@ function MercadoPromoPage() {
 
             <button
               onClick={onBuy}
-              className="mt-5 w-full rounded-md bg-[#3483fa] py-3 text-[16px] font-semibold text-white hover:bg-[#2968c8]"
+              disabled={checkoutLoading}
+              className="mt-5 w-full rounded-md bg-[#3483fa] py-3 text-[16px] font-semibold text-white hover:bg-[#2968c8] disabled:opacity-70"
             >
-              Comprar agora
+              {checkoutLoading ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Abrindo pagamento…
+                </span>
+              ) : (
+                "Comprar agora"
+              )}
             </button>
             <button
               onClick={onAddToCart}
-              className="mt-2 w-full rounded-md bg-[#e6f0ff] py-3 text-[16px] font-semibold text-[#3483fa] hover:bg-[#d5e4fc]"
+              disabled={checkoutLoading}
+              className="mt-2 w-full rounded-md bg-[#e6f0ff] py-3 text-[16px] font-semibold text-[#3483fa] hover:bg-[#d5e4fc] disabled:opacity-70"
             >
               <span className="inline-flex items-center gap-2">
                 <ShoppingCart className="h-4 w-4" /> Adicionar ao carrinho
               </span>
             </button>
+            {checkoutError && (
+              <div className="mt-2 flex items-start gap-2 rounded-sm bg-red-50 px-3 py-2 text-[12px] text-red-700">
+                <CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>{checkoutError}</span>
+              </div>
+            )}
 
             <div className="mt-5 border-t border-[#eee] pt-4 text-[14px]">
               <div>
