@@ -53,64 +53,135 @@ import review3 from "@/assets/mercadopromo/review-3.jpg";
 // pelo __root.tsx global.
 // -----------------------------------------------------------------------------
 
-const PRODUCT = {
+type GalleryMedia = {
+  src: string;
+  kind: "image" | "video";
+};
+
+type Product = {
+  id: string;
+  title: string;
+  brand: string;
+  seller: string;
+  sold: string;
+  rating: number;
+  reviewsCount: number;
+  price: number;
+  compareAt: number | null;
+  installments: { count: number; valueCents: number };
+  categoryTrail: string[];
+  colors: {
+    key: string;
+    label: string;
+    thumb: string;
+    gallery: GalleryMedia[];
+  }[];
+  sizes: string[];
+};
+
+const MAIN_PRODUCT: Product = {
+  id: "mercadopromo-jaqueta-courino",
   title: "Jaqueta Feminina Courino Slim Casaco Frio Zíper Motoqueiro",
   brand: "SKATHI",
   seller: "Skhati Wear",
   sold: "+800 vendidos",
   rating: 5.0,
   reviewsCount: 9,
-  price: 7990, // centavos
-  compareAt: null as number | null,
+  price: 7990,
+  compareAt: null,
   installments: { count: 6, valueCents: 1332 },
   categoryTrail: ["Calçados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
+  colors: [
+    {
+      key: "marrom",
+      label: "Marrom",
+      thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp",
+      gallery: [
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_662783-MLB111271156807_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_683019-MLB111271096821_052026-F.webp", kind: "image" },
+        { src: jacketMarromVideo, kind: "video" },
+      ],
+    },
+    {
+      key: "preto",
+      label: "Branco",
+      thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp",
+      gallery: [
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_698571-MLB111273241677_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_789158-MLB111273927385_052026-F.webp", kind: "image" },
+      ],
+    },
+    {
+      key: "bege",
+      label: "Preto",
+      thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp",
+      gallery: [
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_695488-MLB111273241551_052026-F.webp", kind: "image" },
+        { src: "https://http2.mlstatic.com/D_NQ_NP_2X_992725-MLB110339498342_052026-F.webp", kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["P", "M", "G", "GG", "EXG"],
 };
 
-type GalleryMedia = {
-  src: string;
-  kind: "image" | "video";
+const BOOT_PRODUCT: Product = {
+  id: "mercadopromo-bota-montaria",
+  title: "Montaria Feminina Cano Longo Coturno Cadarço Atrás",
+  brand: "SKATHI",
+  seller: "Skhati Wear",
+  sold: "+300 vendidos",
+  rating: 4.9,
+  reviewsCount: 12,
+  price: 4990,
+  compareAt: null,
+  installments: { count: 6, valueCents: 832 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Calçados", "Botas"],
+  colors: [
+    {
+      key: "preto",
+      label: "Preto",
+      thumb: boots1,
+      gallery: [
+        { src: boots1, kind: "image" },
+        { src: boots2, kind: "image" },
+        { src: boots3, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["34", "35", "36", "37", "38", "39"],
 };
 
-const COLORS: {
-  key: string;
-  label: string;
-  thumb: string;
-  gallery: GalleryMedia[];
-}[] = [
-  {
-    key: "marrom",
-    label: "Marrom",
-    thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp",
-    gallery: [
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_662783-MLB111271156807_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_683019-MLB111271096821_052026-F.webp", kind: "image" },
-      { src: jacketMarromVideo, kind: "video" },
-    ],
-  },
-  {
-    key: "preto",
-    label: "Branco",
-    thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp",
-    gallery: [
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_866958-MLB111273807557_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_698571-MLB111273241677_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_789158-MLB111273927385_052026-F.webp", kind: "image" },
-    ],
-  },
-  {
-    key: "bege",
-    label: "Preto",
-    thumb: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp",
-    gallery: [
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_958620-MLB110339498344_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_695488-MLB111273241551_052026-F.webp", kind: "image" },
-      { src: "https://http2.mlstatic.com/D_NQ_NP_2X_992725-MLB110339498342_052026-F.webp", kind: "image" },
-    ],
-  },
-];
+const PANTS_PRODUCT: Product = {
+  id: "mercadopromo-calca-hiperlipo",
+  title: "Calça Hiperlipo Modeladora Chapa Barriga Suplex e Poliam Leg",
+  brand: "SKATHI",
+  seller: "Skhati Wear",
+  sold: "+500 vendidos",
+  rating: 4.8,
+  reviewsCount: 21,
+  price: 5990,
+  compareAt: null,
+  installments: { count: 6, valueCents: 998 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Roupas", "Calças"],
+  colors: [
+    {
+      key: "preto",
+      label: "Preto",
+      thumb: pants1,
+      gallery: [
+        { src: pants1, kind: "image" },
+        { src: pants2, kind: "image" },
+        { src: pants3, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["P", "M", "G", "GG"],
+};
 
-const SIZES = ["P", "M", "G", "GG", "EXG"];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT];
 
 const SIZE_GUIDE = [
   { label: "P", equivalent: "P", chest: 88, height: 55, shoulders: 37 },
@@ -122,27 +193,12 @@ const SIZE_GUIDE = [
 
 const PAYMENT_METHODS = {
   credit: [
-    {
-      name: "American Express",
-      src: payAmex,
-    },
-    {
-      name: "Elo",
-      src: payElo,
-    },
-    {
-      name: "Visa",
-      src: payVisa,
-    },
-    {
-      name: "Mastercard",
-      src: payMastercard,
-    },
+    { name: "American Express", src: payAmex },
+    { name: "Elo", src: payElo },
+    { name: "Visa", src: payVisa },
+    { name: "Mastercard", src: payMastercard },
   ],
-  pix: {
-    name: "Pix",
-    src: payPix,
-  },
+  pix: { name: "Pix", src: payPix },
 };
 
 const SELLER = {
@@ -153,22 +209,24 @@ const SELLER = {
 
 const RELATED = [
   {
+    productIdx: 1,
     img: boots1,
     gallery: [boots1, boots2, boots3],
-    title: "Montaria Feminina Cano Longo Coturno Cadarço Atrás",
+    title: BOOT_PRODUCT.title,
     description:
       "Bota montaria de cano longo com acabamento liso, fechamento por cadarço atrás e sola firme para uso diário. Visual elegante para compor looks urbanos e de inverno.",
-    priceCents: 4990,
+    priceCents: BOOT_PRODUCT.price,
     installments: "até 6x sem juros",
     freeShip: true,
   },
   {
+    productIdx: 2,
     img: pants1,
     gallery: [pants1, pants2, pants3],
-    title: "Calça Hiperlipo Modeladora Chapa Barriga Suplex e Poliam Leg",
+    title: PANTS_PRODUCT.title,
     description:
       "Calça modeladora com cintura alta, tecido encorpado e elasticidade confortável, pensada para valorizar a silhueta com firmeza e conforto no uso diário.",
-    priceCents: 5990,
+    priceCents: PANTS_PRODUCT.price,
     installments: "até 6x sem juros",
     freeShip: true,
   },
@@ -268,28 +326,33 @@ type CardForm = {
 export const Route = createFileRoute("/mercadopromo")({
   head: () => ({
     meta: [
-      { title: `${PRODUCT.title} | Mercado Livre` },
+      { title: `${MAIN_PRODUCT.title} | Mercado Livre` },
       {
         name: "description",
         content:
           "Jaqueta feminina slim em courino com zíper estilo motoqueiro. Frete grátis, 6x sem juros e devolução grátis em até 30 dias.",
       },
-      { property: "og:title", content: PRODUCT.title },
+      { property: "og:title", content: MAIN_PRODUCT.title },
       {
         property: "og:description",
         content: "Frete grátis e 6x sem juros no Mercado Livre.",
       },
-      { property: "og:image", content: COLORS[0].gallery[0].src },
+      { property: "og:image", content: MAIN_PRODUCT.colors[0].gallery[0].src },
     ],
   }),
   component: MercadoPromoPage,
 });
 
 function MercadoPromoPage() {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const PRODUCT = PRODUCTS[activeIdx];
+  const COLORS = PRODUCT.colors;
+  const SIZES = PRODUCT.sizes;
+
   const [colorKey, setColorKey] = useState(COLORS[0].key);
   const color = useMemo(
     () => COLORS.find((c) => c.key === colorKey) ?? COLORS[0],
-    [colorKey],
+    [colorKey, COLORS],
   );
   const [activeImg, setActiveImg] = useState(color.gallery[0].src);
   const [size, setSize] = useState<string | null>(null);
@@ -303,19 +366,34 @@ function MercadoPromoPage() {
     setActiveImg(color.gallery[0].src);
   }, [color]);
 
+  // Reset selection when switching products via sub-tabs
+  useEffect(() => {
+    setColorKey(PRODUCTS[activeIdx].colors[0].key);
+    setSize(null);
+    setQty(1);
+  }, [activeIdx]);
+
+  // Pixel: ViewContent fires per active product
   useEffect(() => {
     fbqTrack("ViewContent", {
-      content_ids: ["mercadopromo-jaqueta-courino"],
+      content_ids: [PRODUCT.id],
       content_name: PRODUCT.title,
       content_type: "product",
       value: PRODUCT.price / 100,
       currency: "BRL",
     });
-  }, []);
+  }, [PRODUCT.id, PRODUCT.price, PRODUCT.title]);
+
+  const selectProduct = (idx: number) => {
+    if (idx === activeIdx) return;
+    setActiveIdx(idx);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const onBuy = () => {
     fbqTrack("InitiateCheckout", {
-      content_ids: ["mercadopromo-jaqueta-courino"],
+      content_ids: [PRODUCT.id],
+      content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
       num_items: qty,
@@ -327,12 +405,14 @@ function MercadoPromoPage() {
 
   const onAddToCart = () => {
     fbqTrack("AddToCart", {
-      content_ids: ["mercadopromo-jaqueta-courino"],
+      content_ids: [PRODUCT.id],
+      content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
     });
     fbqTrack("InitiateCheckout", {
-      content_ids: ["mercadopromo-jaqueta-courino"],
+      content_ids: [PRODUCT.id],
+      content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
       num_items: qty,
@@ -345,6 +425,7 @@ function MercadoPromoPage() {
   if (checkoutOpen) {
     return (
       <MercadoCheckout
+        product={PRODUCT}
         colorLabel={color.label}
         productImage={activeImg}
         quantity={qty}
@@ -396,18 +477,79 @@ function MercadoPromoPage() {
         </div>
       </div>
 
+      {/* Sub-tabs: navegação entre produtos dentro da mercadopromo */}
+      <div className="mx-auto max-w-[1200px] px-3 pt-3 md:px-4">
+        <div className="flex gap-2 overflow-x-auto border-b border-[#e6e6e6]">
+          {PRODUCTS.map((p, i) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => selectProduct(i)}
+              className={`whitespace-nowrap border-b-2 px-3 py-2 text-[13px] transition ${
+                activeIdx === i
+                  ? "border-[#3483fa] text-[#3483fa]"
+                  : "border-transparent text-[#666] hover:text-[#333]"
+              }`}
+            >
+              {p.title.split(" ").slice(0, 3).join(" ")}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Main card */}
       <div className="mx-auto max-w-[1200px] bg-white md:my-2 md:rounded-md md:shadow-sm">
         <div className="grid gap-4 p-3 md:grid-cols-[minmax(0,1fr)_320px] md:p-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)_320px]">
-          {/* Gallery */}
-          <div className="flex gap-3">
-            <div className="hidden w-14 flex-col gap-2 lg:flex">
+          {/* Gallery column (image + mobile thumbnails) */}
+          <div className="min-w-0">
+            <div className="flex gap-3">
+              <div className="hidden w-14 flex-col gap-2 lg:flex">
+                {color.gallery.map((media) => (
+                  <button
+                    key={media.src}
+                    onMouseEnter={() => setActiveImg(media.src)}
+                    onClick={() => setActiveImg(media.src)}
+                    className={`aspect-square overflow-hidden rounded border bg-white ${
+                      activeImg === media.src ? "border-[#3483fa]" : "border-[#e0e0e0]"
+                    }`}
+                  >
+                    {media.kind === "video" ? (
+                      <video src={media.src} muted playsInline className="h-full w-full object-cover" />
+                    ) : (
+                      <img src={media.src} alt="" className="h-full w-full object-cover" loading="lazy" />
+                    )}
+                  </button>
+                ))}
+              </div>
+              <div className="relative min-w-0 flex-1 overflow-hidden rounded bg-white">
+                {activeImg === jacketMarromVideo ? (
+                  <video
+                    src={activeImg}
+                    className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src={activeImg}
+                    alt={PRODUCT.title}
+                    className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
+                  />
+                )}
+                <button className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow hover:bg-white">
+                  <Heart className="h-5 w-5 text-[#3483fa]" />
+                </button>
+              </div>
+            </div>
+            {/* Mobile thumbnails row */}
+            <div className="mt-2 flex gap-2 overflow-x-auto lg:hidden">
               {color.gallery.map((media) => (
                 <button
                   key={media.src}
-                  onMouseEnter={() => setActiveImg(media.src)}
                   onClick={() => setActiveImg(media.src)}
-                  className={`aspect-square overflow-hidden rounded border bg-white ${
+                  className={`h-14 w-14 flex-shrink-0 overflow-hidden rounded border ${
                     activeImg === media.src ? "border-[#3483fa]" : "border-[#e0e0e0]"
                   }`}
                 >
@@ -419,48 +561,8 @@ function MercadoPromoPage() {
                 </button>
               ))}
             </div>
-            <div className="relative flex-1 overflow-hidden rounded bg-white">
-              {activeImg === jacketMarromVideo ? (
-                <video
-                  src={activeImg}
-                  className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                />
-              ) : (
-                <img
-                  src={activeImg}
-                  alt={PRODUCT.title}
-                  className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
-                />
-              )}
-              <button className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow hover:bg-white">
-                <Heart className="h-5 w-5 text-[#3483fa]" />
-              </button>
-            </div>
-            {/* Mobile strip */}
-            <div className="absolute" />
           </div>
-          {/* Mobile thumbnails row */}
-          <div className="-mt-2 flex gap-2 overflow-x-auto lg:hidden">
-            {color.gallery.map((media) => (
-              <button
-                key={media.src}
-                onClick={() => setActiveImg(media.src)}
-                className={`h-14 w-14 flex-shrink-0 overflow-hidden rounded border ${
-                  activeImg === media.src ? "border-[#3483fa]" : "border-[#e0e0e0]"
-                }`}
-              >
-                {media.kind === "video" ? (
-                  <video src={media.src} muted playsInline className="h-full w-full object-cover" />
-                ) : (
-                  <img src={media.src} alt="" className="h-full w-full object-cover" loading="lazy" />
-                )}
-              </button>
-            ))}
-          </div>
+
 
           {/* Info */}
           <div className="min-w-0">
@@ -662,7 +764,11 @@ function MercadoPromoPage() {
             </div>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
               {RELATED.map((p) => (
-                <RelatedCard key={p.title} {...p} />
+                <RelatedCard
+                  key={p.title}
+                  {...p}
+                  onSelect={() => selectProduct(p.productIdx)}
+                />
               ))}
             </div>
           </div>
@@ -760,18 +866,21 @@ function MercadoPromoPage() {
 }
 
 function MercadoCheckout({
+  product,
   colorLabel,
   productImage,
   quantity,
   selectedSize,
   onBack,
 }: {
+  product: Product;
   colorLabel: string;
   productImage: string;
   quantity: number;
   selectedSize: string | null;
   onBack: () => void;
 }) {
+  const PRODUCT = product;
   const createTx = useServerFn(createHypercashTransaction);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [summaryOpen, setSummaryOpen] = useState(false);
@@ -874,7 +983,7 @@ function MercadoCheckout({
   const baseTransactionData = {
     items: [
       {
-        slug: "mercadopromo-jaqueta-courino",
+        slug: PRODUCT.id,
         title: itemTitle,
         unitPriceCents: PRODUCT.price,
         quantity,
@@ -903,7 +1012,8 @@ function MercadoCheckout({
     setLoading(true);
     setError(null);
     fbqTrack("AddPaymentInfo", {
-      content_ids: ["mercadopromo-jaqueta-courino"],
+      content_ids: [PRODUCT.id],
+      content_name: PRODUCT.title,
       value: totalCents / 100,
       currency: "BRL",
       payment_method: "pix",
@@ -934,7 +1044,8 @@ function MercadoCheckout({
     setLoading(true);
     setError(null);
     fbqTrack("AddPaymentInfo", {
-      content_ids: ["mercadopromo-jaqueta-courino"],
+      content_ids: [PRODUCT.id],
+      content_name: PRODUCT.title,
       value: totalCents / 100,
       currency: "BRL",
       payment_method: "credit_card",
@@ -963,7 +1074,8 @@ function MercadoCheckout({
         method: "CREDIT_CARD",
       });
       fbqTrack("Purchase", {
-        content_ids: ["mercadopromo-jaqueta-courino"],
+        content_ids: [PRODUCT.id],
+        content_name: PRODUCT.title,
         value: totalCents / 100,
         currency: "BRL",
       });
@@ -1761,9 +1873,13 @@ function MLHeader() {
 }
 
 // ---------------- Related product cards ----------------
-function RelatedCard(p: RelatedProduct) {
+function RelatedCard(p: RelatedProduct & { onSelect: () => void }) {
   return (
-    <div className="flex flex-col overflow-hidden rounded border border-[#eee] bg-white p-3">
+    <button
+      type="button"
+      onClick={p.onSelect}
+      className="flex flex-col overflow-hidden rounded border border-[#eee] bg-white p-3 text-left transition hover:border-[#3483fa] hover:shadow-sm"
+    >
       <div className="aspect-square overflow-hidden rounded">
         <img src={p.img} alt={p.title} loading="lazy" className="h-full w-full object-cover" />
       </div>
@@ -1779,9 +1895,10 @@ function RelatedCard(p: RelatedProduct) {
       <div className="mt-2 text-[18px] text-[#333]">{formatBRL(p.priceCents)}</div>
       <div className="text-[12px] text-[#00a650]">{p.installments}</div>
       {p.freeShip && <div className="mt-1 text-[12px] font-semibold text-[#00a650]">Frete grátis</div>}
-    </div>
+    </button>
   );
 }
+
 
 function SizeGuideModal({ onClose }: { onClose: () => void }) {
   useEffect(() => {
