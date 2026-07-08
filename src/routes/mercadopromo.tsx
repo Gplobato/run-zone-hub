@@ -45,6 +45,9 @@ import pants3 from "@/assets/mercadopromo/pants-3.jpg";
 import review1 from "@/assets/mercadopromo/review-1.jpg";
 import review2 from "@/assets/mercadopromo/review-2.jpg";
 import review3 from "@/assets/mercadopromo/review-3.jpg";
+import garmin1 from "@/assets/mercadopromo/garmin-1.jpg";
+import garmin2 from "@/assets/mercadopromo/garmin-2.jpg";
+import garmin3 from "@/assets/mercadopromo/garmin-3.jpg";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
@@ -260,7 +263,34 @@ const PANTS_PRODUCT: Product = {
   sizes: ["P", "M", "G", "GG"],
 };
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT];
+const GARMIN_PRODUCT: Product = {
+  id: "mercadopromo-garmin-forerunner-55",
+  title: "Relógio Garmin Forerunner 55 GPS Monitor Cardíaco Corrida",
+  brand: "GARMIN",
+  seller: "Skhati Wear",
+  sold: "+150 vendidos",
+  rating: 4.9,
+  reviewsCount: 3,
+  price: 7990,
+  compareAt: null,
+  installments: { count: 10, valueCents: 799 },
+  categoryTrail: ["Esportes e Fitness", "Corrida", "Relógios GPS"],
+  colors: [
+    {
+      key: "preto",
+      label: "Preto",
+      thumb: garmin3,
+      gallery: [
+        { src: garmin3, kind: "image" },
+        { src: garmin1, kind: "image" },
+        { src: garmin2, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["Único"],
+};
+
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT];
 
 const SIZE_GUIDE = [
   { label: "P", equivalent: "P", chest: 88, height: 55, shoulders: 37 },
@@ -309,11 +339,31 @@ const RELATED = [
     installments: "até 6x sem juros",
     freeShip: true,
   },
+  {
+    productIdx: 3,
+    img: garmin3,
+    gallery: [garmin3, garmin1, garmin2],
+    title: GARMIN_PRODUCT.title,
+    description:
+      "Relógio esportivo com GPS integrado, monitor cardíaco no pulso, VO₂ máx., sugestões diárias de treino e bateria de até 2 semanas. Ideal para corrida e triatlo.",
+    priceCents: GARMIN_PRODUCT.price,
+    installments: "até 10x sem juros",
+    freeShip: true,
+  },
 ];
 
 type RelatedProduct = (typeof RELATED)[number];
 
-const REVIEWS = [
+type Review = {
+  name: string;
+  verified: boolean;
+  rating: number;
+  text: string;
+  when: string;
+  photo?: string;
+};
+
+const JAQUETA_REVIEWS: Review[] = [
   {
     name: "juliana.m",
     verified: true,
@@ -339,6 +389,40 @@ const REVIEWS = [
     photo: review3,
   },
 ];
+
+const GARMIN_REVIEWS: Review[] = [
+  {
+    name: "rafael.p",
+    verified: true,
+    rating: 5,
+    text: "Chegou rapidinho e lacrado na caixa. Peguei o preto — visor nítido, leve no pulso e o GPS pega em menos de 10 segundos. Já usei em 3 treinos de rua e não perdeu sinal em nenhum.",
+    when: "há 3 semanas",
+    photo: garmin3,
+  },
+  {
+    name: "camila.r",
+    verified: true,
+    rating: 5,
+    text: "Amei! Uso o dia inteiro, bateria dura tranquilamente mais de uma semana com treino diário. O monitor cardíaco bate certinho com meu cinta. Custo-benefício absurdo por esse preço.",
+    when: "há 1 mês",
+    photo: garmin1,
+  },
+  {
+    name: "diego.s",
+    verified: true,
+    rating: 5,
+    text: "Sincroniza direitinho com o Garmin Connect e manda pro Strava sem enrolação. Distância e ritmo bateram com meu antigo relógio na prova. Recomendo demais.",
+    when: "há 1 mês",
+    photo: garmin2,
+  },
+];
+
+const REVIEWS_BY_ID: Record<string, Review[]> = {
+  [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
+  [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
+  [PANTS_PRODUCT.id]: JAQUETA_REVIEWS,
+  [GARMIN_PRODUCT.id]: GARMIN_REVIEWS,
+};
 
 function formatBRL(cents: number) {
   return `R$ ${(cents / 100).toFixed(2).replace(".", ",")}`;
@@ -893,7 +977,7 @@ function MercadoPromoPage() {
               </div>
             </div>
             <div className="space-y-5">
-              {REVIEWS.map((r) => (
+              {(REVIEWS_BY_ID[PRODUCT.id] ?? JAQUETA_REVIEWS).map((r) => (
                 <div key={r.name} className="border-b border-[#eee] pb-4 last:border-0">
                   <div className="mb-1 flex items-center gap-2 text-[13px] text-[#666]">
                     <span>{r.when}</span>
@@ -919,7 +1003,7 @@ function MercadoPromoPage() {
                   {r.photo && (
                     <button
                       type="button"
-                      onClick={() => setZoomPhoto(r.photo)}
+                      onClick={() => r.photo && setZoomPhoto(r.photo)}
                       className="group relative inline-block overflow-hidden rounded border border-[#eee]"
                     >
                       <img
