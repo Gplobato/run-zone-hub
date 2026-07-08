@@ -1970,6 +1970,93 @@ function MLHeader() {
   );
 }
 
+// ---------------- Product description ----------------
+function ProductDescription({
+  d,
+}: {
+  d: NonNullable<Product["description"]>;
+}) {
+  return (
+    <section className="border-t border-[#eee] p-4 md:p-6">
+      <h2 className="mb-4 text-[22px] font-semibold text-[#333]">Descrição</h2>
+      <div className="max-w-[820px] space-y-4 text-[15px] leading-relaxed text-[#333]">
+        <h3 className="text-[18px] font-semibold text-[#333]">{d.heading}</h3>
+        {d.intro.map((p) => (
+          <p key={p}>{p}</p>
+        ))}
+
+        <div className="pt-2">
+          <h4 className="mb-2 text-[16px] font-semibold text-[#333]">Como funciona:</h4>
+          <ol className="space-y-2">
+            {d.steps.map((step, i) => (
+              <li key={step} className="flex gap-2">
+                <span className="font-semibold text-[#3483fa]">Passo {i + 1} —</span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="pt-2">
+          <h4 className="mb-3 text-[16px] font-semibold text-[#333]">Benefícios transformacionais</h4>
+          <ol className="space-y-3">
+            {d.benefits.map((b, i) => (
+              <li key={b.title} className="rounded-md border border-[#eee] bg-[#fafafa] p-3">
+                <div className="text-[14px] font-semibold text-[#333]">
+                  {i + 1}. {b.title}
+                </div>
+                <div className="mt-1 text-[14px] text-[#555]">
+                  <span className="text-[#3483fa]">›› </span>
+                  {b.result}
+                </div>
+                <div className="mt-1 text-[14px] text-[#00a650]">
+                  <span>›› </span>
+                  {b.feeling}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="space-y-2 pt-2">
+          {d.quotes.map((q) => (
+            <blockquote
+              key={q}
+              className="border-l-4 border-[#3483fa] bg-[#f2f7ff] px-4 py-2 text-[14px] italic text-[#333]"
+            >
+              "{q}"
+            </blockquote>
+          ))}
+          <p className="text-[13px] text-[#666]">
+            Avaliação 5 estrelas pela maioria absoluta das compradoras · Qualidade comprovada por quem já recebeu.
+          </p>
+        </div>
+
+        <div className="pt-2">
+          <h4 className="mb-2 text-[16px] font-semibold text-[#333]">Especificações relevantes</h4>
+          <ul className="list-disc space-y-1 pl-5 text-[14px]">
+            {d.specs.map((s) => (
+              <li key={s}>{s}</li>
+            ))}
+          </ul>
+        </div>
+
+        <p className="rounded-md bg-[#fff8e1] px-4 py-3 text-[14px] text-[#7a5a00]">
+          <b>Dica de tamanho:</b> {d.tip}
+        </p>
+
+        {d.closing.map((p) => (
+          <p key={p}>{p}</p>
+        ))}
+
+        <p className="pt-2 text-[13px] text-[#666]">
+          <b>Garantia do vendedor:</b> {d.warranty}
+        </p>
+      </div>
+    </section>
+  );
+}
+
 // ---------------- Related product cards ----------------
 function RelatedCard(p: RelatedProduct & { onSelect: () => void }) {
   return (
