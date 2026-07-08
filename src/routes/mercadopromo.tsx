@@ -53,6 +53,14 @@ import garminReviewA from "@/assets/mercadopromo/garmin-review-a.jpg";
 import garminReviewB from "@/assets/mercadopromo/garmin-review-b.jpg";
 import garminReviewC from "@/assets/mercadopromo/garmin-review-c.jpg";
 import garminReviewD from "@/assets/mercadopromo/garmin-review-d.jpg";
+import jaqmascMarrom1 from "@/assets/mercadopromo/jaqmasc-marrom-1.jpg";
+import jaqmascMarrom2 from "@/assets/mercadopromo/jaqmasc-marrom-2.jpg";
+import jaqmascBege from "@/assets/mercadopromo/jaqmasc-bege.jpg";
+import jaqmascCinza from "@/assets/mercadopromo/jaqmasc-cinza.jpg";
+import jaqmascPreto from "@/assets/mercadopromo/jaqmasc-preto.jpg";
+import jaqmascReview1 from "@/assets/mercadopromo/jaqmasc-review-1.jpg";
+import jaqmascReview2 from "@/assets/mercadopromo/jaqmasc-review-2.jpg";
+import jaqmascReview3 from "@/assets/mercadopromo/jaqmasc-review-3.jpg";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
@@ -106,9 +114,9 @@ const MAIN_PRODUCT: Product = {
   sold: "+800 vendidos",
   rating: 5.0,
   reviewsCount: 9,
-  price: 7990,
+  price: 6990,
   compareAt: null,
-  installments: { count: 6, valueCents: 1332 },
+  installments: { count: 6, valueCents: 1165 },
   categoryTrail: ["Calçados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
   colors: [
     {
@@ -268,6 +276,110 @@ const PANTS_PRODUCT: Product = {
   sizes: ["P", "M", "G", "GG"],
 };
 
+const JAQMASC_PRODUCT: Product = {
+  id: "mercadopromo-jaqueta-termica-masc",
+  title: "Jaqueta Térmica Masculina Premium Suede Forro Peluciado",
+  brand: "SKATHI",
+  seller: "Skhati Wear",
+  sold: "+5 mil vendidos",
+  rating: 5.0,
+  reviewsCount: 3,
+  price: 7990,
+  compareAt: null,
+  installments: { count: 6, valueCents: 1332 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
+  colors: [
+    {
+      key: "marrom",
+      label: "Marrom",
+      thumb: jaqmascMarrom1,
+      gallery: [
+        { src: jaqmascMarrom1, kind: "image" },
+        { src: jaqmascMarrom2, kind: "image" },
+      ],
+    },
+    {
+      key: "bege",
+      label: "Bege",
+      thumb: jaqmascBege,
+      gallery: [{ src: jaqmascBege, kind: "image" }],
+    },
+    {
+      key: "cinza",
+      label: "Cinza",
+      thumb: jaqmascCinza,
+      gallery: [{ src: jaqmascCinza, kind: "image" }],
+    },
+    {
+      key: "preto",
+      label: "Preto",
+      thumb: jaqmascPreto,
+      gallery: [{ src: jaqmascPreto, kind: "image" }],
+    },
+  ],
+  sizes: ["P", "M", "G", "GG", "EXG"],
+  description: {
+    heading: "Jaqueta Térmica Premium: Estilo Robusto e Conforto Absoluto",
+    intro: [
+      "Enfrente o inverno com a combinação ideal de elegância e funcionalidade. Nossa jaqueta foi projetada para o homem que busca um visual imponente sem abrir mão do bem-estar.",
+      "Com um acabamento externo em textura que remete ao suede/camurça, ela oferece um toque sofisticado e durabilidade real — pra durar temporadas, não semanas.",
+    ],
+    steps: [
+      "Escolha seu tamanho pela tabela de medidas (dica: se quiser caimento mais folgado, suba um número).",
+      "Receba em casa com frete rápido e compra 100% protegida pelo Mercado Livre.",
+      "Vista e sinta o forro peluciado abraçar — estilo por fora, conforto absoluto por dentro.",
+    ],
+    benefits: [
+      {
+        title: "Máximo isolamento térmico",
+        result: "Todo o interior revestido com forro peluciado ultra macio.",
+        feeling: "Aquecido mesmo nas temperaturas mais baixas, sem peso extra.",
+      },
+      {
+        title: "Design sofisticado",
+        result: "Detalhes acolchoados nos ombros dão ar moderno e levemente esportivo.",
+        feeling: "Visual imponente que combina com jeans, calça social ou moletom.",
+      },
+      {
+        title: "Funcionalidade inteligente",
+        result: "Bolso interno prático e discreto para documentos ou celular.",
+        feeling: "Sai de casa com tudo no lugar e as mãos livres.",
+      },
+      {
+        title: "Fechamento de alta qualidade",
+        result: "Zíper robusto e eficiente, projetado para durar e facilitar o dia a dia.",
+        feeling: "Sem travamento, sem desgaste rápido — feito para uso diário.",
+      },
+      {
+        title: "Gola padre com botão",
+        result: "Proteção extra para o pescoço e um toque final de estilo.",
+        feeling: "Vento cortante do inverno bloqueado, visual limpo mantido.",
+      },
+    ],
+    quotes: [
+      "“Chegou rápido, o suede parece de loja cara. Forro peluciado é MUITO quente.” — comprador verificado",
+      "“Uso quase todo dia. Caimento perfeito no M e o zíper é firme.” — comprador verificado",
+      "“Comprei o marrom e o preto. Nota 10, recomendo demais.” — comprador verificado",
+    ],
+    specs: [
+      "Material externo: textura tipo suede/camurça",
+      "Forro: peluciado interno completo",
+      "Fechamento: zíper frontal robusto",
+      "Gola: padre com botão",
+      "Detalhes: ombros acolchoados + bolso interno discreto",
+      "Cores: marrom, bege, cinza e preto",
+      "Tamanhos: P ao EXG (consulte a tabela de medidas)",
+      "Cuidados: lavar à mão ou a seco — não torcer",
+    ],
+    tip: "Combine com jeans escuro e botas de couro para um visual clássico de inverno, ou com camiseta branca básica para um look casual e despojado.",
+    closing: [
+      "Compra 100% protegida pelo Mercado Livre. Não ficou como esperava? A política de devolução garante sua tranquilidade.",
+      "Adicione ao carrinho agora e leve a jaqueta que combina estilo robusto com conforto absoluto — enquanto durar o estoque promocional.",
+    ],
+    warranty: "30 dias",
+  },
+};
+
 const GARMIN_PRODUCT: Product = {
   id: "mercadopromo-garmin-forerunner-965",
   title: "Garmin Forerunner 965 Amoled 47mm Touchscreen",
@@ -367,9 +479,10 @@ const PRODUCT_SLUGS: Record<string, number> = {
   bota: 1,
   calca: 2,
   garmin: 3,
+  "jaqueta-masculina": 4,
 };
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT];
 
 const SIZE_GUIDE = [
   { label: "P", equivalent: "P", chest: 88, height: 55, shoulders: 37 },
@@ -427,6 +540,17 @@ const RELATED = [
       "Relógio esportivo com GPS integrado, monitor cardíaco no pulso, VO₂ máx., sugestões diárias de treino e bateria de até 2 semanas. Ideal para corrida e triatlo.",
     priceCents: GARMIN_PRODUCT.price,
     installments: "até 10x sem juros",
+    freeShip: true,
+  },
+  {
+    productIdx: 4,
+    img: jaqmascMarrom1,
+    gallery: [jaqmascMarrom1, jaqmascMarrom2, jaqmascBege, jaqmascCinza, jaqmascPreto],
+    title: JAQMASC_PRODUCT.title,
+    description:
+      "Jaqueta térmica masculina com acabamento suede, forro peluciado ultra macio, ombros acolchoados e gola padre com botão. Estilo robusto e conforto absoluto pro inverno.",
+    priceCents: JAQMASC_PRODUCT.price,
+    installments: "até 6x sem juros",
     freeShip: true,
   },
 ];
@@ -504,11 +628,39 @@ const GARMIN_REVIEWS: Review[] = [
   },
 ];
 
+const JAQMASC_REVIEWS: Review[] = [
+  {
+    name: "marcos.a",
+    verified: true,
+    rating: 5,
+    text: "Chegou rápido, embalada certinho. O suede parece muito mais caro do que custou e o forro peluciado é absurdo de quente. Comprei o marrom no G e caiu perfeito.",
+    when: "há 3 semanas",
+    photo: jaqmascReview1,
+  },
+  {
+    name: "rafael.c",
+    verified: true,
+    rating: 5,
+    text: "Uso praticamente todo dia desde que chegou. Costura reforçada, zíper firme, gola com botão bloqueia o vento. Já pedi a segunda na cor preta.",
+    when: "há 1 mês",
+    photo: jaqmascReview2,
+  },
+  {
+    name: "vinicius.p",
+    verified: true,
+    rating: 5,
+    text: "Nota 10. Combina com jeans, moletom, calça social. Bolso interno é ótimo pro celular. Recomendo demais pelo preço.",
+    when: "há 2 meses",
+    photo: jaqmascReview3,
+  },
+];
+
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
   [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
   [PANTS_PRODUCT.id]: JAQUETA_REVIEWS,
   [GARMIN_PRODUCT.id]: GARMIN_REVIEWS,
+  [JAQMASC_PRODUCT.id]: JAQMASC_REVIEWS,
 };
 
 function formatBRL(cents: number) {
