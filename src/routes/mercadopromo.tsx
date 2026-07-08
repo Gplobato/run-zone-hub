@@ -53,6 +53,14 @@ import garminReviewA from "@/assets/mercadopromo/garmin-review-a.jpg";
 import garminReviewB from "@/assets/mercadopromo/garmin-review-b.jpg";
 import garminReviewC from "@/assets/mercadopromo/garmin-review-c.jpg";
 import garminReviewD from "@/assets/mercadopromo/garmin-review-d.jpg";
+import jaqmascMarrom1 from "@/assets/mercadopromo/jaqmasc-marrom-1.jpg";
+import jaqmascMarrom2 from "@/assets/mercadopromo/jaqmasc-marrom-2.jpg";
+import jaqmascBege from "@/assets/mercadopromo/jaqmasc-bege.jpg";
+import jaqmascCinza from "@/assets/mercadopromo/jaqmasc-cinza.jpg";
+import jaqmascPreto from "@/assets/mercadopromo/jaqmasc-preto.jpg";
+import jaqmascReview1 from "@/assets/mercadopromo/jaqmasc-review-1.jpg";
+import jaqmascReview2 from "@/assets/mercadopromo/jaqmasc-review-2.jpg";
+import jaqmascReview3 from "@/assets/mercadopromo/jaqmasc-review-3.jpg";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
