@@ -960,7 +960,7 @@ function MercadoPromoPage() {
   }, [activeIdx]);
 
   // Soft product has its own isolated Meta Pixel + external checkout URL
-  const SOFT_PIXEL_ID = "27197220149933669";
+  const SOFT_PIXEL_ID = "1752731676153121";
   const SOFT_CHECKOUT_URL =
     "https://seguro.mercadomodasoferta.site/api/public/shopify?product=3353942983311&store=33539";
   const isSoftProduct = PRODUCT.id === "mercadopromo-conjunto-soft-teddy";
