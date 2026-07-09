@@ -1030,6 +1030,17 @@ function MercadoPromoPage() {
     window.location.href = SOFT_CHECKOUT_URL;
   }
 
+  // Female jacket → external Shopify checkout, main pixel keeps tracking
+  const isFemaleJacket = PRODUCT.id === "mercadopromo-jaqueta-courino";
+  const FEMALE_JACKET_CHECKOUT_URL =
+    "https://seguro.veltro.digital/api/public/shopify?product=3393743629991&store=33937";
+
+  function goToFemaleJacketCheckout() {
+    if (checkoutLoading) return;
+    setCheckoutLoading(true);
+    window.location.href = FEMALE_JACKET_CHECKOUT_URL;
+  }
+
   const onBuy = () => {
     const params = {
       content_ids: [PRODUCT.id],
@@ -1043,6 +1054,11 @@ function MercadoPromoPage() {
       const w = window as unknown as { fbq?: (...args: unknown[]) => void };
       w.fbq?.("trackSingle", SOFT_PIXEL_ID, "InitiateCheckout", params);
       goToSoftCheckout();
+      return;
+    }
+    if (isFemaleJacket) {
+      fbqTrack("InitiateCheckout", params);
+      goToFemaleJacketCheckout();
       return;
     }
     fbqTrack("InitiateCheckout", params);
@@ -1066,6 +1082,11 @@ function MercadoPromoPage() {
       w.fbq?.("trackSingle", SOFT_PIXEL_ID, "AddToCart", atcParams);
       w.fbq?.("trackSingle", SOFT_PIXEL_ID, "InitiateCheckout", icParams);
       goToSoftCheckout();
+      return;
+    }
+    if (isFemaleJacket) {
+      fbqTrack("AddToCart", atcParams);
+      goToFemaleJacketCheckout();
       return;
     }
     fbqTrack("AddToCart", atcParams);
