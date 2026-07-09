@@ -721,13 +721,45 @@ const JAQMASC_REVIEWS: Review[] = [
   },
 ];
 
+const SOFT_REVIEWS: Review[] = [
+  {
+    name: "beatriz.l",
+    verified: true,
+    rating: 5,
+    text: "Tecido soft peluciado por dentro é maravilhoso, super quentinho e não solta pelo. Comprei o marrom no M e o caimento ficou ótimo. Vale muito o preço.",
+    when: "há 3 semanas",
+  },
+  {
+    name: "amanda.r",
+    verified: true,
+    rating: 5,
+    text: "Conjunto lindo, a calça tem elástico confortável e não marca. Costura bem feita, chegou embalado direitinho. Já quero comprar em outra cor.",
+    when: "há 1 mês",
+  },
+  {
+    name: "larissa.o",
+    verified: true,
+    rating: 5,
+    text: "Perfeito pro inverno aqui do sul. Bem grossinho, aquece de verdade e a modelagem é folgadinha sem ficar largona. Recomendo.",
+    when: "há 2 meses",
+  },
+  {
+    name: "fernanda.k",
+    verified: true,
+    rating: 4,
+    text: "Gostei bastante, tecido macio e cor fiel à foto. Só achei que a blusa veste um número menor, se tiver dúvida pega o maior.",
+    when: "há 2 meses",
+  },
+];
+
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
   [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
   [PANTS_PRODUCT.id]: JAQUETA_REVIEWS,
   [GARMIN_PRODUCT.id]: GARMIN_REVIEWS,
   [JAQMASC_PRODUCT.id]: JAQMASC_REVIEWS,
-  [SOFT_PRODUCT.id]: JAQUETA_REVIEWS,
+  [SOFT_PRODUCT.id]: SOFT_REVIEWS,
+
 };
 
 function formatBRL(cents: number) {
