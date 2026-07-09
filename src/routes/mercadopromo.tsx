@@ -848,7 +848,7 @@ export const Route = createFileRoute("/mercadopromo")({
   }),
   head: () => ({
     meta: [
-      { title: `${MAIN_PRODUCT.title} | Mercado Livre` },
+      { title: "Mercado Livre" },
       {
         name: "description",
         content:
