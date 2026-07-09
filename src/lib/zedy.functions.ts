@@ -7,21 +7,22 @@
 
 import { createServerFn } from "@tanstack/react-start";
 
-// Fallback variantId — usado quando o slug não tem mapeamento explícito.
-// (usuário definiu "Other: 33937" na configuração inicial da Zedy.)
-const DEFAULT_VARIANT_ID = 33937;
+// Store usada pela vitrine Mercado Promo quando o ambiente não define ZEDY_STORE_ID.
+const DEFAULT_STORE_ID = "33937";
 
 // Mapeamento slug do catálogo local → variantId cadastrado na Zedy.
 // Atualize aqui conforme cadastrar mais produtos no painel Zedy.
 const VARIANT_IDS: Record<string, number> = {
   "fone-conducao-ossea": 247100935,
   "fita-anti-atrito": 247101041,
-  "mercadopromo-jaqueta-courino": 25322414,
-  "mercadopromo-bota-montaria": 25322440,
+  "mercadopromo-jaqueta-courino": 248867337,
+  "mercadopromo-bota-montaria": 248867624,
 };
 
 function variantIdFor(slug: string): number {
-  return VARIANT_IDS[slug] ?? DEFAULT_VARIANT_ID;
+  const variantId = VARIANT_IDS[slug];
+  if (!variantId) throw new Error(`Produto sem variantId Zedy configurado: ${slug}`);
+  return variantId;
 }
 
 export type ZedyCheckoutItem = {
@@ -31,7 +32,7 @@ export type ZedyCheckoutItem = {
 
 async function zFetch(path: string, init: RequestInit) {
   const token = process.env.ZEDY_API_TOKEN;
-  const storeId = process.env.ZEDY_STORE_ID;
+  const storeId = process.env.ZEDY_STORE_ID || DEFAULT_STORE_ID;
   const baseUrl =
     process.env.ZEDY_BASE_URL || "https://app.zedy.com.br/api/loja/v1";
   if (!token) throw new Error("ZEDY_API_TOKEN não configurado");
