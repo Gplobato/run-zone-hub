@@ -1031,14 +1031,20 @@ function MercadoPromoPage() {
   }
 
   // Female jacket → external Shopify checkout, main pixel keeps tracking
-  const isFemaleJacket = PRODUCT.id === "mercadopromo-jaqueta-courino";
-  const FEMALE_JACKET_CHECKOUT_URL =
-    "https://seguro.veltro.digital/api/public/shopify?product=3393743629991&store=33937";
+  const EXTERNAL_MAIN_PIXEL_CHECKOUTS: Record<string, string> = {
+    "mercadopromo-jaqueta-courino":
+      "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393743629991&store=33937",
+    "mercadopromo-jaqueta-termica-masc":
+      "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767842421&store=33937",
+  };
+  const externalMainPixelCheckoutUrl = EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
 
-  function goToFemaleJacketCheckout() {
+  function goToExternalMainPixelCheckout() {
     if (checkoutLoading) return;
     setCheckoutLoading(true);
-    window.location.href = FEMALE_JACKET_CHECKOUT_URL;
+    if (externalMainPixelCheckoutUrl) {
+      window.location.href = externalMainPixelCheckoutUrl;
+    }
   }
 
   const onBuy = () => {
@@ -1056,9 +1062,9 @@ function MercadoPromoPage() {
       goToSoftCheckout();
       return;
     }
-    if (isFemaleJacket) {
+    if (externalMainPixelCheckoutUrl) {
       fbqTrack("InitiateCheckout", params);
-      goToFemaleJacketCheckout();
+      goToExternalMainPixelCheckout();
       return;
     }
     fbqTrack("InitiateCheckout", params);
@@ -1084,9 +1090,10 @@ function MercadoPromoPage() {
       goToSoftCheckout();
       return;
     }
-    if (isFemaleJacket) {
+    if (externalMainPixelCheckoutUrl) {
       fbqTrack("AddToCart", atcParams);
-      goToFemaleJacketCheckout();
+      fbqTrack("InitiateCheckout", icParams);
+      goToExternalMainPixelCheckout();
       return;
     }
     fbqTrack("AddToCart", atcParams);
