@@ -16,6 +16,8 @@ const DEFAULT_VARIANT_ID = 33937;
 const VARIANT_IDS: Record<string, number> = {
   "fone-conducao-ossea": 247100935,
   "fita-anti-atrito": 247101041,
+  "mercadopromo-jaqueta-courino": 25322414,
+  "mercadopromo-bota-montaria": 25322440,
 };
 
 function variantIdFor(slug: string): number {

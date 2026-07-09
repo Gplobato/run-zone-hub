@@ -114,7 +114,7 @@ type Product = {
 
 const MAIN_PRODUCT: Product = {
   id: "mercadopromo-jaqueta-courino",
-  title: "Jaqueta Feminina Courino Slim Casaco Frio Zíper Motoqueiro",
+  title: "Jaqueta Feminina Courino Slim",
   brand: "SKATHI",
   seller: "Skhati Wear",
   sold: "+800 vendidos",
@@ -252,7 +252,83 @@ const BOOT_PRODUCT: Product = {
       ],
     },
   ],
-  sizes: ["34", "35", "36", "37", "38", "39"],
+  sizes: ["33", "34", "35", "36", "37", "38", "39", "40"],
+  description: {
+    heading: "Montaria Feminina Cano Longo Coturno Cadarço Atrás",
+    intro: [
+      "Bota montaria cano médio com sintético hidratado e solado de borracha, finalizada com costura em linha turca para elevar a durabilidade sem abrir mão do conforto.",
+      "O conjunto entrega presença visual, estrutura firme e uso agradável no dia a dia. É o tipo de bota que deixa o look mais elegante e ainda transmite segurança ao caminhar.",
+      "O zíper lateral facilita o calce e o sistema de respiração ajuda a controlar a temperatura interna, deixando a experiência mais confortável por mais tempo.",
+    ],
+    steps: [
+      "Escolha o número usando a medida da palmilha",
+      "Calce com praticidade pelo zíper lateral",
+      "Use com jeans, legging, vestido ou sobreposição de inverno para um visual marcante",
+    ],
+    benefits: [
+      {
+        title: "Sintético hidratado",
+        result: "Visual elegante com toque mais encorpado e boa resistência",
+        feeling: "A peça transmite mais presença logo no primeiro uso",
+      },
+      {
+        title: "Solado de borracha",
+        result: "Passada mais estável e segura",
+        feeling: "Mais confiança para caminhar bem em diferentes rotinas",
+      },
+      {
+        title: "Costura com linha turca",
+        result: "Estrutura reforçada com durabilidade superior",
+        feeling: "Você leva uma bota feita para acompanhar muitos usos",
+      },
+      {
+        title: "Zíper lateral com sistema de respiração",
+        result: "Calce fácil e melhor controle térmico interno",
+        feeling: "Conforto prolongado sem sacrificar a elegância",
+      },
+    ],
+    quotes: [
+      "Visual elegante, firme no pé e muito confortável para usar por horas.",
+      "O acabamento chama atenção e a bota veste super bem na perna.",
+      "Combina com tudo e passa sensação de produto premium.",
+    ],
+    specs: [
+      "Material: Sintético",
+      "Solado: Borracha",
+      "Forro: Têxtil",
+      "Numeração: do 33 ao 40",
+      "Palmilha 33: 24 cm",
+      "Palmilha 34: 24,5 cm",
+      "Palmilha 35: 25 cm",
+      "Palmilha 36: 25,5 cm",
+      "Palmilha 37: 26 cm",
+      "Palmilha 38: 26,5 cm",
+      "Palmilha 39: 27 cm",
+      "Palmilha 40: 27,5 cm",
+      "Altura do cano 33: 35,0 cm",
+      "Altura do cano 34: 35,5 cm",
+      "Altura do cano 35: 36,0 cm",
+      "Altura do cano 36: 37,0 cm",
+      "Altura do cano 37: 37,5 cm",
+      "Altura do cano 38: 38,0 cm",
+      "Altura do cano 39: 38,5 cm",
+      "Altura do cano 40: 39,0 cm",
+      "Circunferência da panturrilha 33: 28,0 cm",
+      "Circunferência da panturrilha 34: 28,5 cm",
+      "Circunferência da panturrilha 35: 29,0 cm",
+      "Circunferência da panturrilha 36: 29,5 cm",
+      "Circunferência da panturrilha 37: 30,0 cm",
+      "Circunferência da panturrilha 38: 30,5 cm",
+      "Circunferência da panturrilha 39: 31,0 cm",
+      "Circunferência da panturrilha 40: 31,5 cm",
+    ],
+    tip: "Se estiver entre dois números, priorize a medida da palmilha e confira também a circunferência da panturrilha para um encaixe mais confortável.",
+    closing: [
+      "É uma montaria pensada para unir elegância, conforto e resistência em uma só peça.",
+      "Perfeita para quem quer se sentir exclusiva, bem vestida e segura em cada passo.",
+    ],
+    warranty: "30 dias",
+  },
 };
 
 const PANTS_PRODUCT: Product = {
