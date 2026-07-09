@@ -639,66 +639,6 @@ const SELLER = {
   medal: "https://http2.mlstatic.com/frontend-assets/vpp-frontend/medal.svg",
 };
 
-const RELATED = [
-  {
-    productIdx: 1,
-    img: boots1,
-    gallery: [boots1, boots2, boots3],
-    title: BOOT_PRODUCT.title,
-    description:
-      "Bota montaria de cano longo com acabamento liso, fechamento por cadarço atrás e sola firme para uso diário. Visual elegante para compor looks urbanos e de inverno.",
-    priceCents: BOOT_PRODUCT.price,
-    installments: "até 6x sem juros",
-    freeShip: true,
-  },
-  {
-    productIdx: 2,
-    img: pants1,
-    gallery: [pants1, pants2, pants3],
-    title: PANTS_PRODUCT.title,
-    description:
-      "Calça modeladora com cintura alta, tecido encorpado e elasticidade confortável, pensada para valorizar a silhueta com firmeza e conforto no uso diário.",
-    priceCents: PANTS_PRODUCT.price,
-    installments: "até 6x sem juros",
-    freeShip: true,
-  },
-  {
-    productIdx: 3,
-    img: garminBlack,
-    gallery: [garminBlack, garminRef1, garminRef2, garminWhite],
-    title: GARMIN_PRODUCT.title,
-    description:
-      "Relógio esportivo com GPS integrado, monitor cardíaco no pulso, VO₂ máx., sugestões diárias de treino e bateria de até 2 semanas. Ideal para corrida e triatlo.",
-    priceCents: GARMIN_PRODUCT.price,
-    installments: "até 10x sem juros",
-    freeShip: true,
-  },
-  {
-    productIdx: 4,
-    img: jaqmascMarrom1,
-    gallery: [jaqmascMarrom1, jaqmascMarrom2, jaqmascBege, jaqmascCinza, jaqmascPreto],
-    title: JAQMASC_PRODUCT.title,
-    description:
-      "Jaqueta térmica masculina com acabamento suede, forro peluciado ultra macio, ombros acolchoados e gola padre com botão. Estilo robusto e conforto absoluto pro inverno.",
-    priceCents: JAQMASC_PRODUCT.price,
-    installments: "até 6x sem juros",
-    freeShip: true,
-  },
-  {
-    productIdx: 5,
-    img: softMarrom,
-    gallery: [softMarrom, softRosa, softAmarelo, softAzul, softBranco, softMarromClaro],
-    title: SOFT_PRODUCT.title,
-    description:
-      "Conjunto homewear em soft teddy peluciado premium, blusa com capuz e bolso canguru + calça com cós elástico. Toque aveludado que não pinica, quentinho e confortável.",
-    priceCents: SOFT_PRODUCT.price,
-    installments: "até 12x sem juros",
-    freeShip: true,
-  },
-];
-
-type RelatedProduct = (typeof RELATED)[number];
-
 type Review = {
   name: string;
   verified: boolean;
@@ -1437,25 +1377,8 @@ function MercadoPromoPage() {
 
         {PRODUCT.description && <ProductDescription d={PRODUCT.description} />}
 
-        {/* Produtos relacionados + seller card */}
         <div className="grid gap-6 border-t border-[#eee] p-4 md:p-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div>
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-[20px] font-semibold text-[#333]">Produtos relacionados</h2>
-              <span className="text-[12px] text-[#999]">Ad</span>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {RELATED.filter((r) => r.productIdx !== activeIdx)
-                .slice(0, 2)
-                .map((p) => (
-                  <RelatedCard
-                    key={p.title}
-                    {...p}
-                    onSelect={() => selectProduct(p.productIdx)}
-                  />
-                ))}
-            </div>
-          </div>
+          <div className="hidden lg:block" aria-hidden="true" />
           <div className="space-y-4">
             <SellerCard />
             <PaymentMethodsCard />
@@ -1727,34 +1650,6 @@ function ProductDescription({
     </section>
   );
 }
-
-// ---------------- Related product cards ----------------
-function RelatedCard(p: RelatedProduct & { onSelect: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={p.onSelect}
-      className="flex flex-col overflow-hidden rounded border border-[#eee] bg-white p-3 text-left transition hover:border-[#3483fa] hover:shadow-sm"
-    >
-      <div className="aspect-square overflow-hidden rounded">
-        <img src={p.img} alt={p.title} loading="lazy" className="h-full w-full object-cover" />
-      </div>
-      <div className="mt-2 grid grid-cols-2 gap-1">
-        {p.gallery.slice(1).map((src) => (
-          <div key={src} className="aspect-square overflow-hidden rounded border border-[#eee]">
-            <img src={src} alt="" loading="lazy" className="h-full w-full object-cover" />
-          </div>
-        ))}
-      </div>
-      <p className="mt-3 line-clamp-2 text-[13px] text-[#333]">{p.title}</p>
-      <p className="mt-1 line-clamp-3 text-[12px] leading-relaxed text-[#666]">{p.description}</p>
-      <div className="mt-2 text-[18px] text-[#333]">{formatBRL(p.priceCents)}</div>
-      <div className="text-[12px] text-[#00a650]">{p.installments}</div>
-      {p.freeShip && <div className="mt-1 text-[12px] font-semibold text-[#00a650]">Frete grátis</div>}
-    </button>
-  );
-}
-
 
 function SizeGuideModal({ onClose }: { onClose: () => void }) {
   useEffect(() => {
