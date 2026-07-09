@@ -61,6 +61,12 @@ import jaqmascPreto from "@/assets/mercadopromo/jaqmasc-preto.jpg";
 import jaqmascReview1 from "@/assets/mercadopromo/jaqmasc-review-1.jpg";
 import jaqmascReview2 from "@/assets/mercadopromo/jaqmasc-review-2.jpg";
 import jaqmascReview3 from "@/assets/mercadopromo/jaqmasc-review-3.jpg";
+import softRosa from "@/assets/mercadopromo/soft-rosa.png";
+import softAmarelo from "@/assets/mercadopromo/soft-amarelo.png";
+import softAzul from "@/assets/mercadopromo/soft-azul.png";
+import softBranco from "@/assets/mercadopromo/soft-branco.png";
+import softMarrom from "@/assets/mercadopromo/soft-marrom.png";
+import softMarromClaro from "@/assets/mercadopromo/soft-marromclaro.png";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
@@ -473,6 +479,54 @@ const GARMIN_PRODUCT: Product = {
   },
 };
 
+const SOFT_PRODUCT: Product = {
+  id: "mercadopromo-conjunto-soft-teddy",
+  title: "Conjunto Soft Premium Teddy Camel Feminino Blusa e Calça Peluciado",
+  brand: "SANDY ESTILO",
+  seller: "Skhati Wear",
+  sold: "+8 mil vendidos",
+  rating: 4.9,
+  reviewsCount: 3451,
+  price: 8999,
+  compareAt: 11999,
+  installments: { count: 12, valueCents: 898 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Roupas", "Conjuntos"],
+  colors: [
+    { key: "rosa", label: "Rosa", thumb: softRosa, gallery: [{ src: softRosa, kind: "image" }] },
+    { key: "amarelo", label: "Amarelo", thumb: softAmarelo, gallery: [{ src: softAmarelo, kind: "image" }] },
+    { key: "azul", label: "Azul", thumb: softAzul, gallery: [{ src: softAzul, kind: "image" }] },
+    { key: "branco", label: "Branco", thumb: softBranco, gallery: [{ src: softBranco, kind: "image" }] },
+    { key: "marrom", label: "Marrom", thumb: softMarrom, gallery: [{ src: softMarrom, kind: "image" }] },
+    { key: "marrom-claro", label: "Marrom Claro", thumb: softMarromClaro, gallery: [{ src: softMarromClaro, kind: "image" }] },
+  ],
+  sizes: ["PP", "P", "M", "G", "GG", "G2", "G3"],
+  description: {
+    heading: "Conjunto Soft Premium Teddy — conforto peluciado pros dias frios",
+    intro: [],
+    steps: [],
+    benefits: [
+      { title: "Tecido peluciado premium", result: "Soft Teddy ultra macio, toque aveludado que não pinica.", feeling: "" },
+      { title: "Blusa com capuz e bolso canguru", result: "Proteção extra e praticidade no dia a dia.", feeling: "" },
+      { title: "Calça com cós elástico", result: "Ajuste confortável sem apertar a cintura.", feeling: "" },
+      { title: "Punhos e barra reforçados", result: "Acabamento firme, durabilidade acima da média.", feeling: "" },
+      { title: "Modelagem versátil", result: "Caimento moderno, veste bem sem apertar.", feeling: "" },
+      { title: "Lavagem fácil", result: "Alta durabilidade e secagem rápida.", feeling: "" },
+    ],
+    quotes: [],
+    specs: [
+      "Composição: Soft Teddy Premium (peluciado)",
+      "Peças: blusa com capuz + bolso canguru + calça com cós elástico",
+      "Indicação: homewear, pijama de inverno, viagens, dias frios",
+      "Tamanhos: PP ao G3 (consulte tabela de medidas)",
+      "Cores: Rosa, Amarelo, Azul, Branco, Marrom e Marrom Claro",
+      "Cuidados: lavar à mão ou máquina em ciclo delicado — não usar alvejante",
+    ],
+    tip: "Se prefere caimento oversized (bem folgado), suba um tamanho na tabela.",
+    closing: [],
+    warranty: "30 dias",
+  },
+};
+
 // Slug -> índice em PRODUCTS. Usado para URLs de anúncio: /mercadopromo?p=<slug>
 const PRODUCT_SLUGS: Record<string, number> = {
   jaqueta: 0,
@@ -480,9 +534,10 @@ const PRODUCT_SLUGS: Record<string, number> = {
   calca: 2,
   garmin: 3,
   "jaqueta-masculina": 4,
+  "conjunto-soft-teddy": 5,
 };
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT];
 
 const SIZE_GUIDE = [
   { label: "P", equivalent: "P", chest: 88, height: 55, shoulders: 37 },
@@ -551,6 +606,17 @@ const RELATED = [
       "Jaqueta térmica masculina com acabamento suede, forro peluciado ultra macio, ombros acolchoados e gola padre com botão. Estilo robusto e conforto absoluto pro inverno.",
     priceCents: JAQMASC_PRODUCT.price,
     installments: "até 6x sem juros",
+    freeShip: true,
+  },
+  {
+    productIdx: 5,
+    img: softMarrom,
+    gallery: [softMarrom, softRosa, softAmarelo, softAzul, softBranco, softMarromClaro],
+    title: SOFT_PRODUCT.title,
+    description:
+      "Conjunto homewear em soft teddy peluciado premium, blusa com capuz e bolso canguru + calça com cós elástico. Toque aveludado que não pinica, quentinho e confortável.",
+    priceCents: SOFT_PRODUCT.price,
+    installments: "até 12x sem juros",
     freeShip: true,
   },
 ];
@@ -661,6 +727,7 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [PANTS_PRODUCT.id]: JAQUETA_REVIEWS,
   [GARMIN_PRODUCT.id]: GARMIN_REVIEWS,
   [JAQMASC_PRODUCT.id]: JAQMASC_REVIEWS,
+  [SOFT_PRODUCT.id]: JAQUETA_REVIEWS,
 };
 
 function formatBRL(cents: number) {
