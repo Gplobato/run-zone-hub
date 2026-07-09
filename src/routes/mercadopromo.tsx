@@ -563,9 +563,9 @@ const SOFT_PRODUCT: Product = {
   sold: "+8 mil vendidos",
   rating: 4.9,
   reviewsCount: 3451,
-  price: 8999,
+  price: 7990,
   compareAt: 11999,
-  installments: { count: 12, valueCents: 898 },
+  installments: { count: 12, valueCents: 666 },
   categoryTrail: ["Calçados, Roupas e Bolsas", "Roupas", "Conjuntos"],
   colors: [
     { key: "rosa", label: "Rosa", thumb: softRosa, gallery: [{ src: softRosa, kind: "image" }] },
