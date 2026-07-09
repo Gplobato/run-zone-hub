@@ -959,16 +959,42 @@ function MercadoPromoPage() {
     setCheckoutError(null);
   }, [activeIdx]);
 
+  // Soft product has its own isolated Meta Pixel + external checkout URL
+  const SOFT_PIXEL_ID = "27197220149933669";
+  const SOFT_CHECKOUT_URL =
+    "https://seguro.mercadomodasoferta.site/api/public/shopify?product=3353942983311&store=33539";
+  const isSoftProduct = PRODUCT.id === "mercadopromo-conjunto-soft-teddy";
+
+  // Load the soft-product-only pixel lazily, once, when the user views it.
+  useEffect(() => {
+    if (!isSoftProduct || typeof window === "undefined") return;
+    const w = window as unknown as {
+      fbq?: ((...args: unknown[]) => void) & { _initializedSoftPixel?: boolean };
+    };
+    if (!w.fbq) return; // main pixel snippet already installs fbq
+    if (!w.fbq._initializedSoftPixel) {
+      w.fbq("init", SOFT_PIXEL_ID);
+      w.fbq._initializedSoftPixel = true;
+    }
+    w.fbq("trackSingle", SOFT_PIXEL_ID, "PageView");
+  }, [isSoftProduct]);
+
   // Pixel: ViewContent fires per active product
   useEffect(() => {
-    fbqTrack("ViewContent", {
+    const params = {
       content_ids: [PRODUCT.id],
       content_name: PRODUCT.title,
       content_type: "product",
       value: PRODUCT.price / 100,
       currency: "BRL",
-    });
-  }, [PRODUCT.id, PRODUCT.price, PRODUCT.title]);
+    };
+    if (isSoftProduct) {
+      const w = window as unknown as { fbq?: (...args: unknown[]) => void };
+      w.fbq?.("trackSingle", SOFT_PIXEL_ID, "ViewContent", params);
+    } else {
+      fbqTrack("ViewContent", params);
+    }
+  }, [PRODUCT.id, PRODUCT.price, PRODUCT.title, isSoftProduct]);
 
   const selectProduct = (idx: number) => {
     if (idx === activeIdx) return;
@@ -998,33 +1024,52 @@ function MercadoPromoPage() {
     }
   }
 
+  function goToSoftCheckout() {
+    if (checkoutLoading) return;
+    setCheckoutLoading(true);
+    window.location.href = SOFT_CHECKOUT_URL;
+  }
+
   const onBuy = () => {
-    fbqTrack("InitiateCheckout", {
+    const params = {
       content_ids: [PRODUCT.id],
       content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
       num_items: qty,
       contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
-    });
+    };
+    if (isSoftProduct) {
+      const w = window as unknown as { fbq?: (...args: unknown[]) => void };
+      w.fbq?.("trackSingle", SOFT_PIXEL_ID, "InitiateCheckout", params);
+      goToSoftCheckout();
+      return;
+    }
+    fbqTrack("InitiateCheckout", params);
     void goToZedy();
   };
 
   const onAddToCart = () => {
-    fbqTrack("AddToCart", {
+    const atcParams = {
       content_ids: [PRODUCT.id],
       content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
-    });
-    fbqTrack("InitiateCheckout", {
-      content_ids: [PRODUCT.id],
-      content_name: PRODUCT.title,
-      value: PRODUCT.price / 100,
-      currency: "BRL",
+    };
+    const icParams = {
+      ...atcParams,
       num_items: qty,
       contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
-    });
+    };
+    if (isSoftProduct) {
+      const w = window as unknown as { fbq?: (...args: unknown[]) => void };
+      w.fbq?.("trackSingle", SOFT_PIXEL_ID, "AddToCart", atcParams);
+      w.fbq?.("trackSingle", SOFT_PIXEL_ID, "InitiateCheckout", icParams);
+      goToSoftCheckout();
+      return;
+    }
+    fbqTrack("AddToCart", atcParams);
+    fbqTrack("InitiateCheckout", icParams);
     void goToZedy();
   };
 
