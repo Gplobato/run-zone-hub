@@ -20,6 +20,8 @@ import {
   ShieldCheck,
   Gift,
   Star,
+  ThumbsUp,
+  Clock3,
   ChevronRight,
   ZoomIn,
   X,
@@ -1377,9 +1379,8 @@ function MercadoPromoPage() {
 
         {PRODUCT.description && <ProductDescription d={PRODUCT.description} />}
 
-        <div className="grid gap-6 border-t border-[#eee] p-4 md:p-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="hidden lg:block" aria-hidden="true" />
-          <div className="space-y-4">
+        <div className="border-t border-[#eee] p-4 md:p-6">
+          <div className="grid gap-4 md:grid-cols-2">
             <SellerCard />
             <PaymentMethodsCard />
           </div>
@@ -1796,11 +1797,11 @@ function SellerCard() {
           Vendas
         </div>
         <div>
-          <div className="font-semibold text-[#333]">ðŸ‘</div>
+          <ThumbsUp className="mx-auto h-4 w-4 text-[#333]" aria-hidden="true" />
           Bom atendimento
         </div>
         <div>
-          <div className="font-semibold text-[#333]">â±</div>
+          <Clock3 className="mx-auto h-4 w-4 text-[#333]" aria-hidden="true" />
           Entrega no prazo
         </div>
       </div>
