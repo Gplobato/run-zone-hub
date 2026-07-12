@@ -938,6 +938,24 @@ function MercadoPromoPage() {
     }
   }, [PRODUCT.id, PRODUCT.price, PRODUCT.title, isSoftProduct]);
 
+  // TikTok pixel tracking for jaqueta feminina (courino)
+  const isJaquetaFeminina = PRODUCT.id === "mercadopromo-jaqueta-courino";
+  const ttqTrack = (event: string, params?: Record<string, unknown>) => {
+    if (typeof window === "undefined") return;
+    const w = window as unknown as { ttq?: { track: (e: string, p?: unknown) => void } };
+    w.ttq?.track(event, params);
+  };
+  useEffect(() => {
+    if (!isJaquetaFeminina) return;
+    ttqTrack("ViewContent", {
+      content_id: PRODUCT.id,
+      content_name: PRODUCT.title,
+      content_type: "product",
+      value: PRODUCT.price / 100,
+      currency: "BRL",
+    });
+  }, [isJaquetaFeminina, PRODUCT.id, PRODUCT.price, PRODUCT.title]);
+
   const selectProduct = (idx: number) => {
     if (idx === activeIdx) return;
     const slug = (Object.keys(PRODUCT_SLUGS) as (keyof typeof PRODUCT_SLUGS)[]).find(
@@ -1006,6 +1024,7 @@ function MercadoPromoPage() {
     }
     if (externalMainPixelCheckoutUrl) {
       fbqTrack("InitiateCheckout", params);
+      if (isJaquetaFeminina) ttqTrack("InitiateCheckout", { content_id: PRODUCT.id, content_name: PRODUCT.title, value: PRODUCT.price / 100, currency: "BRL", quantity: qty });
       goToExternalMainPixelCheckout();
       return;
     }
@@ -1035,6 +1054,9 @@ function MercadoPromoPage() {
     if (externalMainPixelCheckoutUrl) {
       fbqTrack("AddToCart", atcParams);
       fbqTrack("InitiateCheckout", icParams);
+      if (isJaquetaFeminina) {
+        ttqTrack("AddToCart", { content_id: PRODUCT.id, content_name: PRODUCT.title, value: PRODUCT.price / 100, currency: "BRL", quantity: qty });
+      }
       goToExternalMainPixelCheckout();
       return;
     }
