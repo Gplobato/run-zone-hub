@@ -1024,6 +1024,7 @@ function MercadoPromoPage() {
     }
     if (externalMainPixelCheckoutUrl) {
       fbqTrack("InitiateCheckout", params);
+      if (isJaquetaFeminina) ttqTrack("InitiateCheckout", { content_id: PRODUCT.id, content_name: PRODUCT.title, value: PRODUCT.price / 100, currency: "BRL", quantity: qty });
       goToExternalMainPixelCheckout();
       return;
     }
