@@ -69,6 +69,12 @@ import softAzul from "@/assets/mercadopromo/soft-azul.png";
 import softBranco from "@/assets/mercadopromo/soft-branco.png";
 import softMarrom from "@/assets/mercadopromo/soft-marrom.png";
 import softMarromClaro from "@/assets/mercadopromo/soft-marromclaro.png";
+import bobojaco1 from "@/assets/mercadopromo/bobojaco-1.webp";
+import bobojaco2 from "@/assets/mercadopromo/bobojaco-2.webp";
+import bobojaco3 from "@/assets/mercadopromo/bobojaco-3.webp";
+import bobojaco4 from "@/assets/mercadopromo/bobojaco-4.webp";
+import bobojaco5 from "@/assets/mercadopromo/bobojaco-5.webp";
+import bobojaco6 from "@/assets/mercadopromo/bobojaco-6.webp";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
