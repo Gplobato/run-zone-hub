@@ -738,6 +738,7 @@ type Review = {
   text: string;
   when: string;
   photo?: string;
+  photos?: string[];
 };
 
 const JAQUETA_REVIEWS: Review[] = [
@@ -1558,23 +1559,32 @@ function MercadoPromoPage() {
                     ))}
                   </div>
                   <p className="mb-3 text-[14px] leading-relaxed text-[#333]">{r.text}</p>
-                  {r.photo && (
-                    <button
-                      type="button"
-                      onClick={() => r.photo && setZoomPhoto(r.photo)}
-                      className="group relative inline-block overflow-hidden rounded border border-[#eee]"
-                    >
-                      <img
-                        src={r.photo}
-                        alt={`Foto enviada por ${r.name}`}
-                        loading="lazy"
-                        className="h-40 w-40 object-cover"
-                      />
-                      <span className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#3483fa] shadow transition-transform group-hover:scale-105">
-                        <ZoomIn className="h-4 w-4" />
-                      </span>
-                    </button>
-                  )}
+                  {(() => {
+                    const photos = r.photos ?? (r.photo ? [r.photo] : []);
+                    if (photos.length === 0) return null;
+                    return (
+                      <div className="flex flex-wrap gap-2">
+                        {photos.map((p, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setZoomPhoto(p)}
+                            className="group relative inline-block overflow-hidden rounded border border-[#eee]"
+                          >
+                            <img
+                              src={p}
+                              alt={`Foto ${idx + 1} enviada por ${r.name}`}
+                              loading="lazy"
+                              className="h-40 w-40 object-cover"
+                            />
+                            <span className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#3483fa] shadow transition-transform group-hover:scale-105">
+                              <ZoomIn className="h-4 w-4" />
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </div>
               ))}
             </div>
