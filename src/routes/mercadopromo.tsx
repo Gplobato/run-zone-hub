@@ -69,6 +69,12 @@ import softAzul from "@/assets/mercadopromo/soft-azul.png";
 import softBranco from "@/assets/mercadopromo/soft-branco.png";
 import softMarrom from "@/assets/mercadopromo/soft-marrom.png";
 import softMarromClaro from "@/assets/mercadopromo/soft-marromclaro.png";
+import bobojaco1 from "@/assets/mercadopromo/bobojaco-1.webp";
+import bobojaco2 from "@/assets/mercadopromo/bobojaco-2.webp";
+import bobojaco3 from "@/assets/mercadopromo/bobojaco-3.webp";
+import bobojaco4 from "@/assets/mercadopromo/bobojaco-4.webp";
+import bobojaco5 from "@/assets/mercadopromo/bobojaco-5.webp";
+import bobojaco6 from "@/assets/mercadopromo/bobojaco-6.webp";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
@@ -605,6 +611,89 @@ const SOFT_PRODUCT: Product = {
   },
 };
 
+const BOBOJACO_PRODUCT: Product = {
+  id: "mercadopromo-jaqueta-bobojaco-puffer",
+  title: "Jaqueta Unissex Bobojaco Puffer com Capuz Nylon Impermeável",
+  brand: "SKATHI",
+  seller: "Skhati Wear",
+  sold: "+2 mil vendidos",
+  rating: 4.9,
+  reviewsCount: 87,
+  price: 8990,
+  compareAt: 14990,
+  installments: { count: 6, valueCents: 1498 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
+  colors: [
+    {
+      key: "preto",
+      label: "Preto",
+      thumb: bobojaco1,
+      gallery: [
+        { src: bobojaco1, kind: "image" },
+        { src: bobojaco2, kind: "image" },
+        { src: bobojaco3, kind: "image" },
+        { src: bobojaco4, kind: "image" },
+        { src: bobojaco5, kind: "image" },
+        { src: bobojaco6, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["P", "M", "G", "GG", "XGG", "G3", "G4"],
+  description: {
+    heading: "Jaqueta Unissex Bobojaco Puffer com Capuz",
+    intro: [
+      "Conforto, proteção e estilo para os dias frios.",
+      "Nossa Jaqueta Bobojaco Puffer é confeccionada em nylon resistente, leve e confortável. Possui forro interno que ajuda a manter o corpo aquecido, além de oferecer proteção contra vento e chuva leve.",
+      "Modelo unissex, indicado para homens e mulheres, disponível em diversos tamanhos.",
+    ],
+    steps: [
+      "Escolha o tamanho na tabela de medidas (o tamanho selecionado fica registrado no seu pedido).",
+      "Confira antes de finalizar — mesmo que o tamanho não apareça novamente no checkout, enviaremos exatamente o que você escolheu.",
+      "Receba em casa com envio rápido e nota fiscal.",
+    ],
+    benefits: [
+      { title: "Modelo unissex", result: "Estilo bobojaco/puffer que veste bem homens e mulheres.", feeling: "Uma peça que serve pra toda a família." },
+      { title: "Nylon resistente e leve", result: "Tecido externo em nylon com ótima durabilidade.", feeling: "Aquece sem pesar no corpo." },
+      { title: "Proteção contra vento e chuva leve", result: "Barreira contra o frio cortante do inverno.", feeling: "Segurança pra sair mesmo em dias instáveis." },
+      { title: "Forro interno para aquecimento", result: "Revestimento em poliéster que retém o calor do corpo.", feeling: "Conforto térmico do primeiro ao último minuto." },
+      { title: "Capuz para maior proteção", result: "Cobre a cabeça em dias de vento ou garoa.", feeling: "Praticidade sem precisar de gorro." },
+      { title: "Zíper frontal + punhos com elástico", result: "Fechamento firme e vedação nos pulsos.", feeling: "Nenhum vento passa por dentro." },
+      { title: "Bolsos internos e externos", result: "Espaço pra celular, carteira, chaves e documentos.", feeling: "Sai de casa com tudo à mão." },
+    ],
+    quotes: [
+      "“Muito leve e quente ao mesmo tempo. Uso na moto e o vento não passa.” — comprador verificado",
+      "“Puffer excelente pelo preço. Nylon parece de marca cara.” — comprador verificado",
+      "“Comprei pra viajar pro sul e me salvou. Capuz removível é ótimo.” — comprador verificado",
+    ],
+    specs: [
+      "Material externo: nylon",
+      "Revestimento interno: poliéster",
+      "Fechamento: zíper frontal",
+      "Punhos: elástico",
+      "Capuz: sim, para maior proteção",
+      "Bolsos: internos e externos",
+      "Gênero: unissex (homens e mulheres)",
+      "Tipo: casaco de inverno puffer/bobojaco",
+      "Tamanhos disponíveis: P · M · G · GG · XGG/EXGG · G3 · G4",
+      "Indicação: trabalho, passeios, viagens, motociclistas, caminhadas, uso diário — dias frios, com vento ou chuva leve",
+      "Medidas P: manga 64 cm · comprimento 64 cm · cintura 100 cm",
+      "Medidas M: manga 64 cm · comprimento 66 cm · cintura 104 cm",
+      "Medidas G: manga 65 cm · comprimento 68 cm · cintura 108 cm",
+      "Medidas GG: manga 65 cm · comprimento 70 cm · cintura 112 cm",
+      "Medidas XGG/EXGG: manga 67 cm · comprimento 73 cm · cintura 118 cm",
+      "Medidas G3: manga 68 cm · comprimento 75 cm · cintura 124 cm",
+      "Medidas G4: manga 69 cm · comprimento 77 cm · cintura 130 cm",
+    ],
+    tip: "ATENÇÃO SOBRE O TAMANHO: o tamanho selecionado na página fica registrado no seu pedido. Mesmo que ele não apareça novamente no checkout, enviaremos exatamente o tamanho escolhido antes da compra. Confira antes de finalizar. As medidas podem apresentar pequenas variações — compare com uma jaqueta que você já utiliza.",
+    closing: [
+      "Envio rápido: produto à pronta entrega. Pedidos confirmados até as 13h podem ser enviados no mesmo dia útil, conforme disponibilidade da transportadora. Enviado com nota fiscal.",
+      "Garantia de qualidade: acabamento excelente, material selecionado — confortável, resistente e pronto pra acompanhar seus dias de frio.",
+      "Compra 100% protegida pelas políticas do Mercado Livre. Adicione ao carrinho enquanto durar o estoque promocional.",
+    ],
+    warranty: "30 dias (Mercado Livre)",
+  },
+};
+
 // Slug -> índice em PRODUCTS. Usado para URLs de anúncio: /mercadopromo?p=<slug>
 const PRODUCT_SLUGS: Record<string, number> = {
   jaqueta: 0,
@@ -613,9 +702,10 @@ const PRODUCT_SLUGS: Record<string, number> = {
   garmin: 3,
   "jaqueta-masculina": 4,
   "conjunto-soft-teddy": 5,
+  bobojaco: 6,
 };
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT];
 
 const SIZE_GUIDE = [
   { label: "P", equivalent: "P", chest: 88, height: 55, shoulders: 37 },
@@ -777,6 +867,8 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [GARMIN_PRODUCT.id]: GARMIN_REVIEWS,
   [JAQMASC_PRODUCT.id]: JAQMASC_REVIEWS,
   [SOFT_PRODUCT.id]: SOFT_REVIEWS,
+  [BOBOJACO_PRODUCT.id]: JAQMASC_REVIEWS,
+
 
 };
 
