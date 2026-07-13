@@ -75,6 +75,13 @@ import bobojaco3 from "@/assets/mercadopromo/bobojaco-3.webp";
 import bobojaco4 from "@/assets/mercadopromo/bobojaco-4.webp";
 import bobojaco5 from "@/assets/mercadopromo/bobojaco-5.webp";
 import bobojaco6 from "@/assets/mercadopromo/bobojaco-6.webp";
+import bobojacoRev1 from "@/assets/mercadopromo/bobojaco-review-1.png";
+import bobojacoRev2 from "@/assets/mercadopromo/bobojaco-review-2.png";
+import bobojacoRev3 from "@/assets/mercadopromo/bobojaco-review-3.png";
+import bobojacoRev4 from "@/assets/mercadopromo/bobojaco-review-4.png";
+import bobojacoRev5 from "@/assets/mercadopromo/bobojaco-review-5.png";
+import bobojacoRev6 from "@/assets/mercadopromo/bobojaco-review-6.png";
+import bobojacoRev7 from "@/assets/mercadopromo/bobojaco-review-7.png";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
@@ -616,12 +623,12 @@ const BOBOJACO_PRODUCT: Product = {
   title: "Jaqueta Unissex Bobojaco Puffer com Capuz Nylon Impermeável",
   brand: "SKATHI",
   seller: "Skhati Wear",
-  sold: "+2 mil vendidos",
+  sold: "+5 mil vendidos",
   rating: 4.9,
-  reviewsCount: 87,
-  price: 8990,
+  reviewsCount: 1284,
+  price: 5800,
   compareAt: 14990,
-  installments: { count: 6, valueCents: 1498 },
+  installments: { count: 6, valueCents: 967 },
   categoryTrail: ["Calçados, Roupas e Bolsas", "Agasalhos", "Casacos e Jaquetas"],
   colors: [
     {
@@ -861,6 +868,33 @@ const SOFT_REVIEWS: Review[] = [
   },
 ];
 
+const BOBOJACO_REVIEWS: Review[] = [
+  {
+    name: "lucas.freire",
+    verified: true,
+    rating: 5,
+    text: "Chegou muito rápido e é exatamente como nas fotos. Muito quente, leve e o capuz com forro peluciado é confortável demais. Uso pra ir trabalhar e nos passeios de fim de semana. Recomendo!",
+    when: "há 2 semanas",
+    photos: [bobojacoRev1, bobojacoRev2, bobojacoRev3],
+  },
+  {
+    name: "tatiane.r",
+    verified: true,
+    rating: 5,
+    text: "Perfeita! O nylon é bem resistente, aquece muito e o caimento ficou ótimo. Comprei o M e serviu certinho. O preço foi o melhor que encontrei, valeu cada centavo.",
+    when: "há 3 semanas",
+    photos: [bobojacoRev4, bobojacoRev5],
+  },
+  {
+    name: "jaqueline.db",
+    verified: true,
+    rating: 5,
+    text: "Já é a segunda que compro, uma pra mim e outra pro meu marido. Puffer super quente, o forro peluciado por dentro do capuz é maravilhoso e o zíper é firme. Chegou embalado direitinho.",
+    when: "há 1 mês",
+    photos: [bobojacoRev6, bobojacoRev7],
+  },
+];
+
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
   [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
@@ -868,9 +902,7 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [GARMIN_PRODUCT.id]: GARMIN_REVIEWS,
   [JAQMASC_PRODUCT.id]: JAQMASC_REVIEWS,
   [SOFT_PRODUCT.id]: SOFT_REVIEWS,
-  [BOBOJACO_PRODUCT.id]: JAQMASC_REVIEWS,
-
-
+  [BOBOJACO_PRODUCT.id]: BOBOJACO_REVIEWS,
 };
 
 function formatBRL(cents: number) {
@@ -1089,6 +1121,8 @@ function MercadoPromoPage() {
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393743629991&store=33937",
     "mercadopromo-jaqueta-termica-masc":
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767842421&store=33937",
+    "mercadopromo-jaqueta-bobojaco-puffer":
+      "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393732718424&store=33937",
   };
   const externalMainPixelCheckoutUrl = EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
 
