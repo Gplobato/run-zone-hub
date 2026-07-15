@@ -703,7 +703,7 @@ const BOBOJACO_PRODUCT: Product = {
 
 // Slug -> índice em PRODUCTS. Usado para URLs de anúncio: /mercadopromo?p=<slug>
 const PRODUCT_SLUGS: Record<string, number> = {
-  jaqueta: 0,
+  jaquetafem: 0,
   bota: 1,
   calca: 2,
   garmin: 3,
