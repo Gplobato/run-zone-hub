@@ -19,6 +19,17 @@ const VARIANT_IDS: Record<string, number> = {
   "mercadopromo-bota-montaria": 248867624,
 };
 
+function envValue(name: string): string | undefined {
+  const nodeValue = process.env[name];
+  if (nodeValue) return nodeValue;
+
+  const cloudflareEnv = (globalThis as typeof globalThis & {
+    __env__?: Record<string, string | undefined>;
+  }).__env__;
+
+  return cloudflareEnv?.[name];
+}
+
 function variantIdFor(slug: string): number {
   const variantId = VARIANT_IDS[slug];
   if (!variantId) throw new Error(`Produto sem variantId Zedy configurado: ${slug}`);
@@ -85,10 +96,10 @@ export type ZedyProductsPayload = {
 };
 
 async function zFetch(path: string, init: RequestInit) {
-  const token = process.env.ZEDY_API_TOKEN;
-  const storeId = process.env.ZEDY_STORE_ID || DEFAULT_STORE_ID;
+  const token = envValue("ZEDY_API_TOKEN");
+  const storeId = envValue("ZEDY_STORE_ID") || DEFAULT_STORE_ID;
   const baseUrl =
-    process.env.ZEDY_BASE_URL || "https://app.zedy.com.br/api/loja/v1";
+    envValue("ZEDY_BASE_URL") || "https://app.zedy.com.br/api/loja/v1";
   if (!token) throw new Error("ZEDY_API_TOKEN não configurado");
   if (!storeId) throw new Error("ZEDY_STORE_ID não configurado");
 
