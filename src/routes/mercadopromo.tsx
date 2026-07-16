@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useSearch, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
@@ -990,9 +990,10 @@ export const Route = createFileRoute("/mercadopromo")({
   component: MercadoPromoPage,
 });
 
-function MercadoPromoPage() {
-  const { p } = Route.useSearch();
-  const navigate = Route.useNavigate();
+export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
+  const search = useSearch({ strict: false }) as { p?: string };
+  const navigate = useNavigate();
+  const p = forcedSlug ?? search.p;
   const activeIdx = p && PRODUCT_SLUGS[p] !== undefined ? PRODUCT_SLUGS[p] : 0;
   const PRODUCT = PRODUCTS[activeIdx];
   const COLORS = PRODUCT.colors;
@@ -1086,7 +1087,7 @@ function MercadoPromoPage() {
     const slug = (Object.keys(PRODUCT_SLUGS) as (keyof typeof PRODUCT_SLUGS)[]).find(
       (k) => PRODUCT_SLUGS[k] === idx,
     );
-    navigate({ search: { p: slug } });
+    navigate({ to: "/mercadopromo", search: { p: slug } });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
