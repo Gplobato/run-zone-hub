@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as MercadopromoRouteImport } from './routes/mercadopromo'
+import { Route as JaquetaRouteImport } from './routes/jaqueta'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -25,6 +26,11 @@ const ProdutosRoute = ProdutosRouteImport.update({
 const MercadopromoRoute = MercadopromoRouteImport.update({
   id: '/mercadopromo',
   path: '/mercadopromo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JaquetaRoute = JaquetaRouteImport.update({
+  id: '/jaqueta',
+  path: '/jaqueta',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/jaqueta': typeof JaquetaRoute
   '/mercadopromo': typeof MercadopromoRoute
   '/produtos': typeof ProdutosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/jaqueta': typeof JaquetaRoute
   '/mercadopromo': typeof MercadopromoRoute
   '/produtos': typeof ProdutosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/jaqueta': typeof JaquetaRoute
   '/mercadopromo': typeof MercadopromoRoute
   '/produtos': typeof ProdutosRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/jaqueta'
     | '/mercadopromo'
     | '/produtos'
     | '/categoria/$slug'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/jaqueta'
     | '/mercadopromo'
     | '/produtos'
     | '/categoria/$slug'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/jaqueta'
     | '/mercadopromo'
     | '/produtos'
     | '/categoria/$slug'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   CheckoutRoute: typeof CheckoutRoute
+  JaquetaRoute: typeof JaquetaRoute
   MercadopromoRoute: typeof MercadopromoRoute
   ProdutosRoute: typeof ProdutosRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/mercadopromo'
       fullPath: '/mercadopromo'
       preLoaderRoute: typeof MercadopromoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jaqueta': {
+      id: '/jaqueta'
+      path: '/jaqueta'
+      fullPath: '/jaqueta'
+      preLoaderRoute: typeof JaquetaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   CheckoutRoute: CheckoutRoute,
+  JaquetaRoute: JaquetaRoute,
   MercadopromoRoute: MercadopromoRoute,
   ProdutosRoute: ProdutosRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
