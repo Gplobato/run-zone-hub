@@ -990,9 +990,10 @@ export const Route = createFileRoute("/mercadopromo")({
   component: MercadoPromoPage,
 });
 
-function MercadoPromoPage() {
-  const { p } = Route.useSearch();
-  const navigate = Route.useNavigate();
+export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
+  const search = useSearch({ strict: false }) as { p?: string };
+  const navigate = useNavigate();
+  const p = forcedSlug ?? search.p;
   const activeIdx = p && PRODUCT_SLUGS[p] !== undefined ? PRODUCT_SLUGS[p] : 0;
   const PRODUCT = PRODUCTS[activeIdx];
   const COLORS = PRODUCT.colors;
