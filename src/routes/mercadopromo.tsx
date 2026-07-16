@@ -1027,25 +1027,9 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     setCheckoutError(null);
   }, [activeIdx]);
 
-  // Soft product has its own isolated Meta Pixel + external checkout URL
-  const SOFT_PIXEL_ID = "1752731676153121";
   const SOFT_CHECKOUT_URL =
     "https://seguro.mercadomodasoferta.site/api/public/shopify?product=3353942983311&store=33539";
   const isSoftProduct = PRODUCT.id === "mercadopromo-conjunto-soft-teddy";
-
-  // Load the soft-product-only pixel lazily, once, when the user views it.
-  useEffect(() => {
-    if (!isSoftProduct || typeof window === "undefined") return;
-    const w = window as unknown as {
-      fbq?: ((...args: unknown[]) => void) & { _initializedSoftPixel?: boolean };
-    };
-    if (!w.fbq) return; // main pixel snippet already installs fbq
-    if (!w.fbq._initializedSoftPixel) {
-      w.fbq("init", SOFT_PIXEL_ID);
-      w.fbq._initializedSoftPixel = true;
-    }
-    w.fbq("trackSingle", SOFT_PIXEL_ID, "PageView");
-  }, [isSoftProduct]);
 
   // Pixel: ViewContent fires per active product
   useEffect(() => {
@@ -1056,31 +1040,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       value: PRODUCT.price / 100,
       currency: "BRL",
     };
-    if (isSoftProduct) {
-      const w = window as unknown as { fbq?: (...args: unknown[]) => void };
-      w.fbq?.("trackSingle", SOFT_PIXEL_ID, "ViewContent", params);
-    } else {
-      fbqTrack("ViewContent", params);
-    }
-  }, [PRODUCT.id, PRODUCT.price, PRODUCT.title, isSoftProduct]);
-
-  // TikTok pixel tracking for jaqueta feminina (courino)
-  const isJaquetaFeminina = PRODUCT.id === "mercadopromo-jaqueta-courino";
-  const ttqTrack = (event: string, params?: Record<string, unknown>) => {
-    if (typeof window === "undefined") return;
-    const w = window as unknown as { ttq?: { track: (e: string, p?: unknown) => void } };
-    w.ttq?.track(event, params);
-  };
-  useEffect(() => {
-    if (!isJaquetaFeminina) return;
-    ttqTrack("ViewContent", {
-      content_id: PRODUCT.id,
-      content_name: PRODUCT.title,
-      content_type: "product",
-      value: PRODUCT.price / 100,
-      currency: "BRL",
-    });
-  }, [isJaquetaFeminina, PRODUCT.id, PRODUCT.price, PRODUCT.title]);
+    fbqTrack("ViewContent", params);
+  }, [PRODUCT.id, PRODUCT.price, PRODUCT.title]);
 
   const selectProduct = (idx: number) => {
     if (idx === activeIdx) return;
@@ -1145,14 +1106,12 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
     };
     if (isSoftProduct) {
-      const w = window as unknown as { fbq?: (...args: unknown[]) => void };
-      w.fbq?.("trackSingle", SOFT_PIXEL_ID, "InitiateCheckout", params);
+      fbqTrack("InitiateCheckout", params);
       goToSoftCheckout();
       return;
     }
     if (externalMainPixelCheckoutUrl) {
       fbqTrack("InitiateCheckout", params);
-      if (isJaquetaFeminina) ttqTrack("InitiateCheckout", { content_id: PRODUCT.id, content_name: PRODUCT.title, value: PRODUCT.price / 100, currency: "BRL", quantity: qty });
       goToExternalMainPixelCheckout();
       return;
     }
@@ -1173,18 +1132,14 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
     };
     if (isSoftProduct) {
-      const w = window as unknown as { fbq?: (...args: unknown[]) => void };
-      w.fbq?.("trackSingle", SOFT_PIXEL_ID, "AddToCart", atcParams);
-      w.fbq?.("trackSingle", SOFT_PIXEL_ID, "InitiateCheckout", icParams);
+      fbqTrack("AddToCart", atcParams);
+      fbqTrack("InitiateCheckout", icParams);
       goToSoftCheckout();
       return;
     }
     if (externalMainPixelCheckoutUrl) {
       fbqTrack("AddToCart", atcParams);
       fbqTrack("InitiateCheckout", icParams);
-      if (isJaquetaFeminina) {
-        ttqTrack("AddToCart", { content_id: PRODUCT.id, content_name: PRODUCT.title, value: PRODUCT.price / 100, currency: "BRL", quantity: qty });
-      }
       goToExternalMainPixelCheckout();
       return;
     }
@@ -1236,25 +1191,26 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
         </div>
       </div>
 
-      {/* Sub-tabs: navegação entre produtos dentro da mercadopromo */}
-      <div className="mx-auto max-w-[1200px] px-3 pt-3 md:px-4">
-        <div className="flex gap-2 overflow-x-auto border-b border-[#e6e6e6]">
-          {PRODUCTS.map((p, i) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => selectProduct(i)}
-              className={`whitespace-nowrap border-b-2 px-3 py-2 text-[13px] transition ${
-                activeIdx === i
-                  ? "border-[#3483fa] text-[#3483fa]"
-                  : "border-transparent text-[#666] hover:text-[#333]"
-              }`}
-            >
-              {p.title.split(" ").slice(0, 3).join(" ")}
-            </button>
-          ))}
+      {!forcedSlug && (
+        <div className="mx-auto max-w-[1200px] px-3 pt-3 md:px-4">
+          <div className="flex gap-2 overflow-x-auto border-b border-[#e6e6e6]">
+            {PRODUCTS.map((p, i) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => selectProduct(i)}
+                className={`whitespace-nowrap border-b-2 px-3 py-2 text-[13px] transition ${
+                  activeIdx === i
+                    ? "border-[#3483fa] text-[#3483fa]"
+                    : "border-transparent text-[#666] hover:text-[#333]"
+                }`}
+              >
+                {p.title.split(" ").slice(0, 3).join(" ")}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main card */}
       <div className="mx-auto max-w-[1200px] bg-white md:my-2 md:rounded-md md:shadow-sm">

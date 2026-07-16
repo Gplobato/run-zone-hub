@@ -7,8 +7,6 @@ import { ProductCard } from "@/components/paze/ProductCard";
 import { CATEGORIES, PRODUCTS, PRODUCT_IMAGES, formatBRL } from "@/lib/products";
 import { ArrowRight, Truck, ShieldCheck, RotateCcw, Headphones, PlayCircle, Activity, Radio, Zap } from "lucide-react";
 
-// TODO: Meta Pixel PageView, GA4 page_view, TikTok Pixel Pageview
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
