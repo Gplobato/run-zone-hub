@@ -26,8 +26,62 @@ function variantIdFor(slug: string): number {
 }
 
 export type ZedyCheckoutItem = {
-  slug: string;
+  slug?: string;
+  variantId?: string | number;
   quantity: number;
+};
+
+export type ZedyImage = {
+  id?: string;
+  url?: string;
+  altText?: string | null;
+  width?: number;
+  height?: number;
+  position?: number;
+};
+
+export type ZedyVariant = {
+  id: string;
+  title?: string | null;
+  sku?: string | null;
+  price?: number | null;
+  compareAtPrice?: number | null;
+  inventoryQuantity?: number | null;
+  availableForSale?: boolean;
+  selectedOptions?: { name: string; value: string }[];
+  image?: ZedyImage | null;
+};
+
+export type ZedyProduct = {
+  id: string;
+  handle: string;
+  title: string;
+  description?: string | null;
+  descriptionHtml?: string | null;
+  vendor?: string | null;
+  status?: string;
+  price?: number | null;
+  compareAtPrice?: number | null;
+  currency?: string | null;
+  images?: ZedyImage[];
+  featuredImage?: ZedyImage | null;
+  variants?: ZedyVariant[];
+  totalInventory?: number | null;
+  trackInventory?: boolean;
+  seo?: { title?: string | null; description?: string | null } | null;
+};
+
+export type ZedyPagination = {
+  page: number;
+  perPage: number;
+  total: number;
+  totalPages: number;
+};
+
+export type ZedyProductsPayload = {
+  products: ZedyProduct[];
+  pagination?: ZedyPagination;
+  query?: string;
 };
 
 async function zFetch(path: string, init: RequestInit) {
@@ -62,7 +116,7 @@ export const createZedyCheckout = createServerFn({ method: "POST" })
   .inputValidator((data: { items: ZedyCheckoutItem[] }) => {
     if (!data?.items?.length) throw new Error("Carrinho vazio.");
     for (const it of data.items) {
-      if (!it.slug) throw new Error("Item sem slug.");
+      if (!it.slug && !it.variantId) throw new Error("Item sem produto.");
       if (!it.quantity || it.quantity < 1)
         throw new Error("Quantidade inválida.");
     }
@@ -71,7 +125,7 @@ export const createZedyCheckout = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const payload = {
       items: data.items.map((i) => ({
-        variantId: variantIdFor(i.slug),
+        variantId: i.variantId ?? variantIdFor(i.slug!),
         quantity: i.quantity,
       })),
     };
@@ -86,4 +140,43 @@ export const createZedyCheckout = createServerFn({ method: "POST" })
     if (!url) throw new Error("Zedy não retornou URL de checkout.");
 
     return { url };
+  });
+
+export const listZedyProducts = createServerFn({ method: "GET" })
+  .inputValidator(
+    (data: {
+      q?: string;
+      page?: number;
+      perPage?: number;
+      sortBy?: "created_at" | "title" | "price";
+      sortOrder?: "asc" | "desc";
+    }) => ({
+      q: typeof data?.q === "string" ? data.q.trim() : "",
+      page: Number.isFinite(data?.page) && data.page! > 0 ? Math.floor(data.page!) : 1,
+      perPage:
+        Number.isFinite(data?.perPage) && data.perPage! > 0
+          ? Math.min(Math.floor(data.perPage!), 50)
+          : 24,
+      sortBy: data?.sortBy ?? "created_at",
+      sortOrder: data?.sortOrder ?? "desc",
+    }),
+  )
+  .handler(async ({ data }) => {
+    const params = new URLSearchParams({
+      page: String(data.page),
+      per_page: String(data.perPage),
+    });
+
+    if (data.q) {
+      params.set("q", data.q);
+      return (await zFetch(`/search?${params.toString()}`, {
+        method: "GET",
+      })) as ZedyProductsPayload;
+    }
+
+    params.set("sort_by", data.sortBy);
+    params.set("sort_order", data.sortOrder);
+    return (await zFetch(`/products?${params.toString()}`, {
+      method: "GET",
+    })) as ZedyProductsPayload;
   });
