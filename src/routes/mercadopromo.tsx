@@ -1087,7 +1087,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     const slug = (Object.keys(PRODUCT_SLUGS) as (keyof typeof PRODUCT_SLUGS)[]).find(
       (k) => PRODUCT_SLUGS[k] === idx,
     );
-    navigate({ search: { p: slug } });
+    navigate({ to: "/mercadopromo", search: { p: slug } });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
