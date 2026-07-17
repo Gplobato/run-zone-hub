@@ -132,9 +132,9 @@ const MAIN_PRODUCT: Product = {
   title: "Jaqueta Feminina Courino Slim",
   brand: "SKATHI",
   seller: "Skhati Wear",
-  sold: "+800 vendidos",
+  sold: "+5000 vendidos",
   rating: 5.0,
-  reviewsCount: 9,
+  reviewsCount: 131,
   price: 6990,
   compareAt: null,
   installments: { count: 6, valueCents: 1165 },
@@ -172,7 +172,7 @@ const MAIN_PRODUCT: Product = {
       ],
     },
   ],
-  sizes: ["P", "M", "G", "GG", "EXG"],
+  sizes: ["P", "M", "G", "GG"],
   description: {
     heading: "Jaqueta Feminina Couro Sintético Forrada Luxo Rock",
     intro: [
@@ -714,6 +714,27 @@ const PRODUCT_SLUGS: Record<string, number> = {
 
 const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT];
 
+const FEMALE_JACKET_VARIANT_IDS: Record<string, Record<string, number>> = {
+  marrom: {
+    P: 248867337,
+    M: 250272025,
+    G: 250272071,
+    GG: 250272082,
+  },
+  preto: {
+    P: 250272166,
+    M: 250272274,
+    G: 250272380,
+    GG: 250272472,
+  },
+  bege: {
+    P: 250272635,
+    M: 250272743,
+    G: 250272745,
+    GG: 250272838,
+  },
+};
+
 const SIZE_GUIDE = [
   { label: "P", equivalent: "P", chest: 88, height: 55, shoulders: 37 },
   { label: "M", equivalent: "M", chest: 95, height: 56, shoulders: 40 },
@@ -1052,13 +1073,39 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const selectedFemaleJacketVariantId =
+    PRODUCT.id === "mercadopromo-jaqueta-courino" && size
+      ? FEMALE_JACKET_VARIANT_IDS[colorKey]?.[size]
+      : undefined;
+
+  function validateSelection() {
+    if (!size) {
+      setCheckoutError("Escolha um tamanho para continuar.");
+      return false;
+    }
+
+    if (PRODUCT.id === "mercadopromo-jaqueta-courino" && !selectedFemaleJacketVariantId) {
+      setCheckoutError("Esta combinação de cor e tamanho não está disponível.");
+      return false;
+    }
+
+    return true;
+  }
+
   async function goToZedy() {
     if (checkoutLoading) return;
+    if (!validateSelection()) return;
     setCheckoutLoading(true);
     setCheckoutError(null);
     try {
       const { url } = await createCheckout({
-        data: { items: [{ slug: PRODUCT.id, quantity: qty }] },
+        data: {
+          items: [
+            selectedFemaleJacketVariantId
+              ? { variantId: selectedFemaleJacketVariantId, quantity: qty }
+              : { slug: PRODUCT.id, quantity: qty },
+          ],
+        },
       });
       window.location.href = url;
     } catch (err) {
@@ -1077,10 +1124,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     window.location.href = SOFT_CHECKOUT_URL;
   }
 
-  // Female jacket → external Shopify checkout, main pixel keeps tracking
+  // Product-specific external checkouts. Female jacket uses Zedy variants.
   const EXTERNAL_MAIN_PIXEL_CHECKOUTS: Record<string, string> = {
-    "mercadopromo-jaqueta-courino":
-      "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393743629991&store=33937",
     "mercadopromo-jaqueta-termica-masc":
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767842421&store=33937",
     "mercadopromo-jaqueta-bobojaco-puffer":
@@ -1097,13 +1142,14 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   }
 
   const onBuy = () => {
+    if (!validateSelection()) return;
     const params = {
-      content_ids: [PRODUCT.id],
+      content_ids: [selectedFemaleJacketVariantId ?? PRODUCT.id],
       content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
       num_items: qty,
-      contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
+      contents: [{ id: selectedFemaleJacketVariantId ?? colorKey, size: size ?? "-", quantity: qty }],
     };
     if (isSoftProduct) {
       fbqTrack("InitiateCheckout", params);
@@ -1120,8 +1166,9 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   };
 
   const onAddToCart = () => {
+    if (!validateSelection()) return;
     const atcParams = {
-      content_ids: [PRODUCT.id],
+      content_ids: [selectedFemaleJacketVariantId ?? PRODUCT.id],
       content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
@@ -1129,7 +1176,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     const icParams = {
       ...atcParams,
       num_items: qty,
-      contents: [{ id: colorKey, size: size ?? "-", quantity: qty }],
+      contents: [{ id: selectedFemaleJacketVariantId ?? colorKey, size: size ?? "-", quantity: qty }],
     };
     if (isSoftProduct) {
       fbqTrack("AddToCart", atcParams);
