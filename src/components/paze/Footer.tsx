@@ -82,7 +82,7 @@ export function Footer() {
       </div>
       <div className="border-t border-[color:var(--bone)]/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 font-mono text-[11px] uppercase tracking-wider text-[color:var(--bone)]/40 md:flex-row md:items-center md:justify-between md:px-8">
-          <div>© {new Date().getFullYear()} Paze · Todos os direitos reservados</div>
+          <div>© {new Date().getFullYear()} Paze · Todos os direitos reservados · Compra segura</div>
           <div>São Paulo, Brasil</div>
         </div>
       </div>
