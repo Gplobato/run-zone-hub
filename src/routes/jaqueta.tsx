@@ -4,7 +4,7 @@ import { MercadoPromoPage } from "./mercadopromo";
 const TITLE = "Mercado Livre";
 const PRODUCT_TITLE = "Jaqueta Feminina Courino Slim";
 const DESCRIPTION =
-  "Jaqueta feminina slim em courino com ziper estilo motoqueiro. Frete gratis, 6x sem juros e devolucao gratis em ate 30 dias.";
+  "Jaqueta feminina slim em courino com ziper estilo motoqueiro. Compra segura, frete gratis, 6x sem juros e devolucao gratis em ate 30 dias.";
 const OG_IMAGE =
   "https://http2.mlstatic.com/D_NQ_NP_2X_810204-MLB110339498152_052026-F.webp";
 
