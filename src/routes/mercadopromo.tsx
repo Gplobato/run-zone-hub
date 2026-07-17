@@ -711,6 +711,8 @@ const PRODUCT_SLUGS: Record<string, number> = {
   "conjunto-soft-teddy": 5,
   bobojaco: 6,
 };
+const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
+const DEFAULT_MERCADO_PROMO_SLUG = "bota";
 
 const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT];
 
@@ -1023,7 +1025,11 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const search = useSearch({ strict: false }) as { p?: string };
   const navigate = useNavigate();
   const p = forcedSlug ?? search.p;
-  const activeIdx = p && PRODUCT_SLUGS[p] !== undefined ? PRODUCT_SLUGS[p] : 0;
+  const isBlockedLegacyJacket = !forcedSlug && Boolean(search.p) && LEGACY_JACKET_SEARCH_SLUGS.has(search.p!);
+  const activeIdx =
+    p && PRODUCT_SLUGS[p] !== undefined && !isBlockedLegacyJacket
+      ? PRODUCT_SLUGS[p]
+      : PRODUCT_SLUGS[DEFAULT_MERCADO_PROMO_SLUG];
   const PRODUCT = PRODUCTS[activeIdx];
   const COLORS = PRODUCT.colors;
   const SIZES = PRODUCT.sizes;
@@ -1062,6 +1068,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
 
   // Pixel: ViewContent fires per active product
   useEffect(() => {
+    if (isBlockedLegacyJacket) return;
+
     const params = {
       content_ids: [PRODUCT.id],
       content_name: PRODUCT.title,
@@ -1070,7 +1078,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       currency: "BRL",
     };
     fbqTrack("ViewContent", params);
-  }, [PRODUCT.id, PRODUCT.price, PRODUCT.title]);
+  }, [PRODUCT.id, PRODUCT.price, PRODUCT.title, isBlockedLegacyJacket]);
 
   const selectProduct = (idx: number) => {
     if (idx === activeIdx) return;
@@ -1212,6 +1220,16 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     void goToZedy();
   };
 
+  if (isBlockedLegacyJacket) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#ededed] px-4 text-[#333]">
+        <div className="text-center">
+          <h1 className="text-5xl font-semibold">404</h1>
+          <p className="mt-3 text-sm text-[#666]">Página não encontrada.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mercado-promo-page min-h-screen bg-[#ededed] text-[#333]">
