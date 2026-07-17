@@ -82,6 +82,11 @@ import bobojacoRev4 from "@/assets/mercadopromo/bobojaco-review-4.png";
 import bobojacoRev5 from "@/assets/mercadopromo/bobojaco-review-5.png";
 import bobojacoRev6 from "@/assets/mercadopromo/bobojaco-review-6.png";
 import bobojacoRev7 from "@/assets/mercadopromo/bobojaco-review-7.png";
+import kitPanos1 from "@/assets/mercadopromo/kitpanos-1.jpeg";
+import kitPanos2 from "@/assets/mercadopromo/kitpanos-2.jpeg";
+import kitPanos3 from "@/assets/mercadopromo/kitpanos-3.jpeg";
+import kitPanosVideo from "@/assets/mercadopromo/kitpanos-video.mp4";
+import kitPanosReview1 from "@/assets/mercadopromo/kitpanos-review-1.webp";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
@@ -701,6 +706,84 @@ const BOBOJACO_PRODUCT: Product = {
   },
 };
 
+const KIT_PANOS_PRODUCT: Product = {
+  id: "mercadopromo-kit-panos",
+  title: "Pano de Prato Atoalhado 70x50 cm em Algodão – Alta Absorção e Durabilidade",
+  brand: "Mercado Livre",
+  seller: "Casa Prime",
+  sold: "+2 mil vendidos",
+  rating: 4.9,
+  reviewsCount: 87,
+  price: 3990,
+  compareAt: 7990,
+  installments: { count: 6, valueCents: 665 },
+  categoryTrail: ["Casa, Móveis e Decoração", "Cozinha", "Panos de Prato"],
+  colors: [
+    {
+      key: "kit-estampado",
+      label: "Kit estampado",
+      thumb: kitPanos1,
+      gallery: [
+        { src: kitPanos1, kind: "image" },
+        { src: kitPanos2, kind: "image" },
+        { src: kitPanos3, kind: "image" },
+        { src: kitPanosVideo, kind: "video" },
+      ],
+    },
+  ],
+  sizes: [],
+  description: {
+    heading: "Kit 10x Pano de Prato Atoalhado 70x50 cm em Algodão",
+    intro: [
+      "Pano de prato atoalhado confeccionado em tecido 100% algodão, macio, resistente e com excelente poder de absorção.",
+      "Ideal para secar louças, utensílios e manter a cozinha sempre limpa e organizada, sem deixar pelos nas peças.",
+      "Kit perfeito para uso doméstico, cozinha profissional ou revenda, com estampas variadas e acabamento resistente para o dia a dia.",
+    ],
+    steps: [
+      "Receba um kit com 10 panos atoalhados sortidos.",
+      "Use para secar louças, copos, talheres e bancadas com absorção rápida.",
+      "Lave normalmente e reutilize por muito mais tempo.",
+    ],
+    benefits: [
+      {
+        title: "100% algodão atoalhado",
+        result: "Mais absorção no uso diário",
+        feeling: "Louça seca mais rápido, cozinha mais prática.",
+      },
+      {
+        title: "Tamanho 70 x 50 cm",
+        result: "Medida versátil para louças e utensílios",
+        feeling: "Não fica pequeno demais nem atrapalha no manuseio.",
+      },
+      {
+        title: "Kit com 10 unidades",
+        result: "Mais custo-benefício para casa ou revenda",
+        feeling: "Você sempre tem pano limpo disponível.",
+      },
+    ],
+    quotes: [
+      "Parece toalha de rosto. Seca super bem e são super bonitos. Amei.",
+      "O acabamento das peças é excelente e não deixa pelo nas louças.",
+      "Pano bom. Gostei.",
+    ],
+    specs: [
+      "Quantidade: kit com 10 panos de prato",
+      "Tamanho: 70 x 50 cm",
+      "Material: 100% algodão",
+      "Tecido: atoalhado de alta absorção",
+      "Toque: macio, resistente e durável",
+      "Lavagem: fácil de lavar e de secagem rápida",
+      "Uso indicado: doméstico, profissional ou revenda",
+    ],
+    tip: "As estampas podem variar conforme disponibilidade do lote, mantendo sempre o mesmo padrão de qualidade e absorção.",
+    closing: [
+      "Produto de ótima qualidade, perfeito para o dia a dia e também uma excelente opção para revenda.",
+      "Adicione ao carrinho agora e receba um kit completo para deixar sua cozinha mais prática, limpa e organizada.",
+    ],
+    warranty: "30 dias (Mercado Livre)",
+  },
+};
+
 // Slug -> índice em PRODUCTS. Usado para URLs de anúncio: /mercadopromo?p=<slug>
 const PRODUCT_SLUGS: Record<string, number> = {
   jaquetafem: 0,
@@ -710,11 +793,12 @@ const PRODUCT_SLUGS: Record<string, number> = {
   "jaqueta-masculina": 4,
   "conjunto-soft-teddy": 5,
   bobojaco: 6,
+  kitpanos: 7,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT];
 
 const FEMALE_JACKET_VARIANT_IDS: Record<string, Record<string, number>> = {
   marrom: {
@@ -926,6 +1010,31 @@ const BOBOJACO_REVIEWS: Review[] = [
   },
 ];
 
+const KIT_PANOS_REVIEWS: Review[] = [
+  {
+    name: "marcia.s",
+    verified: true,
+    rating: 5,
+    text: "Parece toalha de rosto. Seca super bem e são super bonitas. Amei.",
+    when: "há 2 semanas",
+    photos: [kitPanosReview1],
+  },
+  {
+    name: "regina.l",
+    verified: true,
+    rating: 5,
+    text: "O pano de prato tem uma trama média. O acabamento das peças é excelente e seu tamanho atende a proposta. Não deixa pelo nas louças, o que já coloca o material numa posição privilegiada.",
+    when: "há 3 semanas",
+  },
+  {
+    name: "clau.cozinha",
+    verified: true,
+    rating: 5,
+    text: "Pano bom. Gostei. Comprei para usar em casa e já separei alguns para revenda porque a qualidade surpreendeu.",
+    when: "há 1 mês",
+  },
+];
+
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
   [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
@@ -934,6 +1043,7 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [JAQMASC_PRODUCT.id]: JAQMASC_REVIEWS,
   [SOFT_PRODUCT.id]: SOFT_REVIEWS,
   [BOBOJACO_PRODUCT.id]: BOBOJACO_REVIEWS,
+  [KIT_PANOS_PRODUCT.id]: KIT_PANOS_REVIEWS,
 };
 
 function formatBRL(cents: number) {
@@ -1033,6 +1143,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const PRODUCT = PRODUCTS[activeIdx];
   const COLORS = PRODUCT.colors;
   const SIZES = PRODUCT.sizes;
+  const requiresSize = SIZES.length > 0;
 
   const [colorKey, setColorKey] = useState(COLORS[0].key);
   const color = useMemo(
@@ -1040,6 +1151,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     [colorKey, COLORS],
   );
   const [activeImg, setActiveImg] = useState(color.gallery[0].src);
+  const activeMedia = color.gallery.find((media) => media.src === activeImg);
   const [size, setSize] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
@@ -1101,7 +1213,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     selectedFemaleJacketVariantId ?? selectedBobojacoVariantId;
 
   function validateSelection() {
-    if (!size) {
+    if (requiresSize && !size) {
       setCheckoutError("Escolha um tamanho para continuar.");
       return false;
     }
@@ -1319,7 +1431,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                 ))}
               </div>
               <div className="relative min-w-0 flex-1 overflow-hidden rounded bg-white">
-                {activeImg === jacketMarromVideo ? (
+                {activeMedia?.kind === "video" ? (
                   <video
                     src={activeImg}
                     className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
@@ -1420,40 +1532,41 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
               </div>
             </div>
 
-            {/* Tamanho */}
-            <div className="mt-6">
-              <div className="mb-2 text-[14px]">
-                <span className="text-[#333]">Tamanho: </span>
-                <span className="text-[#666]">{size ?? "Escolha"}</span>
+            {requiresSize && (
+              <div className="mt-6">
+                <div className="mb-2 text-[14px]">
+                  <span className="text-[#333]">Tamanho: </span>
+                  <span className="text-[#666]">{size ?? "Escolha"}</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {SIZES.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setSize(s)}
+                      className={`min-w-[54px] rounded border px-3 py-2 text-[14px] ${
+                        size === s
+                          ? "border-[#3483fa] bg-[#e6f0ff] text-[#3483fa]"
+                          : "border-[#c7c7c7] bg-white text-[#333] hover:border-[#3483fa]"
+                      } ${size === null ? "border-dashed" : ""}`}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSizeGuideOpen(true)}
+                  className="mt-3 inline-flex items-center gap-1 text-[13px] text-[#3483fa] hover:underline"
+                >
+                  <Ruler className="h-3.5 w-3.5" /> Guia de tamanhos
+                </button>
+                <div className="mt-2">
+                  <a href="#" className="inline-flex items-center gap-1 text-[13px] text-[#3483fa] hover:underline">
+                    Perfeito para 100% <ChevronDown className="h-3 w-3" />
+                  </a>
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {SIZES.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSize(s)}
-                    className={`min-w-[54px] rounded border px-3 py-2 text-[14px] ${
-                      size === s
-                        ? "border-[#3483fa] bg-[#e6f0ff] text-[#3483fa]"
-                        : "border-[#c7c7c7] bg-white text-[#333] hover:border-[#3483fa]"
-                    } ${size === null ? "border-dashed" : ""}`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => setSizeGuideOpen(true)}
-                className="mt-3 inline-flex items-center gap-1 text-[13px] text-[#3483fa] hover:underline"
-              >
-                <Ruler className="h-3.5 w-3.5" /> Guia de tamanhos
-              </button>
-              <div className="mt-2">
-                <a href="#" className="inline-flex items-center gap-1 text-[13px] text-[#3483fa] hover:underline">
-                  Perfeito para 100% <ChevronDown className="h-3 w-3" />
-                </a>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Buy box */}

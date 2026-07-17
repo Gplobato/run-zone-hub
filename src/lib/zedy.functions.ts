@@ -17,6 +17,7 @@ const VARIANT_IDS: Record<string, number> = {
   "fita-anti-atrito": 247101041,
   "mercadopromo-jaqueta-courino": 248867337,
   "mercadopromo-bota-montaria": 248867624,
+  "mercadopromo-kit-panos": 250397229,
 };
 
 function envValue(name: string): string | undefined {
