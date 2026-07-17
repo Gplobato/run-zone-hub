@@ -645,7 +645,7 @@ const BOBOJACO_PRODUCT: Product = {
       ],
     },
   ],
-  sizes: ["P", "M", "G", "GG", "XGG", "G3", "G4"],
+  sizes: ["P", "M", "G", "GG", "XGG"],
   description: {
     heading: "Jaqueta Unissex Bobojaco Puffer com Capuz",
     intro: [
@@ -733,6 +733,14 @@ const FEMALE_JACKET_VARIANT_IDS: Record<string, Record<string, number>> = {
     G: 250272745,
     GG: 250272838,
   },
+};
+
+const BOBOJACO_VARIANT_IDS: Record<string, number> = {
+  P: 249797139,
+  M: 250277308,
+  G: 250277311,
+  GG: 250277319,
+  XGG: 250277323,
 };
 
 const SIZE_GUIDE = [
@@ -1077,6 +1085,12 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     PRODUCT.id === "mercadopromo-jaqueta-courino" && size
       ? FEMALE_JACKET_VARIANT_IDS[colorKey]?.[size]
       : undefined;
+  const selectedBobojacoVariantId =
+    PRODUCT.id === "mercadopromo-jaqueta-bobojaco-puffer" && size
+      ? BOBOJACO_VARIANT_IDS[size]
+      : undefined;
+  const selectedZedyVariantId =
+    selectedFemaleJacketVariantId ?? selectedBobojacoVariantId;
 
   function validateSelection() {
     if (!size) {
@@ -1086,6 +1100,11 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
 
     if (PRODUCT.id === "mercadopromo-jaqueta-courino" && !selectedFemaleJacketVariantId) {
       setCheckoutError("Esta combinação de cor e tamanho não está disponível.");
+      return false;
+    }
+
+    if (PRODUCT.id === "mercadopromo-jaqueta-bobojaco-puffer" && !selectedBobojacoVariantId) {
+      setCheckoutError("Este tamanho não está disponível.");
       return false;
     }
 
@@ -1101,8 +1120,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       const { url } = await createCheckout({
         data: {
           items: [
-            selectedFemaleJacketVariantId
-              ? { variantId: selectedFemaleJacketVariantId, quantity: qty }
+            selectedZedyVariantId
+              ? { variantId: selectedZedyVariantId, quantity: qty }
               : { slug: PRODUCT.id, quantity: qty },
           ],
         },
@@ -1124,12 +1143,10 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     window.location.href = SOFT_CHECKOUT_URL;
   }
 
-  // Product-specific external checkouts. Female jacket uses Zedy variants.
+  // Product-specific external checkouts. Female jacket and Bobojaco use Zedy variants.
   const EXTERNAL_MAIN_PIXEL_CHECKOUTS: Record<string, string> = {
     "mercadopromo-jaqueta-termica-masc":
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767842421&store=33937",
-    "mercadopromo-jaqueta-bobojaco-puffer":
-      "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393732718424&store=33937",
   };
   const externalMainPixelCheckoutUrl = EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
 
@@ -1144,12 +1161,12 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const onBuy = () => {
     if (!validateSelection()) return;
     const params = {
-      content_ids: [selectedFemaleJacketVariantId ?? PRODUCT.id],
+      content_ids: [selectedZedyVariantId ?? PRODUCT.id],
       content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
       num_items: qty,
-      contents: [{ id: selectedFemaleJacketVariantId ?? colorKey, size: size ?? "-", quantity: qty }],
+      contents: [{ id: selectedZedyVariantId ?? colorKey, size: size ?? "-", quantity: qty }],
     };
     if (isSoftProduct) {
       fbqTrack("InitiateCheckout", params);
@@ -1168,7 +1185,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const onAddToCart = () => {
     if (!validateSelection()) return;
     const atcParams = {
-      content_ids: [selectedFemaleJacketVariantId ?? PRODUCT.id],
+      content_ids: [selectedZedyVariantId ?? PRODUCT.id],
       content_name: PRODUCT.title,
       value: PRODUCT.price / 100,
       currency: "BRL",
@@ -1176,7 +1193,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     const icParams = {
       ...atcParams,
       num_items: qty,
-      contents: [{ id: selectedFemaleJacketVariantId ?? colorKey, size: size ?? "-", quantity: qty }],
+      contents: [{ id: selectedZedyVariantId ?? colorKey, size: size ?? "-", quantity: qty }],
     };
     if (isSoftProduct) {
       fbqTrack("AddToCart", atcParams);

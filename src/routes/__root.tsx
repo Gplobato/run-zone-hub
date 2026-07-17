@@ -15,6 +15,8 @@ import appCss from "../styles.css?url";
 const seoTitle = "Paze | Acessorios tecnicos de corrida e seguranca urbana";
 const seoDescription =
   "Fone de conducao ossea, LEDs, coletes refletivos e acessorios tecnicos para quem treina em ambiente urbano. Seguranca e performance em cada passada.";
+const mainPixelId = "37033721662937730";
+const bobojacoPixelId = "1370764315020072";
 
 function NotFoundComponent() {
   return (
@@ -113,14 +115,14 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
         <script
           dangerouslySetInnerHTML={{
-            __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', '37033721662937730');fbq('track', 'PageView');`,
+            __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');var p=window.location.pathname.indexOf('/bobojaco')===0?'${bobojacoPixelId}':'${mainPixelId}';fbq('init',p);fbq('track','PageView');`,
           }}
         />
       </head>
       <body>
         <noscript
           dangerouslySetInnerHTML={{
-            __html: `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=37033721662937730&ev=PageView&noscript=1" alt="" />`,
+            __html: `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${mainPixelId}&ev=PageView&noscript=1" alt="" />`,
           }}
         />
         {children}

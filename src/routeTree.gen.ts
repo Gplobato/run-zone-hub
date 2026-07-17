@@ -13,6 +13,7 @@ import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as MercadopromoRouteImport } from './routes/mercadopromo'
 import { Route as JaquetaRouteImport } from './routes/jaqueta'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as BobojacoRouteImport } from './routes/bobojaco'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
@@ -36,6 +37,11 @@ const JaquetaRoute = JaquetaRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BobojacoRoute = BobojacoRouteImport.update({
+  id: '/bobojaco',
+  path: '/bobojaco',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -62,6 +68,7 @@ const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/bobojaco': typeof BobojacoRoute
   '/checkout': typeof CheckoutRoute
   '/jaqueta': typeof JaquetaRoute
   '/mercadopromo': typeof MercadopromoRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/bobojaco': typeof BobojacoRoute
   '/checkout': typeof CheckoutRoute
   '/jaqueta': typeof JaquetaRoute
   '/mercadopromo': typeof MercadopromoRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/bobojaco': typeof BobojacoRoute
   '/checkout': typeof CheckoutRoute
   '/jaqueta': typeof JaquetaRoute
   '/mercadopromo': typeof MercadopromoRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/bobojaco'
     | '/checkout'
     | '/jaqueta'
     | '/mercadopromo'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/bobojaco'
     | '/checkout'
     | '/jaqueta'
     | '/mercadopromo'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/bobojaco'
     | '/checkout'
     | '/jaqueta'
     | '/mercadopromo'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  BobojacoRoute: typeof BobojacoRoute
   CheckoutRoute: typeof CheckoutRoute
   JaquetaRoute: typeof JaquetaRoute
   MercadopromoRoute: typeof MercadopromoRoute
@@ -164,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bobojaco': {
+      id: '/bobojaco'
+      path: '/bobojaco'
+      fullPath: '/bobojaco'
+      preLoaderRoute: typeof BobojacoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  BobojacoRoute: BobojacoRoute,
   CheckoutRoute: CheckoutRoute,
   JaquetaRoute: JaquetaRoute,
   MercadopromoRoute: MercadopromoRoute,
