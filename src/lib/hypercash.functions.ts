@@ -9,9 +9,11 @@ function envValue(name: string): string | undefined {
   const nodeValue = process.env[name];
   if (nodeValue) return nodeValue;
 
-  const cloudflareEnv = (globalThis as typeof globalThis & {
-    __env__?: Record<string, string | undefined>;
-  }).__env__;
+  const cloudflareEnv = (
+    globalThis as typeof globalThis & {
+      __env__?: Record<string, string | undefined>;
+    }
+  ).__env__;
 
   return cloudflareEnv?.[name];
 }
@@ -86,7 +88,6 @@ export type CreateHypercashTransactionInput = {
   customer: HypercashCustomerInput;
   address: HypercashAddressInput;
   card?: HypercashCardInput;
-  externalRef?: string;
 };
 
 export const createHypercashTransaction = createServerFn({ method: "POST" })
@@ -102,7 +103,8 @@ export const createHypercashTransaction = createServerFn({ method: "POST" })
     if (!data.address.neighborhood?.trim()) throw new Error("Bairro obrigatorio.");
     if (!data.address.city?.trim()) throw new Error("Cidade obrigatoria.");
     if (data.address.state?.trim().length !== 2) throw new Error("UF obrigatoria.");
-    if (data.paymentMethod === "CREDIT_CARD" && !data.card) throw new Error("Dados do cartao obrigatorios.");
+    if (data.paymentMethod === "CREDIT_CARD" && !data.card)
+      throw new Error("Dados do cartao obrigatorios.");
     return data;
   })
   .handler(async ({ data }) => {
@@ -154,13 +156,10 @@ export const createHypercashTransaction = createServerFn({ method: "POST" })
         unitPrice: item.unitPriceCents,
         quantity: item.quantity,
         tangible: true,
-        externalRef: item.slug,
       })),
       traceable: true,
       ip: clientIp,
       postbackUrl,
-      externalRef: data.externalRef,
-      metadata: { pedido_id: data.externalRef },
     };
 
     if (data.paymentMethod === "PIX") {

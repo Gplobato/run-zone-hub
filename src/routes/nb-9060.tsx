@@ -7,21 +7,21 @@ import {
   CircleAlert,
   Copy,
   CreditCard,
+  Edit3,
   Loader2,
   Lock,
+  MapPin,
   Minus,
   Plus,
   RotateCcw,
   ShieldCheck,
+  Smartphone,
   Truck,
 } from "lucide-react";
 import { StoreLayout } from "@/components/paze/StoreLayout";
 import { formatBRL } from "@/lib/products";
 import { fbqTrack } from "@/lib/pixel";
-import {
-  createHypercashTransaction,
-  getHypercashTransaction,
-} from "@/lib/hypercash.functions";
+import { createHypercashTransaction, getHypercashTransaction } from "@/lib/hypercash.functions";
 import nb9060Rose from "@/assets/products/nb-9060-rose.png";
 import payAmex from "@/assets/mercadopromo/pay-amex.png";
 import payElo from "@/assets/mercadopromo/pay-elo.png";
@@ -65,10 +65,18 @@ const COLORS = [
 type AvailableColor = Extract<(typeof COLORS)[number], { soldOut: false }>;
 type PixData = {
   qrcode?: string;
+  qrCode?: string;
+  copyPaste?: string;
+  code?: string;
   qrcodeBase64?: string;
+  qrCodeBase64?: string;
   qrcodeUrl?: string;
+  qrCodeUrl?: string;
   expiresAt?: string;
 };
+
+type CheckoutStep = 1 | 2 | 3;
+type ShippingState = "idle" | "calculating" | "ready";
 
 export const Route = createFileRoute("/nb-9060")({
   head: () => ({
@@ -129,9 +137,14 @@ function Nb9060Page() {
   const [activeImage, setActiveImage] = useState(COLORS[0].image);
   const [qty, setQty] = useState(1);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>(1);
   const [paymentMethod, setPaymentMethod] = useState<"PIX" | "CREDIT_CARD">("PIX");
   const [form, setForm] = useState(emptyForm);
   const [card, setCard] = useState(emptyCard);
+  const [cepLoading, setCepLoading] = useState(false);
+  const [cepError, setCepError] = useState<string | null>(null);
+  const [shippingState, setShippingState] = useState<ShippingState>("idle");
+  const [shippingSelected, setShippingSelected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tx, setTx] = useState<{ id: string; status: string; pix: PixData | null } | null>(null);
@@ -153,32 +166,65 @@ function Nb9060Page() {
 
   useEffect(() => {
     const cep = onlyDigits(form.zipCode);
-    if (cep.length !== 8) return;
+    if (cep.length !== 8) {
+      setCepLoading(false);
+      setCepError(null);
+      setShippingState("idle");
+      setShippingSelected(false);
+      return;
+    }
     let cancelled = false;
+    setCepLoading(true);
+    setCepError(null);
+    setShippingState("idle");
+    setShippingSelected(false);
     fetch(`https://viacep.com.br/ws/${cep}/json/`)
       .then((response) => response.json())
-      .then((data: {
-        logradouro?: string;
-        bairro?: string;
-        localidade?: string;
-        uf?: string;
-        erro?: boolean;
-      }) => {
-        if (cancelled || data.erro) return;
-        setForm((current) => ({
-          ...current,
-          street: data.logradouro || current.street,
-          neighborhood: data.bairro || current.neighborhood,
-          city: data.localidade || current.city,
-          state: data.uf || current.state,
-        }));
+      .then(
+        (data: {
+          logradouro?: string;
+          bairro?: string;
+          localidade?: string;
+          uf?: string;
+          erro?: boolean;
+        }) => {
+          if (cancelled) return;
+          if (data.erro) {
+            setCepError("CEP não encontrado. Confira os números e tente novamente.");
+            return;
+          }
+          setForm((current) => ({
+            ...current,
+            street: data.logradouro || current.street,
+            neighborhood: data.bairro || current.neighborhood,
+            city: data.localidade || current.city,
+            state: data.uf || current.state,
+          }));
+          setShippingState("calculating");
+          window.setTimeout(() => {
+            if (!cancelled) setShippingState("ready");
+          }, 1900);
+        },
+      )
+      .catch(() => {
+        if (!cancelled)
+          setCepError("Não foi possível consultar o CEP agora. Preencha o endereço manualmente.");
       })
-      .catch(() => undefined);
+      .finally(() => {
+        if (!cancelled) setCepLoading(false);
+      });
 
     return () => {
       cancelled = true;
     };
   }, [form.zipCode]);
+
+  useEffect(() => {
+    if (!tx) return;
+    window.setTimeout(() => {
+      checkoutRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  }, [tx]);
 
   useEffect(() => {
     if (!tx?.id || paid) return;
@@ -200,40 +246,50 @@ function Nb9060Page() {
     };
   }, [getTx, paid, qty, selectedColor, selectedSize, tx?.id]);
 
-  const canSubmit = useMemo(() => {
-    const hasAddress =
+  const hasCustomer = useMemo(
+    () =>
+      form.name.trim().length > 2 &&
+      /.+@.+\..+/.test(form.email) &&
+      onlyDigits(form.document).length === 11 &&
+      onlyDigits(form.phone).length >= 10,
+    [form.document, form.email, form.name, form.phone],
+  );
+
+  const hasAddress = useMemo(
+    () =>
       onlyDigits(form.zipCode).length === 8 &&
       form.street.trim() &&
       form.streetNumber.trim() &&
       form.neighborhood.trim() &&
       form.city.trim() &&
-      form.state.trim().length === 2;
+      form.state.trim().length === 2,
+    [form.city, form.neighborhood, form.state, form.street, form.streetNumber, form.zipCode],
+  );
 
-    const hasCustomer =
-      form.name.trim().length > 2 &&
-      /.+@.+\..+/.test(form.email) &&
-      onlyDigits(form.document).length === 11 &&
-      onlyDigits(form.phone).length >= 10;
-
+  const canSubmit = useMemo(() => {
+    if (!shippingSelected) return false;
     if (paymentMethod === "PIX") return Boolean(hasCustomer && hasAddress);
 
     const [month, year] = parseExpiration(card.expiration);
     return Boolean(
       hasCustomer &&
-        hasAddress &&
-        onlyDigits(card.number).length >= 13 &&
-        card.holderName.trim().length > 2 &&
-        month &&
-        year &&
-        onlyDigits(card.cvv).length >= 3,
+      hasAddress &&
+      onlyDigits(card.number).length >= 13 &&
+      card.holderName.trim().length > 2 &&
+      month &&
+      year &&
+      onlyDigits(card.cvv).length >= 3,
     );
-  }, [card, form, paymentMethod]);
+  }, [card, hasAddress, hasCustomer, paymentMethod, shippingSelected]);
 
   function openInternalCheckout(source: "buy_now" | "add_to_cart") {
     const payload = pixelPayload(selectedColor, qty, selectedSize);
     if (source === "add_to_cart") fbqTrack("AddToCart", payload);
     fbqTrack("InitiateCheckout", payload);
     setCheckoutOpen(true);
+    setCheckoutStep(1);
+    setTx(null);
+    setPaid(false);
     window.setTimeout(() => {
       checkoutRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 80);
@@ -292,7 +348,6 @@ function Nb9060Page() {
                   installments: Number(card.installments),
                 }
               : undefined,
-          externalRef: `nb9060-${selectedColor.key}-${selectedSize}-${Date.now()}`,
         },
       });
 
@@ -357,7 +412,13 @@ function Nb9060Page() {
                       : "border-[color:var(--graphite)]/10"
                   }`}
                 >
-                  <img src={src} alt="" className="h-full w-full object-cover" loading="lazy" draggable={false} />
+                  <img
+                    src={src}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    draggable={false}
+                  />
                 </button>
               ))}
             </div>
@@ -412,7 +473,13 @@ function Nb9060Page() {
                           : "border-[color:var(--graphite)]/15 bg-white hover:border-[color:var(--sage)]"
                       } ${color.soldOut ? "cursor-not-allowed opacity-55" : ""}`}
                     >
-                      <img src={color.image} alt="" className="h-14 w-14 rounded-sm object-cover" loading="lazy" draggable={false} />
+                      <img
+                        src={color.image}
+                        alt=""
+                        className="h-14 w-14 rounded-sm object-cover"
+                        loading="lazy"
+                        draggable={false}
+                      />
                       <span className="font-mono text-xs uppercase tracking-wider">
                         {color.label}
                         {color.soldOut && (
@@ -451,11 +518,19 @@ function Nb9060Page() {
 
             <div className="mt-8 flex items-center gap-3">
               <div className="inline-flex items-center rounded-sm border border-[color:var(--graphite)]/20">
-                <button aria-label="Diminuir" onClick={() => setQty((q) => Math.max(1, q - 1))} className="p-3 hover:bg-[color:var(--graphite)]/5">
+                <button
+                  aria-label="Diminuir"
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  className="p-3 hover:bg-[color:var(--graphite)]/5"
+                >
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="w-10 text-center font-mono text-sm">{qty}</span>
-                <button aria-label="Aumentar" onClick={() => setQty((q) => q + 1)} className="p-3 hover:bg-[color:var(--graphite)]/5">
+                <button
+                  aria-label="Aumentar"
+                  onClick={() => setQty((q) => q + 1)}
+                  className="p-3 hover:bg-[color:var(--graphite)]/5"
+                >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
@@ -483,8 +558,11 @@ function Nb9060Page() {
         </div>
 
         {checkoutOpen && (
-          <section ref={checkoutRef} className="mt-16 rounded-md border border-[color:var(--graphite)]/10 bg-white p-4 shadow-sm md:p-6">
-            <div className="mb-6 flex flex-col gap-3 border-b border-[color:var(--graphite)]/10 pb-5 md:flex-row md:items-center md:justify-between">
+          <section
+            ref={checkoutRef}
+            className="mt-12 scroll-mt-4 rounded-md border border-[color:var(--graphite)]/10 bg-[#f7f7f5] p-3 shadow-sm md:mt-16 md:p-6"
+          >
+            <div className="mb-5 flex flex-col gap-4 border-b border-[color:var(--graphite)]/10 pb-5 md:flex-row md:items-center md:justify-between">
               <div>
                 <div className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--sage)]">
                   / Checkout seguro
@@ -492,138 +570,459 @@ function Nb9060Page() {
                 <h2 className="mt-1 font-display text-3xl tracking-wide">Finalize sua compra</h2>
                 <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                   <Lock className="h-4 w-4 text-[color:var(--sage)]" />
-                  Pagamento criptografado, Pix instantâneo e cartão em até 12x.
+                  Seus dados são criptografados do início ao fim.
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {[payAmex, payElo, payVisa, payMastercard, payPix].map((src) => (
-                  <span key={src} className="flex h-8 w-12 items-center justify-center rounded-sm border border-[color:var(--graphite)]/10 bg-white p-1">
+                  <span
+                    key={src}
+                    className="flex h-8 w-12 items-center justify-center rounded-sm border border-[color:var(--graphite)]/10 bg-white p-1"
+                  >
                     <img src={src} alt="" className="max-h-5 max-w-full" />
                   </span>
                 ))}
               </div>
             </div>
 
-            {paid ? (
-              <SuccessPanel />
-            ) : tx ? (
-              <PixPanel tx={tx} totalCents={totalCents} />
-            ) : (
-              <div className="grid gap-8 lg:grid-cols-[1.35fr_0.85fr]">
-                <form onSubmit={submitPayment} className="space-y-6">
-                  <section>
-                    <h3 className="font-display text-2xl tracking-wide">Identificação</h3>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                      <Field label="Nome completo" className="sm:col-span-2">
-                        <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} required />
-                      </Field>
-                      <Field label="E-mail">
-                        <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputCls} required />
-                      </Field>
-                      <Field label="Celular / WhatsApp">
-                        <input value={form.phone} onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })} placeholder="(11) 99999-9999" className={inputCls} required />
-                      </Field>
-                      <Field label="CPF">
-                        <input value={form.document} onChange={(e) => setForm({ ...form, document: maskCPF(e.target.value) })} placeholder="000.000.000-00" className={inputCls} required />
-                      </Field>
-                    </div>
-                  </section>
+            <CheckoutProgress current={tx || paid ? 3 : checkoutStep} />
 
-                  <section>
-                    <h3 className="font-display text-2xl tracking-wide">Entrega</h3>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-6">
-                      <Field label="CEP" className="sm:col-span-2">
-                        <input value={form.zipCode} onChange={(e) => setForm({ ...form, zipCode: maskCEP(e.target.value) })} placeholder="00000-000" className={inputCls} required />
-                      </Field>
-                      <Field label="Rua" className="sm:col-span-4">
-                        <input value={form.street} onChange={(e) => setForm({ ...form, street: e.target.value })} className={inputCls} required />
-                      </Field>
-                      <Field label="Número" className="sm:col-span-2">
-                        <input value={form.streetNumber} onChange={(e) => setForm({ ...form, streetNumber: e.target.value })} className={inputCls} required />
-                      </Field>
-                      <Field label="Complemento" className="sm:col-span-4">
-                        <input value={form.complement} onChange={(e) => setForm({ ...form, complement: e.target.value })} className={inputCls} />
-                      </Field>
-                      <Field label="Bairro" className="sm:col-span-3">
-                        <input value={form.neighborhood} onChange={(e) => setForm({ ...form, neighborhood: e.target.value })} className={inputCls} required />
-                      </Field>
-                      <Field label="Cidade" className="sm:col-span-2">
-                        <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={inputCls} required />
-                      </Field>
-                      <Field label="UF" className="sm:col-span-1">
-                        <input maxLength={2} value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value.toUpperCase().slice(0, 2) })} className={inputCls} required />
-                      </Field>
-                    </div>
-                  </section>
+            <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)]">
+              <div className="min-w-0">
+                {paid ? (
+                  <div className="rounded-md border border-[color:var(--sage)]/40 bg-white p-5 md:p-8">
+                    <SuccessPanel />
+                  </div>
+                ) : tx ? (
+                  <div className="rounded-md border border-[color:var(--graphite)]/10 bg-white p-5 md:p-8">
+                    <PixPanel tx={tx} totalCents={totalCents} />
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {checkoutStep > 1 && (
+                      <CompletedCheckoutBlock
+                        icon={<CheckCircle2 className="h-5 w-5" />}
+                        title="Identificação"
+                        onEdit={() => setCheckoutStep(1)}
+                      >
+                        <div className="font-medium text-[color:var(--graphite)]">{form.name}</div>
+                        <div>
+                          {form.email} · {form.phone}
+                        </div>
+                      </CompletedCheckoutBlock>
+                    )}
 
-                  <section>
-                    <h3 className="font-display text-2xl tracking-wide">Pagamento</h3>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                      <PaymentButton active={paymentMethod === "PIX"} onClick={() => setPaymentMethod("PIX")}>
-                        <img src={pixLogo} alt="" className="h-6 w-6" />
-                        Pix
-                      </PaymentButton>
-                      <PaymentButton active={paymentMethod === "CREDIT_CARD"} onClick={() => setPaymentMethod("CREDIT_CARD")}>
-                        <CreditCard className="h-5 w-5" />
-                        Cartão de crédito
-                      </PaymentButton>
-                    </div>
-
-                    {paymentMethod === "CREDIT_CARD" && (
-                      <div className="mt-4 grid gap-3 sm:grid-cols-6">
-                        <Field label="Número do cartão" className="sm:col-span-6">
-                          <input value={card.number} onChange={(e) => setCard({ ...card, number: maskCardNumber(e.target.value) })} placeholder="0000 0000 0000 0000" className={inputCls} />
-                        </Field>
-                        <Field label="Nome impresso" className="sm:col-span-6">
-                          <input value={card.holderName} onChange={(e) => setCard({ ...card, holderName: e.target.value.toUpperCase() })} className={inputCls} />
-                        </Field>
-                        <Field label="Validade" className="sm:col-span-2">
-                          <input value={card.expiration} onChange={(e) => setCard({ ...card, expiration: maskExpiration(e.target.value) })} placeholder="MM/AA" className={inputCls} />
-                        </Field>
-                        <Field label="CVV" className="sm:col-span-2">
-                          <input value={card.cvv} onChange={(e) => setCard({ ...card, cvv: onlyDigits(e.target.value).slice(0, 4) })} placeholder="123" className={inputCls} />
-                        </Field>
-                        <Field label="Parcelas" className="sm:col-span-2">
-                          <select value={card.installments} onChange={(e) => setCard({ ...card, installments: e.target.value })} className={inputCls}>
-                            {Array.from({ length: 12 }, (_, i) => i + 1).map((installment) => (
-                              <option key={installment} value={installment}>
-                                {installment}x de {formatBRL(Math.ceil(totalCents / installment))}
-                              </option>
-                            ))}
-                          </select>
-                        </Field>
+                    {checkoutStep === 1 && (
+                      <div className="rounded-md border border-[color:var(--graphite)]/10 bg-white p-4 md:p-6">
+                        <CheckoutStepHeading
+                          step={1}
+                          title="Identificação"
+                          description="Preencha seus dados para acompanhar e receber o pedido."
+                        />
+                        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                          <Field label="Nome completo" className="sm:col-span-2">
+                            <input
+                              autoComplete="name"
+                              value={form.name}
+                              onChange={(e) => setForm({ ...form, name: e.target.value })}
+                              placeholder="Digite seu nome completo"
+                              className={inputCls}
+                            />
+                          </Field>
+                          <Field label="E-mail">
+                            <input
+                              type="email"
+                              autoComplete="email"
+                              value={form.email}
+                              onChange={(e) => setForm({ ...form, email: e.target.value })}
+                              placeholder="voce@email.com"
+                              className={inputCls}
+                            />
+                          </Field>
+                          <Field label="Celular / WhatsApp">
+                            <input
+                              inputMode="tel"
+                              autoComplete="tel"
+                              value={form.phone}
+                              onChange={(e) =>
+                                setForm({ ...form, phone: maskPhone(e.target.value) })
+                              }
+                              placeholder="(11) 99999-9999"
+                              className={inputCls}
+                            />
+                          </Field>
+                          <Field label="CPF" className="sm:col-span-2">
+                            <input
+                              inputMode="numeric"
+                              autoComplete="off"
+                              value={form.document}
+                              onChange={(e) =>
+                                setForm({ ...form, document: maskCPF(e.target.value) })
+                              }
+                              placeholder="000.000.000-00"
+                              className={inputCls}
+                            />
+                          </Field>
+                        </div>
+                        <button
+                          type="button"
+                          disabled={!hasCustomer}
+                          onClick={() => setCheckoutStep(2)}
+                          className={primaryButtonCls}
+                        >
+                          Continuar para entrega
+                          <Truck className="h-4 w-4" />
+                        </button>
                       </div>
                     )}
-                  </section>
 
-                  {error && (
-                    <div className="flex items-start gap-2 rounded-sm bg-[color:var(--terracotta)]/10 p-3">
-                      <CircleAlert className="mt-0.5 h-4 w-4 flex-shrink-0 text-[color:var(--terracotta)]" />
-                      <p className="font-mono text-xs text-[color:var(--terracotta)]">{error}</p>
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={!canSubmit || loading}
-                    className="flex w-full items-center justify-center gap-2 rounded-sm bg-[color:var(--terracotta)] px-6 py-4 font-mono text-xs uppercase tracking-widest text-[color:var(--bone)] disabled:opacity-50"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Processando...
-                      </>
-                    ) : paymentMethod === "PIX" ? (
-                      <>Gerar Pix · {formatBRL(totalCents)}</>
-                    ) : (
-                      <>Pagar com cartão · {formatBRL(totalCents)}</>
+                    {checkoutStep > 2 && (
+                      <CompletedCheckoutBlock
+                        icon={<MapPin className="h-5 w-5" />}
+                        title="Entrega"
+                        onEdit={() => setCheckoutStep(2)}
+                      >
+                        <div className="font-medium text-[color:var(--graphite)]">
+                          {form.street}, {form.streetNumber}
+                          {form.complement ? ` · ${form.complement}` : ""}
+                        </div>
+                        <div>
+                          {form.neighborhood} · {form.city}/{form.state} · {form.zipCode}
+                        </div>
+                        <div className="mt-1 font-medium text-[color:var(--sage)]">
+                          SEDEX grátis · 1 a 3 dias úteis
+                        </div>
+                      </CompletedCheckoutBlock>
                     )}
-                  </button>
-                </form>
 
-                <OrderSummary color={selectedColor.label} size={selectedSize} qty={qty} totalCents={totalCents} />
+                    {checkoutStep === 2 && (
+                      <div className="rounded-md border border-[color:var(--graphite)]/10 bg-white p-4 md:p-6">
+                        <CheckoutStepHeading
+                          step={2}
+                          title="Entrega"
+                          description="Informe onde você quer receber seu NB 9060."
+                        />
+                        <div className="mt-5 grid gap-4 sm:grid-cols-6">
+                          <Field label="CEP" className="sm:col-span-2">
+                            <div className="relative">
+                              <input
+                                inputMode="numeric"
+                                autoComplete="postal-code"
+                                value={form.zipCode}
+                                onChange={(e) =>
+                                  setForm({ ...form, zipCode: maskCEP(e.target.value) })
+                                }
+                                placeholder="00000-000"
+                                className={`${inputCls} pr-10`}
+                              />
+                              {cepLoading && (
+                                <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-[color:var(--sage)]" />
+                              )}
+                              {!cepLoading &&
+                                onlyDigits(form.zipCode).length === 8 &&
+                                !cepError && (
+                                  <CheckCircle2 className="absolute right-3 top-3 h-4 w-4 text-[color:var(--sage)]" />
+                                )}
+                            </div>
+                          </Field>
+                          <div className="flex items-end sm:col-span-4">
+                            <p className="pb-3 text-xs text-muted-foreground">
+                              O endereço é preenchido automaticamente pelo CEP.
+                            </p>
+                          </div>
+                          {cepError && (
+                            <div className="sm:col-span-6 flex items-start gap-2 rounded-sm bg-[color:var(--terracotta)]/10 p-3 text-xs text-[color:var(--terracotta)]">
+                              <CircleAlert className="h-4 w-4 flex-shrink-0" />
+                              {cepError}
+                            </div>
+                          )}
+                          <Field label="Rua / Avenida" className="sm:col-span-4">
+                            <input
+                              autoComplete="address-line1"
+                              value={form.street}
+                              onChange={(e) => setForm({ ...form, street: e.target.value })}
+                              placeholder="Nome da rua"
+                              className={inputCls}
+                            />
+                          </Field>
+                          <Field label="Número" className="sm:col-span-2">
+                            <input
+                              inputMode="numeric"
+                              value={form.streetNumber}
+                              onChange={(e) => setForm({ ...form, streetNumber: e.target.value })}
+                              placeholder="123"
+                              className={inputCls}
+                            />
+                          </Field>
+                          <Field label="Complemento (opcional)" className="sm:col-span-3">
+                            <input
+                              autoComplete="address-line2"
+                              value={form.complement}
+                              onChange={(e) => setForm({ ...form, complement: e.target.value })}
+                              placeholder="Apto, bloco, referência"
+                              className={inputCls}
+                            />
+                          </Field>
+                          <Field label="Bairro" className="sm:col-span-3">
+                            <input
+                              value={form.neighborhood}
+                              onChange={(e) => setForm({ ...form, neighborhood: e.target.value })}
+                              placeholder="Bairro"
+                              className={inputCls}
+                            />
+                          </Field>
+                          <Field label="Cidade" className="sm:col-span-4">
+                            <input
+                              autoComplete="address-level2"
+                              value={form.city}
+                              onChange={(e) => setForm({ ...form, city: e.target.value })}
+                              placeholder="Cidade"
+                              className={inputCls}
+                            />
+                          </Field>
+                          <Field label="UF" className="sm:col-span-2">
+                            <input
+                              autoComplete="address-level1"
+                              maxLength={2}
+                              value={form.state}
+                              onChange={(e) =>
+                                setForm({
+                                  ...form,
+                                  state: e.target.value.toUpperCase().slice(0, 2),
+                                })
+                              }
+                              placeholder="UF"
+                              className={inputCls}
+                            />
+                          </Field>
+                        </div>
+
+                        <div className="mt-6">
+                          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                            Método de entrega
+                          </div>
+                          {shippingState === "idle" && (
+                            <div className="rounded-md border border-dashed border-[color:var(--graphite)]/20 bg-[#fafafa] p-4 text-sm text-muted-foreground">
+                              Digite seu CEP para calcular a entrega.
+                            </div>
+                          )}
+                          {shippingState === "calculating" && (
+                            <div className="flex items-center gap-3 rounded-md border border-[color:var(--graphite)]/10 bg-[#fafafa] p-4">
+                              <Loader2 className="h-5 w-5 animate-spin text-[color:var(--sage)]" />
+                              <div>
+                                <div className="font-medium">Calculando o melhor envio...</div>
+                                <div className="text-xs text-muted-foreground">
+                                  Consultando prazo e condição promocional
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          {shippingState === "ready" && (
+                            <button
+                              type="button"
+                              onClick={() => setShippingSelected(true)}
+                              className={`flex w-full items-center gap-4 rounded-md border p-4 text-left transition-colors ${shippingSelected ? "border-[color:var(--sage)] bg-[color:var(--sage)]/10" : "border-[color:var(--graphite)]/15 bg-white hover:border-[color:var(--sage)]"}`}
+                            >
+                              <span
+                                className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border ${shippingSelected ? "border-[color:var(--sage)] bg-[color:var(--sage)]" : "border-[color:var(--graphite)]/30"}`}
+                              >
+                                {shippingSelected && <Check className="h-3 w-3 text-white" />}
+                              </span>
+                              <Truck className="h-6 w-6 flex-shrink-0 text-[color:var(--sage)]" />
+                              <span className="min-w-0 flex-1">
+                                <span className="block font-medium">SEDEX</span>
+                                <span className="block text-xs text-muted-foreground">
+                                  Receba em 1 a 3 dias úteis
+                                </span>
+                              </span>
+                              <span className="text-right">
+                                <span className="block text-xs text-muted-foreground line-through">
+                                  R$ 19,90
+                                </span>
+                                <span className="block font-semibold text-[color:var(--sage)]">
+                                  Grátis
+                                </span>
+                              </span>
+                            </button>
+                          )}
+                        </div>
+
+                        <button
+                          type="button"
+                          disabled={!hasAddress || !shippingSelected}
+                          onClick={() => setCheckoutStep(3)}
+                          className={primaryButtonCls}
+                        >
+                          Continuar para pagamento
+                          <CreditCard className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
+
+                    {checkoutStep === 3 && (
+                      <form
+                        onSubmit={submitPayment}
+                        className="rounded-md border border-[color:var(--graphite)]/10 bg-white p-4 md:p-6"
+                      >
+                        <CheckoutStepHeading
+                          step={3}
+                          title="Pagamento"
+                          description="Escolha como pagar. A confirmação é automática e segura."
+                        />
+                        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                          <PaymentButton
+                            active={paymentMethod === "PIX"}
+                            onClick={() => setPaymentMethod("PIX")}
+                          >
+                            <img src={pixLogo} alt="" className="h-7 w-7" />
+                            <span>
+                              <strong className="block font-sans text-sm normal-case">Pix</strong>
+                              <small className="font-sans text-xs normal-case opacity-70">
+                                Aprovação imediata
+                              </small>
+                            </span>
+                          </PaymentButton>
+                          <PaymentButton
+                            active={paymentMethod === "CREDIT_CARD"}
+                            onClick={() => setPaymentMethod("CREDIT_CARD")}
+                          >
+                            <CreditCard className="h-6 w-6" />
+                            <span>
+                              <strong className="block font-sans text-sm normal-case">
+                                Cartão de crédito
+                              </strong>
+                              <small className="font-sans text-xs normal-case opacity-70">
+                                Até 12x
+                              </small>
+                            </span>
+                          </PaymentButton>
+                        </div>
+
+                        {paymentMethod === "PIX" && (
+                          <div className="mt-4 flex items-start gap-3 rounded-md bg-[#eef8f4] p-4 text-sm">
+                            <Smartphone className="mt-0.5 h-5 w-5 flex-shrink-0 text-[color:var(--sage)]" />
+                            <div>
+                              <strong>Pagamento rápido pelo app do seu banco.</strong>
+                              <p className="mt-1 text-xs text-muted-foreground">
+                                O QR Code fica disponível por 30 minutos e o pedido é confirmado
+                                assim que o pagamento for identificado.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {paymentMethod === "CREDIT_CARD" && (
+                          <div className="mt-4 grid gap-4 sm:grid-cols-6">
+                            <Field label="Número do cartão" className="sm:col-span-6">
+                              <input
+                                inputMode="numeric"
+                                autoComplete="cc-number"
+                                value={card.number}
+                                onChange={(e) =>
+                                  setCard({ ...card, number: maskCardNumber(e.target.value) })
+                                }
+                                placeholder="0000 0000 0000 0000"
+                                className={inputCls}
+                              />
+                            </Field>
+                            <Field label="Nome impresso" className="sm:col-span-6">
+                              <input
+                                autoComplete="cc-name"
+                                value={card.holderName}
+                                onChange={(e) =>
+                                  setCard({ ...card, holderName: e.target.value.toUpperCase() })
+                                }
+                                placeholder="COMO ESTÁ NO CARTÃO"
+                                className={inputCls}
+                              />
+                            </Field>
+                            <Field label="Validade" className="sm:col-span-2">
+                              <input
+                                inputMode="numeric"
+                                autoComplete="cc-exp"
+                                value={card.expiration}
+                                onChange={(e) =>
+                                  setCard({ ...card, expiration: maskExpiration(e.target.value) })
+                                }
+                                placeholder="MM/AA"
+                                className={inputCls}
+                              />
+                            </Field>
+                            <Field label="CVV" className="sm:col-span-2">
+                              <input
+                                inputMode="numeric"
+                                autoComplete="cc-csc"
+                                value={card.cvv}
+                                onChange={(e) =>
+                                  setCard({ ...card, cvv: onlyDigits(e.target.value).slice(0, 4) })
+                                }
+                                placeholder="123"
+                                className={inputCls}
+                              />
+                            </Field>
+                            <Field label="Parcelas" className="sm:col-span-2">
+                              <select
+                                value={card.installments}
+                                onChange={(e) => setCard({ ...card, installments: e.target.value })}
+                                className={inputCls}
+                              >
+                                {Array.from({ length: 12 }, (_, i) => i + 1).map((installment) => (
+                                  <option key={installment} value={installment}>
+                                    {installment}x de{" "}
+                                    {formatBRL(Math.ceil(totalCents / installment))}
+                                  </option>
+                                ))}
+                              </select>
+                            </Field>
+                          </div>
+                        )}
+
+                        {error && (
+                          <div className="mt-4 flex items-start gap-2 rounded-sm bg-[color:var(--terracotta)]/10 p-3">
+                            <CircleAlert className="mt-0.5 h-4 w-4 flex-shrink-0 text-[color:var(--terracotta)]" />
+                            <p className="text-xs text-[color:var(--terracotta)]">{error}</p>
+                          </div>
+                        )}
+
+                        <button
+                          type="submit"
+                          disabled={!canSubmit || loading}
+                          className={primaryButtonCls}
+                        >
+                          {loading ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Processando pagamento...
+                            </>
+                          ) : paymentMethod === "PIX" ? (
+                            <>
+                              <img src={pixLogo} alt="" className="h-5 w-5 brightness-0 invert" />
+                              Gerar Pix · {formatBRL(totalCents)}
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="h-4 w-4" />
+                              Pagar com cartão · {formatBRL(totalCents)}
+                            </>
+                          )}
+                        </button>
+                        <div className="mt-4 flex items-center justify-center gap-2 text-center text-[11px] text-muted-foreground">
+                          <ShieldCheck className="h-4 w-4 text-[color:var(--sage)]" />
+                          Ambiente seguro · dados criptografados · compra protegida
+                        </div>
+                      </form>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
+
+              <OrderSummary
+                color={selectedColor.label}
+                size={selectedSize}
+                qty={qty}
+                totalCents={totalCents}
+              />
+            </div>
           </section>
         )}
 
@@ -635,10 +1034,17 @@ function Nb9060Page() {
           <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-[color:var(--graphite)]/10 bg-[color:var(--bone)] p-3 md:hidden">
             <div className="flex items-center gap-3">
               <div className="flex-shrink-0">
-                <div className="font-mono text-sm text-[color:var(--terracotta)]">{formatBRL(PRICE_CENTS)}</div>
-                <div className="font-mono text-[10px] text-muted-foreground">{selectedColor.label} · {selectedSize}</div>
+                <div className="font-mono text-sm text-[color:var(--terracotta)]">
+                  {formatBRL(PRICE_CENTS)}
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground">
+                  {selectedColor.label} · {selectedSize}
+                </div>
               </div>
-              <button onClick={() => openInternalCheckout("buy_now")} className="flex-1 rounded-sm bg-[color:var(--terracotta)] py-3 font-mono text-xs uppercase tracking-widest text-[color:var(--bone)]">
+              <button
+                onClick={() => openInternalCheckout("buy_now")}
+                className="flex-1 rounded-sm bg-[color:var(--terracotta)] py-3 font-mono text-xs uppercase tracking-widest text-[color:var(--bone)]"
+              >
                 Comprar
               </button>
             </div>
@@ -650,23 +1056,140 @@ function Nb9060Page() {
   );
 }
 
-function OrderSummary({ color, size, qty, totalCents }: { color: string; size: string; qty: number; totalCents: number }) {
+function CheckoutProgress({ current }: { current: CheckoutStep }) {
+  const labels = ["Identificação", "Entrega", "Pagamento"];
   return (
-    <aside className="h-fit rounded-md border border-[color:var(--graphite)]/10 bg-[color:var(--bone)] p-5">
-      <h3 className="font-display text-2xl tracking-wide">Resumo do pedido</h3>
+    <div className="rounded-md border border-[color:var(--graphite)]/10 bg-white px-3 py-4 md:px-5">
+      <div className="grid grid-cols-3">
+        {labels.map((label, index) => {
+          const step = (index + 1) as CheckoutStep;
+          const complete = current > step;
+          const active = current === step;
+          return (
+            <div key={label} className="relative flex flex-col items-center text-center">
+              {index > 0 && (
+                <span
+                  className={`absolute right-1/2 top-4 h-px w-full ${current >= step ? "bg-[color:var(--sage)]" : "bg-[color:var(--graphite)]/15"}`}
+                />
+              )}
+              <span
+                className={`relative z-10 flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold ${complete || active ? "border-[color:var(--sage)] bg-[color:var(--sage)] text-white" : "border-[color:var(--graphite)]/20 bg-white text-muted-foreground"}`}
+              >
+                {complete ? <Check className="h-4 w-4" /> : step}
+              </span>
+              <span
+                className={`mt-2 text-[10px] uppercase tracking-wide ${active ? "font-semibold text-[color:var(--graphite)]" : "text-muted-foreground"}`}
+              >
+                {label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function CheckoutStepHeading({
+  step,
+  title,
+  description,
+}: {
+  step: CheckoutStep;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <div>
+        <h3 className="font-display text-2xl tracking-wide md:text-3xl">{title}</h3>
+        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      </div>
+      <span className="flex-shrink-0 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+        {step} de 3
+      </span>
+    </div>
+  );
+}
+
+function CompletedCheckoutBlock({
+  icon,
+  title,
+  onEdit,
+  children,
+}: {
+  icon: ReactNode;
+  title: string;
+  onEdit: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <div className="rounded-md border border-[color:var(--sage)]/40 bg-[#f4faf6] p-4 md:p-5">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-2 font-display text-xl tracking-wide text-[color:var(--graphite)]">
+          <span className="text-[color:var(--sage)]">{icon}</span>
+          {title}
+        </div>
+        <button
+          type="button"
+          onClick={onEdit}
+          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-[color:var(--graphite)]"
+        >
+          Editar <Edit3 className="h-3.5 w-3.5" />
+        </button>
+      </div>
+      <div className="mt-3 text-sm leading-relaxed text-muted-foreground">{children}</div>
+    </div>
+  );
+}
+
+function OrderSummary({
+  color,
+  size,
+  qty,
+  totalCents,
+}: {
+  color: string;
+  size: string;
+  qty: number;
+  totalCents: number;
+}) {
+  return (
+    <aside className="h-fit rounded-md border border-[color:var(--graphite)]/10 bg-white p-5 lg:sticky lg:top-4">
+      <div className="flex items-center justify-between gap-3">
+        <h3 className="font-display text-2xl tracking-wide">Resumo do pedido</h3>
+        <span className="font-mono text-sm text-[color:var(--terracotta)]">
+          {formatBRL(totalCents)}
+        </span>
+      </div>
       <div className="mt-4 flex gap-3 border-b border-[color:var(--graphite)]/10 pb-4">
-        <img src={COLORS.find((c) => c.label === color)?.image ?? COLORS[0].image} alt="" className="h-20 w-20 rounded-sm object-cover" />
+        <img
+          src={COLORS.find((c) => c.label === color)?.image ?? COLORS[0].image}
+          alt=""
+          className="h-20 w-20 rounded-sm object-cover"
+        />
         <div className="flex-1">
           <div className="font-display text-lg leading-tight tracking-wide">NB 9060 RUNNING</div>
           <div className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
             {color} · Tam {size} · Qtd {qty}
           </div>
-          <div className="mt-2 font-mono text-sm text-[color:var(--terracotta)]">{formatBRL(PRICE_CENTS * qty)}</div>
+          <div className="mt-2 font-mono text-sm text-[color:var(--terracotta)]">
+            {formatBRL(PRICE_CENTS * qty)}
+          </div>
         </div>
       </div>
       <div className="mt-4 space-y-1 font-mono text-xs">
-        <div className="flex justify-between text-muted-foreground"><span>Produtos</span><span>{formatBRL(PRICE_CENTS * qty)}</span></div>
-        <div className="flex justify-between text-muted-foreground"><span>Frete</span><span>Grátis</span></div>
+        <div className="flex justify-between text-muted-foreground">
+          <span>Produtos</span>
+          <span>{formatBRL(PRICE_CENTS * qty)}</span>
+        </div>
+        <div className="flex justify-between text-muted-foreground">
+          <span>SEDEX · 1 a 3 dias</span>
+          <span>
+            <span className="mr-2 line-through">R$ 19,90</span>
+            <strong className="text-[color:var(--sage)]">Grátis</strong>
+          </span>
+        </div>
         <div className="mt-2 flex justify-between border-t border-[color:var(--graphite)]/10 pt-2 text-base">
           <span className="font-sans">Total</span>
           <span className="text-[color:var(--terracotta)]">{formatBRL(totalCents)}</span>
@@ -678,22 +1201,45 @@ function OrderSummary({ color, size, qty, totalCents }: { color: string; size: s
           Compra protegida. Seus dados são criptografados e o pagamento é processado com segurança.
         </p>
       </div>
+      <div className="mt-3 flex items-center justify-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+        <Lock className="h-3.5 w-3.5" /> Pagamento 100% seguro
+      </div>
     </aside>
   );
 }
 
-function PixPanel({ tx, totalCents }: { tx: { id: string; status: string; pix: PixData | null }; totalCents: number }) {
+function PixPanel({
+  tx,
+  totalCents,
+}: {
+  tx: { id: string; status: string; pix: PixData | null };
+  totalCents: number;
+}) {
   const [copied, setCopied] = useState(false);
-  const code = tx.pix?.qrcode || "";
-  const imgSrc = tx.pix?.qrcodeBase64
-    ? tx.pix.qrcodeBase64.startsWith("data:")
-      ? tx.pix.qrcodeBase64
-      : `data:image/png;base64,${tx.pix.qrcodeBase64}`
-    : tx.pix?.qrcodeUrl
-      ? tx.pix.qrcodeUrl
+  const [secondsLeft, setSecondsLeft] = useState(() => {
+    if (!tx.pix?.expiresAt) return 30 * 60;
+    return Math.max(0, Math.floor((new Date(tx.pix.expiresAt).getTime() - Date.now()) / 1000));
+  });
+  const code = tx.pix?.qrcode || tx.pix?.qrCode || tx.pix?.copyPaste || tx.pix?.code || "";
+  const base64 = tx.pix?.qrcodeBase64 || tx.pix?.qrCodeBase64;
+  const qrUrl = tx.pix?.qrcodeUrl || tx.pix?.qrCodeUrl;
+  const imgSrc = base64
+    ? base64.startsWith("data:")
+      ? base64
+      : `data:image/png;base64,${base64}`
+    : qrUrl
+      ? qrUrl
       : code
         ? `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(code)}`
         : null;
+
+  useEffect(() => {
+    const timer = window.setInterval(
+      () => setSecondsLeft((current) => Math.max(0, current - 1)),
+      1000,
+    );
+    return () => window.clearInterval(timer);
+  }, []);
 
   async function copyCode() {
     if (!code) return;
@@ -703,25 +1249,69 @@ function PixPanel({ tx, totalCents }: { tx: { id: string; status: string; pix: P
   }
 
   return (
-    <div className="mx-auto max-w-xl text-center">
-      <div className="font-mono text-[11px] uppercase tracking-widest text-[color:var(--sage)]">
-        Pix gerado · {formatBRL(totalCents)}
+    <div className="mx-auto max-w-xl">
+      <div className="text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eef8f4]">
+          <img src={pixLogo} alt="Pix" className="h-8 w-8" />
+        </div>
+        <h3 className="mt-3 font-display text-3xl tracking-wide md:text-4xl">Quase lá...</h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Pague via Pix para confirmar seu pedido.
+        </p>
+        <div className="mx-auto mt-4 inline-flex items-center gap-2 rounded-full bg-[#fff5d8] px-4 py-2 text-sm font-medium text-[#8a6500]">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Aguardando pagamento · {formatCountdown(secondsLeft)}
+        </div>
       </div>
-      <h3 className="mt-1 font-display text-3xl tracking-wide">Quase lá...</h3>
-      <p className="mt-2 text-sm text-muted-foreground">Pague via Pix para confirmar seu pedido. A aprovação é instantânea.</p>
-      {imgSrc && <img src={imgSrc} alt="QR Code Pix" className="mx-auto mt-6 h-64 w-64 rounded-md border border-[color:var(--graphite)]/10 bg-white p-2" />}
+      {imgSrc && (
+        <img
+          src={imgSrc}
+          alt="QR Code Pix"
+          className="mx-auto mt-6 h-64 w-64 rounded-md border border-[color:var(--graphite)]/10 bg-white p-2 shadow-sm"
+        />
+      )}
       {code && (
-        <div className="mt-6">
-          <div className="break-all rounded-sm border border-[color:var(--graphite)]/15 bg-[color:var(--bone)] p-3 text-left font-mono text-[11px] leading-relaxed">{code}</div>
-          <button onClick={copyCode} className="mt-3 inline-flex items-center gap-2 rounded-sm bg-[color:var(--graphite)] px-5 py-2.5 font-mono text-xs uppercase tracking-widest text-[color:var(--bone)]">
+        <div className="mt-5">
+          <div className="line-clamp-2 break-all rounded-sm border border-[color:var(--graphite)]/15 bg-[#fafafa] p-3 font-mono text-[10px] leading-relaxed text-muted-foreground">
+            {code}
+          </div>
+          <button
+            onClick={copyCode}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-sm bg-[color:var(--graphite)] px-5 py-3.5 font-mono text-xs uppercase tracking-widest text-[color:var(--bone)]"
+          >
             <Copy className="h-3.5 w-3.5" />
             {copied ? "Copiado!" : "Copiar código Pix"}
           </button>
         </div>
       )}
-      <div className="mt-6 flex items-center justify-center gap-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-        Aguardando pagamento...
+      {!imgSrc && (
+        <div className="mt-6 flex items-center justify-center gap-2 rounded-md bg-[color:var(--terracotta)]/10 p-4 text-sm text-[color:var(--terracotta)]">
+          <CircleAlert className="h-4 w-4" /> O Pix foi criado, mas o QR Code não veio na resposta.
+          Atualize a página e tente novamente.
+        </div>
+      )}
+      <div className="mt-7 border-t border-[color:var(--graphite)]/10 pt-6">
+        <h4 className="font-display text-2xl tracking-wide">Como pagar</h4>
+        <ol className="mt-4 space-y-3 text-sm text-muted-foreground">
+          {[
+            "Clique em copiar o código Pix acima",
+            "Abra o aplicativo do seu banco",
+            "Escolha Pix e depois Pix Copia e Cola",
+            "Cole o código e confirme o valor",
+            "Finalize o pagamento para confirmar o pedido",
+          ].map((instruction, index) => (
+            <li key={instruction} className="flex items-center gap-3">
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[color:var(--sage)] text-xs font-semibold text-white">
+                {index + 1}
+              </span>
+              {instruction}
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className="mt-6 flex items-center justify-center gap-2 rounded-md bg-[#eef8f4] p-3 text-center text-xs text-muted-foreground">
+        <ShieldCheck className="h-4 w-4 text-[color:var(--sage)]" />
+        Pagamento identificado automaticamente. Não feche esta página.
       </div>
     </div>
   );
@@ -732,7 +1322,9 @@ function SuccessPanel() {
     <div className="mx-auto max-w-xl py-8 text-center">
       <CheckCircle2 className="mx-auto h-14 w-14 text-[color:var(--sage)]" />
       <h3 className="mt-4 font-display text-4xl tracking-wide">Pagamento confirmado!</h3>
-      <p className="mt-3 text-muted-foreground">Seu pedido foi recebido e já está em processamento.</p>
+      <p className="mt-3 text-muted-foreground">
+        Seu pedido foi recebido e já está em processamento.
+      </p>
     </div>
   );
 }
@@ -741,17 +1333,75 @@ function ProductDescription() {
   return (
     <section className="mt-20 grid gap-8 md:grid-cols-[0.9fr_1.1fr]">
       <div>
-        <div className="mb-4 font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">/ Descrição</div>
+        <div className="mb-4 font-mono text-xs uppercase tracking-widest text-[color:var(--sage)]">
+          / Descrição
+        </div>
         <h2 className="font-display text-3xl tracking-wide md:text-4xl">NB 9060 Running</h2>
       </div>
       <div className="space-y-5 text-sm leading-relaxed text-[color:var(--graphite)]/85">
-        <p>O NB 9060 combina um visual robusto e moderno com conforto para o uso diário. Seu design apresenta linhas onduladas, proporções ampliadas e uma entressola escultural, criando uma estética urbana e retrô-futurista inspirada nos modelos esportivos dos anos 2000.</p>
-        <p>A construção conta com cabedal respirável, sobreposições estruturadas e solado reforçado, proporcionando melhor ajuste, estabilidade e conforto durante as passadas. É uma opção versátil para combinar com jeans, calças cargo, bermudas, conjuntos e roupas esportivas.</p>
-        <DescriptionBlock title="Principais características" items={["Modelo unissex", "Produto 1L", "Estilo casual e lifestyle", "Design robusto e moderno", "Cabedal respirável em tecido mesh", "Sobreposições em material sintético e suede", "Entressola de dupla densidade", "Sistema de amortecimento ABZORB e SBS", "Solado em borracha e EVA", "Fechamento tradicional por cadarços", "Interior acolchoado", "Bico arredondado", "Lingueta macia e estruturada", "Palmilha confortável e removível", "Tamanhos disponíveis do 35 ao 44"]} />
-        <DescriptionParagraph title="Cabedal">O cabedal combina tecido mesh respirável com sobreposições em material sintético e suede. Essa construção auxilia na ventilação dos pés, ao mesmo tempo que oferece sustentação e reforço nas áreas de maior contato. Os diferentes painéis e texturas destacam o visual robusto característico do modelo.</DescriptionParagraph>
-        <DescriptionParagraph title="Entressola e amortecimento">A entressola possui construção de dupla densidade, desenvolvida para proporcionar conforto e absorção de impactos durante as passadas. O sistema ABZORB auxilia na absorção dos impactos e o SBS reforça o amortecimento na região do calcanhar.</DescriptionParagraph>
-        <DescriptionParagraph title="Solado">O solado é produzido em uma combinação de borracha e EVA, oferecendo aderência, resistência e flexibilidade para o uso diário.</DescriptionParagraph>
-        <DescriptionBlock title="Ficha técnica" items={["Marca utilizada no anúncio: NB", "Modelo: 9060", "Gênero: Unissex", "Categoria: Casual e lifestyle", "Estilo: Chunky, urbano e retrô-futurista", "Tecnologias: ABZORB e SBS", "Cabedal: Mesh com sobreposições sintéticas", "Entressola: Dupla densidade", "Solado: Borracha e EVA", "Palmilha: Macia e removível", "Fechamento: Cadarço", "Tamanhos: 35 ao 44", "Indicação de uso: Dia a dia, passeios e looks casuais"]} />
+        <p>
+          O NB 9060 combina um visual robusto e moderno com conforto para o uso diário. Seu design
+          apresenta linhas onduladas, proporções ampliadas e uma entressola escultural, criando uma
+          estética urbana e retrô-futurista inspirada nos modelos esportivos dos anos 2000.
+        </p>
+        <p>
+          A construção conta com cabedal respirável, sobreposições estruturadas e solado reforçado,
+          proporcionando melhor ajuste, estabilidade e conforto durante as passadas. É uma opção
+          versátil para combinar com jeans, calças cargo, bermudas, conjuntos e roupas esportivas.
+        </p>
+        <DescriptionBlock
+          title="Principais características"
+          items={[
+            "Modelo unissex",
+            "Produto 1L",
+            "Estilo casual e lifestyle",
+            "Design robusto e moderno",
+            "Cabedal respirável em tecido mesh",
+            "Sobreposições em material sintético e suede",
+            "Entressola de dupla densidade",
+            "Sistema de amortecimento ABZORB e SBS",
+            "Solado em borracha e EVA",
+            "Fechamento tradicional por cadarços",
+            "Interior acolchoado",
+            "Bico arredondado",
+            "Lingueta macia e estruturada",
+            "Palmilha confortável e removível",
+            "Tamanhos disponíveis do 35 ao 44",
+          ]}
+        />
+        <DescriptionParagraph title="Cabedal">
+          O cabedal combina tecido mesh respirável com sobreposições em material sintético e suede.
+          Essa construção auxilia na ventilação dos pés, ao mesmo tempo que oferece sustentação e
+          reforço nas áreas de maior contato. Os diferentes painéis e texturas destacam o visual
+          robusto característico do modelo.
+        </DescriptionParagraph>
+        <DescriptionParagraph title="Entressola e amortecimento">
+          A entressola possui construção de dupla densidade, desenvolvida para proporcionar conforto
+          e absorção de impactos durante as passadas. O sistema ABZORB auxilia na absorção dos
+          impactos e o SBS reforça o amortecimento na região do calcanhar.
+        </DescriptionParagraph>
+        <DescriptionParagraph title="Solado">
+          O solado é produzido em uma combinação de borracha e EVA, oferecendo aderência,
+          resistência e flexibilidade para o uso diário.
+        </DescriptionParagraph>
+        <DescriptionBlock
+          title="Ficha técnica"
+          items={[
+            "Marca utilizada no anúncio: NB",
+            "Modelo: 9060",
+            "Gênero: Unissex",
+            "Categoria: Casual e lifestyle",
+            "Estilo: Chunky, urbano e retrô-futurista",
+            "Tecnologias: ABZORB e SBS",
+            "Cabedal: Mesh com sobreposições sintéticas",
+            "Entressola: Dupla densidade",
+            "Solado: Borracha e EVA",
+            "Palmilha: Macia e removível",
+            "Fechamento: Cadarço",
+            "Tamanhos: 35 ao 44",
+            "Indicação de uso: Dia a dia, passeios e looks casuais",
+          ]}
+        />
       </div>
     </section>
   );
@@ -782,12 +1432,20 @@ function DescriptionParagraph({ title, children }: { title: string; children: Re
   );
 }
 
-function PaymentButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
+function PaymentButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-3 rounded-sm border px-4 py-3 font-mono text-xs uppercase tracking-wider transition-colors ${
+      className={`flex min-h-16 w-full items-center gap-3 rounded-sm border px-4 py-3 text-left font-mono text-xs uppercase tracking-wider transition-colors ${
         active
           ? "border-[color:var(--graphite)] bg-[color:var(--graphite)] text-[color:var(--bone)]"
           : "border-[color:var(--graphite)]/15 bg-white hover:border-[color:var(--sage)]"
@@ -798,10 +1456,20 @@ function PaymentButton({ active, onClick, children }: { active: boolean; onClick
   );
 }
 
-function Field({ label, children, className = "" }: { label: string; children: ReactNode; className?: string }) {
+function Field({
+  label,
+  children,
+  className = "",
+}: {
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-1 block font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
+      <span className="mb-1 block font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+        {label}
+      </span>
       {children}
     </label>
   );
@@ -825,13 +1493,17 @@ function InfoIcon({ icon, label }: { icon: ReactNode; label: string }) {
   return (
     <div className="flex flex-col items-start gap-1">
       <span className="text-[color:var(--sage)]">{icon}</span>
-      <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{label}</span>
+      <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </span>
     </div>
   );
 }
 
 const inputCls =
-  "w-full rounded-sm border border-[color:var(--graphite)]/20 bg-white px-3 py-2.5 font-sans text-sm outline-none focus:border-[color:var(--terracotta)]";
+  "h-11 w-full rounded-sm border border-[color:var(--graphite)]/20 bg-white px-3 font-sans text-sm outline-none transition-colors placeholder:text-[color:var(--graphite)]/35 focus:border-[color:var(--terracotta)] focus:ring-2 focus:ring-[color:var(--terracotta)]/10";
+const primaryButtonCls =
+  "mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-sm bg-[color:var(--terracotta)] px-6 py-3.5 font-mono text-xs uppercase tracking-widest text-[color:var(--bone)] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40";
 
 const onlyDigits = (value: string) => value.replace(/\D+/g, "");
 const maskCPF = (value: string) =>
@@ -845,9 +1517,18 @@ const maskPhone = (value: string) => {
   if (digits.length <= 10) return digits.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3").trim();
   return digits.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").trim();
 };
-const maskCEP = (value: string) => onlyDigits(value).slice(0, 8).replace(/(\d{5})(\d)/, "$1-$2");
-const maskCardNumber = (value: string) => onlyDigits(value).slice(0, 19).replace(/(\d{4})(?=\d)/g, "$1 ");
-const maskExpiration = (value: string) => onlyDigits(value).slice(0, 4).replace(/(\d{2})(\d)/, "$1/$2");
+const maskCEP = (value: string) =>
+  onlyDigits(value)
+    .slice(0, 8)
+    .replace(/(\d{5})(\d)/, "$1-$2");
+const maskCardNumber = (value: string) =>
+  onlyDigits(value)
+    .slice(0, 19)
+    .replace(/(\d{4})(?=\d)/g, "$1 ");
+const maskExpiration = (value: string) =>
+  onlyDigits(value)
+    .slice(0, 4)
+    .replace(/(\d{2})(\d)/, "$1/$2");
 
 function parseExpiration(value: string): [number, number] {
   const digits = onlyDigits(value);
@@ -858,5 +1539,15 @@ function parseExpiration(value: string): [number, number] {
 }
 
 function isPaidStatus(status?: string) {
-  return ["paid", "approved", "PAID", "APPROVED", "AUTHORIZED", "authorized"].includes(status || "");
+  return ["paid", "approved", "PAID", "APPROVED", "AUTHORIZED", "authorized"].includes(
+    status || "",
+  );
+}
+
+function formatCountdown(seconds: number) {
+  const minutes = Math.floor(seconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const remainingSeconds = (seconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${remainingSeconds}`;
 }
