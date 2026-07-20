@@ -9,6 +9,7 @@ import { createZedyCheckout } from "@/lib/zedy.functions";
 
 const PRICE_CENTS = 7990;
 const PIXEL_CONTENT_ID = "nb-9060";
+const SIZES = ["34/35", "36/37", "38/39", "40/41", "42/43", "43/44"] as const;
 
 const COLORS = [
   {
@@ -56,6 +57,7 @@ export const Route = createFileRoute("/nb-9060")({
 function Nb9060Page() {
   const createCheckout = useServerFn(createZedyCheckout);
   const [selectedColor, setSelectedColor] = useState<(typeof COLORS)[number]>(COLORS[0]);
+  const [selectedSize, setSelectedSize] = useState<(typeof SIZES)[number]>(SIZES[0]);
   const [activeImage, setActiveImage] = useState(COLORS[0].image);
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -71,15 +73,15 @@ function Nb9060Page() {
   }, [selectedColor]);
 
   useEffect(() => {
-    fbqTrack("ViewContent", pixelPayload(selectedColor, qty));
-  }, [selectedColor, qty]);
+    fbqTrack("ViewContent", pixelPayload(selectedColor, qty, selectedSize));
+  }, [selectedColor, qty, selectedSize]);
 
   async function openCheckout(source: "buy_now" | "add_to_cart") {
     if (loading) return;
     setLoading(true);
     setError(null);
 
-    const payload = pixelPayload(selectedColor, qty);
+    const payload = pixelPayload(selectedColor, qty, selectedSize);
     if (source === "add_to_cart") fbqTrack("AddToCart", payload);
     fbqTrack("InitiateCheckout", payload);
 
@@ -212,6 +214,28 @@ function Nb9060Page() {
               </div>
             </div>
 
+            <div className="mt-6">
+              <div className="mb-2 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                Tamanho: <span className="text-[color:var(--graphite)]">{selectedSize}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+                {SIZES.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setSelectedSize(size)}
+                    className={`rounded-sm border px-3 py-3 font-mono text-xs uppercase tracking-wider transition-colors ${
+                      selectedSize === size
+                        ? "border-[color:var(--graphite)] bg-[color:var(--graphite)] text-[color:var(--bone)]"
+                        : "border-[color:var(--graphite)]/20 bg-white hover:border-[color:var(--sage)]"
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="mt-8 flex items-center gap-3">
               <div className="inline-flex items-center rounded-sm border border-[color:var(--graphite)]/20">
                 <button
@@ -299,7 +323,7 @@ function Nb9060Page() {
               {formatBRL(PRICE_CENTS)}
             </div>
             <div className="font-mono text-[10px] text-muted-foreground">
-              {selectedColor.label}
+              {selectedColor.label} · {selectedSize}
             </div>
           </div>
           <button
@@ -316,12 +340,18 @@ function Nb9060Page() {
   );
 }
 
-function pixelPayload(color: (typeof COLORS)[number], quantity: number) {
+function pixelPayload(
+  color: (typeof COLORS)[number],
+  quantity: number,
+  size: (typeof SIZES)[number],
+) {
   return {
     content_ids: [PIXEL_CONTENT_ID, String(color.variantId)],
     content_name: `Tênis NB 9060 Running - ${color.label}`,
     content_type: "product",
     content_category: "Calçados",
+    size,
+    color: color.label,
     contents: [
       {
         id: String(color.variantId),
