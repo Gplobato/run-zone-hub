@@ -1,6 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import {
   Check,
   CheckCircle2,
@@ -20,7 +28,7 @@ import {
 } from "lucide-react";
 import { StoreLayout } from "@/components/paze/StoreLayout";
 import { formatBRL } from "@/lib/products";
-import { fbqTrack } from "@/lib/pixel";
+import { fbqInit, fbqTrackPageViewOnce, fbqTrackSingle } from "@/lib/pixel";
 import { createHypercashTransaction, getHypercashTransaction } from "@/lib/hypercash.functions";
 import nb9060Rose from "@/assets/products/nb-9060-rose.png";
 import payAmex from "@/assets/mercadopromo/pay-amex.png";
@@ -33,7 +41,12 @@ import pixLogo from "@/assets/mercadopromo/pix-logo.png";
 const PRICE_CENTS = 7990;
 const SHIPPING_CENTS = 0;
 const PIXEL_CONTENT_ID = "nb-9060";
+const NB9060_PIXEL_ID = "1040492725582996";
 const SIZES = ["34/35", "36/37", "38/39", "40/41", "42/43", "43/44"] as const;
+
+function trackNb9060Event(event: string, params?: Record<string, unknown>) {
+  fbqTrackSingle(NB9060_PIXEL_ID, event, params);
+}
 
 const COLORS = [
   {
@@ -77,6 +90,13 @@ type PixData = {
 
 type CheckoutStep = 1 | 2 | 3;
 type ShippingState = "idle" | "calculating" | "ready";
+type PaymentMethod = "PIX" | "CREDIT_CARD";
+type CheckoutTransaction = {
+  id: string;
+  status: string;
+  paymentMethod: PaymentMethod;
+  pix: PixData | null;
+};
 
 export const Route = createFileRoute("/nb-9060")({
   head: () => ({
@@ -131,6 +151,7 @@ function Nb9060Page() {
   const getTx = useServerFn(getHypercashTransaction);
   const checkoutRef = useRef<HTMLDivElement | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const trackedPurchaseIdsRef = useRef(new Set<string>());
 
   const [selectedColor, setSelectedColor] = useState<AvailableColor>(COLORS[0]);
   const [selectedSize, setSelectedSize] = useState<(typeof SIZES)[number]>(SIZES[0]);
@@ -138,7 +159,7 @@ function Nb9060Page() {
   const [qty, setQty] = useState(1);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>(1);
-  const [paymentMethod, setPaymentMethod] = useState<"PIX" | "CREDIT_CARD">("PIX");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("PIX");
   const [form, setForm] = useState(emptyForm);
   const [card, setCard] = useState(emptyCard);
   const [cepLoading, setCepLoading] = useState(false);
@@ -147,7 +168,7 @@ function Nb9060Page() {
   const [shippingSelected, setShippingSelected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [tx, setTx] = useState<{ id: string; status: string; pix: PixData | null } | null>(null);
+  const [tx, setTx] = useState<CheckoutTransaction | null>(null);
   const [paid, setPaid] = useState(false);
 
   const totalCents = PRICE_CENTS * qty + SHIPPING_CENTS;
@@ -157,11 +178,30 @@ function Nb9060Page() {
   );
 
   useEffect(() => {
+    fbqInit(NB9060_PIXEL_ID);
+    fbqTrackPageViewOnce(NB9060_PIXEL_ID);
+  }, []);
+
+  const trackPurchaseOnce = useCallback(
+    (transactionId: string, method: PaymentMethod, status: string) => {
+      if (!transactionId || trackedPurchaseIdsRef.current.has(transactionId)) return;
+      trackedPurchaseIdsRef.current.add(transactionId);
+      trackNb9060Event("Purchase", {
+        ...pixelPayload(selectedColor, qty, selectedSize),
+        order_id: transactionId,
+        payment_method: method,
+        payment_status: status,
+      });
+    },
+    [qty, selectedColor, selectedSize],
+  );
+
+  useEffect(() => {
     setActiveImage(selectedColor.image);
   }, [selectedColor]);
 
   useEffect(() => {
-    fbqTrack("ViewContent", pixelPayload(selectedColor, qty, selectedSize));
+    trackNb9060Event("ViewContent", pixelPayload(selectedColor, qty, selectedSize));
   }, [selectedColor, qty, selectedSize]);
 
   useEffect(() => {
@@ -233,7 +273,7 @@ function Nb9060Page() {
         const response = await getTx({ data: { id: tx.id } });
         if (isPaidStatus(response.status)) {
           setPaid(true);
-          fbqTrack("Purchase", pixelPayload(selectedColor, qty, selectedSize));
+          trackPurchaseOnce(tx.id, tx.paymentMethod, response.status);
           if (pollRef.current) clearInterval(pollRef.current);
         }
       } catch {
@@ -244,7 +284,7 @@ function Nb9060Page() {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
-  }, [getTx, paid, qty, selectedColor, selectedSize, tx?.id]);
+  }, [getTx, paid, trackPurchaseOnce, tx?.id, tx?.paymentMethod]);
 
   const hasCustomer = useMemo(
     () =>
@@ -284,8 +324,8 @@ function Nb9060Page() {
 
   function openInternalCheckout(source: "buy_now" | "add_to_cart") {
     const payload = pixelPayload(selectedColor, qty, selectedSize);
-    if (source === "add_to_cart") fbqTrack("AddToCart", payload);
-    fbqTrack("InitiateCheckout", payload);
+    if (source === "add_to_cart") trackNb9060Event("AddToCart", payload);
+    trackNb9060Event("InitiateCheckout", payload);
     setCheckoutOpen(true);
     setCheckoutStep(1);
     setTx(null);
@@ -303,7 +343,7 @@ function Nb9060Page() {
     setTx(null);
     setPaid(false);
 
-    fbqTrack("AddPaymentInfo", {
+    trackNb9060Event("AddPaymentInfo", {
       ...pixelPayload(selectedColor, qty, selectedSize),
       payment_method: paymentMethod,
     });
@@ -351,13 +391,27 @@ function Nb9060Page() {
         },
       });
 
+      if (isFailedStatus(response.status)) {
+        setError(
+          paymentMethod === "CREDIT_CARD"
+            ? "O cartão não foi aprovado. Confira os dados ou tente outro cartão."
+            : "Não foi possível gerar o Pix. Tente novamente em instantes.",
+        );
+        return;
+      }
+
+      const transactionId = response.id ? String(response.id) : "";
+      if (!transactionId) throw new Error("A Hypercash não retornou o código da transação.");
+
+      trackPurchaseOnce(transactionId, paymentMethod, response.status);
+
       if (paymentMethod === "CREDIT_CARD" && isPaidStatus(response.status)) {
         setPaid(true);
-        fbqTrack("Purchase", pixelPayload(selectedColor, qty, selectedSize));
       } else {
         setTx({
-          id: response.id,
+          id: transactionId,
           status: response.status,
+          paymentMethod,
           pix: (response.pix as PixData) ?? null,
         });
       }
@@ -595,7 +649,11 @@ function Nb9060Page() {
                   </div>
                 ) : tx ? (
                   <div className="rounded-md border border-[color:var(--graphite)]/10 bg-white p-5 md:p-8">
-                    <PixPanel tx={tx} totalCents={totalCents} />
+                    {tx.paymentMethod === "PIX" ? (
+                      <PixPanel tx={tx} totalCents={totalCents} />
+                    ) : (
+                      <CardProcessingPanel status={tx.status} />
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -1208,13 +1266,7 @@ function OrderSummary({
   );
 }
 
-function PixPanel({
-  tx,
-  totalCents,
-}: {
-  tx: { id: string; status: string; pix: PixData | null };
-  totalCents: number;
-}) {
+function PixPanel({ tx, totalCents }: { tx: CheckoutTransaction; totalCents: number }) {
   const [copied, setCopied] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(() => {
     if (!tx.pix?.expiresAt) return 30 * 60;
@@ -1312,6 +1364,29 @@ function PixPanel({
       <div className="mt-6 flex items-center justify-center gap-2 rounded-md bg-[#eef8f4] p-3 text-center text-xs text-muted-foreground">
         <ShieldCheck className="h-4 w-4 text-[color:var(--sage)]" />
         Pagamento identificado automaticamente. Não feche esta página.
+      </div>
+    </div>
+  );
+}
+
+function CardProcessingPanel({ status }: { status: string }) {
+  return (
+    <div className="mx-auto max-w-xl py-6 text-center">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#eef8f4]">
+        <CreditCard className="h-7 w-7 text-[color:var(--sage)]" />
+      </div>
+      <h3 className="mt-4 font-display text-3xl tracking-wide">Pagamento em análise</h3>
+      <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+        A operadora recebeu os dados do cartão. Estamos aguardando a confirmação, que normalmente
+        leva poucos segundos.
+      </p>
+      <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full bg-[#fff5d8] px-4 py-2 text-sm font-medium text-[#8a6500]">
+        <Loader2 className="h-4 w-4 animate-spin" />
+        Processando · {status || "pendente"}
+      </div>
+      <div className="mt-6 flex items-center justify-center gap-2 rounded-md bg-[#eef8f4] p-3 text-xs text-muted-foreground">
+        <ShieldCheck className="h-4 w-4 text-[color:var(--sage)]" />
+        Não atualize a página enquanto confirmamos o pagamento.
       </div>
     </div>
   );
@@ -1539,9 +1614,28 @@ function parseExpiration(value: string): [number, number] {
 }
 
 function isPaidStatus(status?: string) {
-  return ["paid", "approved", "PAID", "APPROVED", "AUTHORIZED", "authorized"].includes(
-    status || "",
-  );
+  return [
+    "paid",
+    "approved",
+    "authorized",
+    "completed",
+    "complete",
+    "success",
+    "succeeded",
+    "confirmed",
+  ].includes((status || "").toLowerCase());
+}
+
+function isFailedStatus(status?: string) {
+  return [
+    "failed",
+    "declined",
+    "refused",
+    "canceled",
+    "cancelled",
+    "expired",
+    "chargeback",
+  ].includes((status || "").toLowerCase());
 }
 
 function formatCountdown(seconds: number) {
