@@ -27,6 +27,7 @@ export const Route = createFileRoute("/")({
 });
 
 const FEATURED_SLUGS = [
+  "nb-9060",
   "garmin-forerunner-965",
   "fone-conducao-ossea",
   "bracadeira-led",

@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { formatBRL, type Product } from "@/lib/products";
 import { ProductImage } from "./ProductImage";
 import { useCart } from "@/context/CartContext";
@@ -6,11 +5,13 @@ import { Plus } from "lucide-react";
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const productHref = product.slug === "nb-9060" ? "/nb-9060" : `/produto/${product.slug}`;
+  const isDirectProduct = product.slug === "nb-9060";
+
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-md border border-border bg-card transition-colors hover:border-[color:var(--sage)]">
-      <Link
-        to="/produto/$slug"
-        params={{ slug: product.slug }}
+      <a
+        href={productHref}
         className="relative block aspect-square overflow-hidden bg-[color:var(--bone)]"
       >
         <div className="absolute inset-0 flex items-center justify-center p-6 md:p-8">
@@ -28,14 +29,14 @@ export function ProductCard({ product }: { product: Product }) {
         <span className="absolute right-3 top-3 rounded-sm bg-[color:var(--graphite)]/70 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-[color:var(--bone)]">
           {product.categoryLabel}
         </span>
-      </Link>
+      </a>
       <div className="flex flex-1 flex-col justify-between gap-4 p-4">
         <div>
-          <Link to="/produto/$slug" params={{ slug: product.slug }}>
+          <a href={productHref}>
             <h3 className="font-display text-2xl leading-tight tracking-wide">
               {product.shortName.toUpperCase()}
             </h3>
-          </Link>
+          </a>
           <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
             {product.tagline}
           </p>
@@ -58,6 +59,10 @@ export function ProductCard({ product }: { product: Product }) {
             aria-label={`Adicionar ${product.name} ao carrinho`}
             onClick={(e) => {
               e.preventDefault();
+              if (isDirectProduct) {
+                window.location.href = productHref;
+                return;
+              }
               addItem(product.slug, 1);
             }}
             className="inline-flex h-10 w-10 items-center justify-center rounded-sm bg-[color:var(--graphite)] text-[color:var(--bone)] transition-colors hover:bg-[color:var(--terracotta)]"

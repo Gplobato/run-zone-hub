@@ -13,6 +13,9 @@ import imgKit from "@/assets/products/kit-seguranca-urbana.jpg";
 import imgGarmin from "@/assets/products/garmin-forerunner-965.jpg";
 import imgGarminPreto from "@/assets/products/garmin-forerunner-965-preto.jpg";
 
+const imgNb9060Branco = "https://assetsglobalbr.com/u/testimony/fe6916cd.png";
+const imgNb9060Preto = "https://assetsglobalbr.com/u/testimony/8cbd4aab.png";
+
 export const PRODUCT_IMAGES: Record<string, string> = {
   "fone-conducao-ossea": imgFone,
   "bracadeira-led": imgBrac,
@@ -22,12 +25,15 @@ export const PRODUCT_IMAGES: Record<string, string> = {
   "cinto-corrida": imgCinto,
   "kit-seguranca-urbana": imgKit,
   "garmin-forerunner-965": imgGarmin,
+  "nb-9060": imgNb9060Branco,
 };
 
 // Imagens específicas por variante. Chave: `${slug}::${variante}`.
 export const PRODUCT_VARIANT_IMAGES: Record<string, string> = {
   "garmin-forerunner-965::Branco": imgGarmin,
   "garmin-forerunner-965::Preto": imgGarminPreto,
+  "nb-9060::Branco / Clássico": imgNb9060Branco,
+  "nb-9060::Preto / Creme": imgNb9060Preto,
 };
 
 
@@ -374,6 +380,52 @@ export const PRODUCTS: Product[] = [
     ],
     crossSell: ["fone-conducao-ossea", "cinto-corrida", "bracadeira-led"],
     hero: { bg: "graphite", accent: "sage" },
+  },
+  {
+    slug: "nb-9060",
+    name: "Tênis NB 9060 Running",
+    shortName: "NB 9060",
+    category: "acessorios",
+    categoryLabel: "Calçados",
+    tagline: "Visual robusto, conforto para o dia a dia e duas cores para escolher.",
+    description:
+      "Tênis NB 9060 Running unissex, com cabedal respirável, solado reforçado e design urbano inspirado nos modelos esportivos dos anos 2000.",
+    longDescription:
+      "O NB 9060 combina linhas marcantes, entressola volumosa e construção confortável para uso casual. O cabedal em mesh com sobreposições estruturadas ajuda na ventilação e no ajuste, enquanto o solado em borracha e EVA entrega estabilidade para a rotina.",
+    priceCents: 7990,
+    installments: { count: 10, valueCents: 799 },
+    badge: "Novo",
+    variants: [
+      { key: "cor", label: "Cor", options: ["Branco / Clássico", "Preto / Creme"] },
+    ],
+    specs: [
+      { label: "Modelo", value: "NB 9060" },
+      { label: "Gênero", value: "Unissex" },
+      { label: "Estilo", value: "Casual e lifestyle" },
+      { label: "Cabedal", value: "Mesh com sobreposições sintéticas" },
+      { label: "Entressola", value: "EVA de dupla densidade" },
+      { label: "Solado", value: "Borracha e EVA" },
+      { label: "Fechamento", value: "Cadarço" },
+      { label: "Tamanhos", value: "35 ao 44" },
+    ],
+    bullets: [
+      "Design chunky moderno e fácil de combinar",
+      "Cabedal respirável para mais conforto",
+      "Interior acolchoado e palmilha removível",
+      "Solado reforçado para uso diário",
+    ],
+    faq: [
+      {
+        q: "Como escolho a cor?",
+        a: "Selecione Branco / Clássico ou Preto / Creme antes de finalizar. O checkout aberto será o da cor escolhida.",
+      },
+      {
+        q: "Como escolho o tamanho?",
+        a: "O tamanho é escolhido na etapa anterior/checkout, conforme a configuração do produto na Zedy.",
+      },
+    ],
+    crossSell: ["cinto-corrida", "fone-conducao-ossea", "bracadeira-led"],
+    hero: { bg: "bone", accent: "sage" },
   },
 ];
 

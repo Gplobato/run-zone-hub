@@ -18,6 +18,8 @@ const VARIANT_IDS: Record<string, number> = {
   "mercadopromo-jaqueta-courino": 248867337,
   "mercadopromo-bota-montaria": 248867624,
   "mercadopromo-kit-panos": 250397229,
+  "nb-9060-branco": 250703130,
+  "nb-9060-preto": 250703640,
 };
 
 function envValue(name: string): string | undefined {

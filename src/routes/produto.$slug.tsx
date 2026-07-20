@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { StoreLayout } from "@/components/paze/StoreLayout";
 import { ProductCard } from "@/components/paze/ProductCard";
 import { ProductImage } from "@/components/paze/ProductImage";
@@ -17,6 +17,7 @@ import { Minus, Plus, ShieldCheck, Truck, RotateCcw, Check, Play } from "lucide-
 
 export const Route = createFileRoute("/produto/$slug")({
   loader: ({ params }) => {
+    if (params.slug === "nb-9060") throw redirect({ to: "/nb-9060" });
     const product = getProduct(params.slug);
     if (!product) throw notFound();
     return { product };
