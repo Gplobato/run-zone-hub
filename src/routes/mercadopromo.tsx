@@ -1843,7 +1843,7 @@ function MLHeader() {
   }, []);
 
   return (
-    <header className="bg-white border-b border-gray-200">
+    <header className="bg-[#bbf0b6] border-b border-[#aae0a5]">
       <div className="mx-auto max-w-[1200px] px-3 pb-3 pt-3 md:px-4 md:pb-0">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 md:flex md:gap-6">
           {/* Logo */}
