@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { fbqTrack } from "@/lib/pixel";
 import { createZedyCheckout } from "@/lib/zedy.functions";
-import mlLogo from "@/assets/mercadopromo/ml-logo.png";
+const logoUrl = "/logo.webp";
 import pixLogo from "@/assets/mercadopromo/pix-logo.png";
 import payAmex from "@/assets/mercadopromo/pay-amex.png";
 import payElo from "@/assets/mercadopromo/pay-elo.png";
@@ -1360,13 +1360,13 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       {/* Breadcrumbs */}
       <div className="mx-auto hidden max-w-[1200px] px-4 py-3 text-[13px] md:block">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <a href="#" className="text-[#3483fa] hover:underline">
+          <a href="#" className="text-[#79C142] hover:underline">
             Voltar à lista
           </a>
           <span className="text-[#999]">|</span>
           {PRODUCT.categoryTrail.map((c, i) => (
             <span key={c} className="flex items-center gap-2">
-              <a href="#" className="text-[#3483fa] hover:underline">
+              <a href="#" className="text-[#79C142] hover:underline">
                 {c}
               </a>
               {i < PRODUCT.categoryTrail.length - 1 && (
@@ -1375,10 +1375,10 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             </span>
           ))}
           <div className="ml-auto flex gap-4">
-            <a href="#" className="text-[#3483fa] hover:underline">
+            <a href="#" className="text-[#79C142] hover:underline">
               Vender um igual
             </a>
-            <a href="#" className="text-[#3483fa] hover:underline">
+            <a href="#" className="text-[#79C142] hover:underline">
               Compartilhar
             </a>
           </div>
@@ -1395,7 +1395,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                 onClick={() => selectProduct(i)}
                 className={`whitespace-nowrap border-b-2 px-3 py-2 text-[13px] transition ${
                   activeIdx === i
-                    ? "border-[#3483fa] text-[#3483fa]"
+                    ? "border-[#79C142] text-[#79C142]"
                     : "border-transparent text-[#666] hover:text-[#333]"
                 }`}
               >
@@ -1419,7 +1419,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                     onMouseEnter={() => setActiveImg(media.src)}
                     onClick={() => setActiveImg(media.src)}
                     className={`aspect-square overflow-hidden rounded border bg-white ${
-                      activeImg === media.src ? "border-[#3483fa]" : "border-[#e0e0e0]"
+                      activeImg === media.src ? "border-[#79C142]" : "border-[#e0e0e0]"
                     }`}
                   >
                     {media.kind === "video" ? (
@@ -1448,7 +1448,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                   />
                 )}
                 <button className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow hover:bg-white">
-                  <Heart className="h-5 w-5 text-[#3483fa]" />
+                  <Heart className="h-5 w-5 text-[#79C142]" />
                 </button>
               </div>
             </div>
@@ -1459,7 +1459,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                   key={media.src}
                   onClick={() => setActiveImg(media.src)}
                   className={`h-14 w-14 flex-shrink-0 overflow-hidden rounded border ${
-                    activeImg === media.src ? "border-[#3483fa]" : "border-[#e0e0e0]"
+                    activeImg === media.src ? "border-[#79C142]" : "border-[#e0e0e0]"
                   }`}
                 >
                   {media.kind === "video" ? (
@@ -1484,19 +1484,19 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
               MAIS VENDIDO
             </div>
             <div className="mb-1 text-[13px] text-[#666]">
-              1º em <a href="#" className="text-[#3483fa] hover:underline">Casacos e Jaquetas {PRODUCT.brand}</a>
+              1º em <a href="#" className="text-[#79C142] hover:underline">Casacos e Jaquetas {PRODUCT.brand}</a>
             </div>
             <h1 className="mb-2 text-[22px] font-semibold leading-tight text-[#333] md:text-[24px]">
               {PRODUCT.title}
             </h1>
             <div className="mb-4 flex items-center gap-2 text-[14px]">
-              <span className="text-[#3483fa]">{PRODUCT.rating.toFixed(1)}</span>
+              <span className="text-[#79C142]">{PRODUCT.rating.toFixed(1)}</span>
               <div className="flex">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-[#3483fa] text-[#3483fa]" strokeWidth={0} />
+                  <Star key={i} className="h-4 w-4 fill-[#79C142] text-[#79C142]" strokeWidth={0} />
                 ))}
               </div>
-              <span className="text-[#3483fa]">({PRODUCT.reviewsCount})</span>
+              <span className="text-[#79C142]">({PRODUCT.reviewsCount})</span>
             </div>
 
             <div className="mb-1 flex items-start gap-1">
@@ -1506,7 +1506,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             <div className="mb-1 text-[16px] text-[#00a650]">
               {PRODUCT.installments.count}x {formatBRL(PRODUCT.installments.valueCents)} sem juros
             </div>
-            <a href="#" className="mb-6 inline-block text-[13px] text-[#3483fa] hover:underline">
+            <a href="#" className="mb-6 inline-block text-[13px] text-[#79C142] hover:underline">
               Ver os meios de pagamento
             </a>
 
@@ -1523,7 +1523,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                     onClick={() => setColorKey(c.key)}
                     title={c.label}
                     className={`h-11 w-11 overflow-hidden rounded border-2 bg-white ${
-                      colorKey === c.key ? "border-[#3483fa]" : "border-transparent hover:border-[#999]"
+                      colorKey === c.key ? "border-[#79C142]" : "border-transparent hover:border-[#999]"
                     }`}
                   >
                     <img src={c.thumb} alt={c.label} className="h-full w-full object-cover" />
@@ -1545,8 +1545,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                       onClick={() => setSize(s)}
                       className={`min-w-[54px] rounded border px-3 py-2 text-[14px] ${
                         size === s
-                          ? "border-[#3483fa] bg-[#e6f0ff] text-[#3483fa]"
-                          : "border-[#c7c7c7] bg-white text-[#333] hover:border-[#3483fa]"
+                          ? "border-[#79C142] bg-[#f2fbe8] text-[#79C142]"
+                          : "border-[#c7c7c7] bg-white text-[#333] hover:border-[#79C142]"
                       } ${size === null ? "border-dashed" : ""}`}
                     >
                       {s}
@@ -1556,12 +1556,12 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                 <button
                   type="button"
                   onClick={() => setSizeGuideOpen(true)}
-                  className="mt-3 inline-flex items-center gap-1 text-[13px] text-[#3483fa] hover:underline"
+                  className="mt-3 inline-flex items-center gap-1 text-[13px] text-[#79C142] hover:underline"
                 >
                   <Ruler className="h-3.5 w-3.5" /> Guia de tamanhos
                 </button>
                 <div className="mt-2">
-                  <a href="#" className="inline-flex items-center gap-1 text-[13px] text-[#3483fa] hover:underline">
+                  <a href="#" className="inline-flex items-center gap-1 text-[13px] text-[#79C142] hover:underline">
                     Perfeito para 100% <ChevronDown className="h-3 w-3" />
                   </a>
                 </div>
@@ -1578,14 +1578,14 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             <p className="text-[14px]">
               <span className="text-[#00a650]">Chegará grátis amanhã</span> por ser sua primeira compra
             </p>
-            <a href="#" className="mt-1 inline-block text-[13px] text-[#3483fa] hover:underline">
+            <a href="#" className="mt-1 inline-block text-[13px] text-[#79C142] hover:underline">
               Mais detalhes e formas de entrega
             </a>
 
             <p className="mt-4 text-[14px]">
               <span className="text-[#00a650]">Retire grátis</span> a partir de segunda-feira em uma agência Mercado Livre
             </p>
-            <a href="#" className="text-[13px] text-[#3483fa] hover:underline">
+            <a href="#" className="text-[13px] text-[#79C142] hover:underline">
               Ver no mapa
             </a>
 
@@ -1625,7 +1625,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             <button
               onClick={onBuy}
               disabled={checkoutLoading}
-              className="mt-5 w-full rounded-md bg-[#3483fa] py-3 text-[16px] font-semibold text-white hover:bg-[#2968c8] disabled:opacity-70"
+              className="mt-5 w-full rounded-md bg-[#79C142] py-3 text-[16px] font-semibold text-white hover:bg-[#6bb136] disabled:opacity-70"
             >
               {checkoutLoading ? (
                 <span className="inline-flex items-center gap-2">
@@ -1638,7 +1638,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             <button
               onClick={onAddToCart}
               disabled={checkoutLoading}
-              className="mt-2 w-full rounded-md bg-[#e6f0ff] py-3 text-[16px] font-semibold text-[#3483fa] hover:bg-[#d5e4fc] disabled:opacity-70"
+              className="mt-2 w-full rounded-md bg-[#f2fbe8] py-3 text-[16px] font-semibold text-[#79C142] hover:bg-[#e5f7d3] disabled:opacity-70"
             >
               <span className="inline-flex items-center gap-2">
                 <ShoppingCart className="h-4 w-4" /> Adicionar ao carrinho
@@ -1654,7 +1654,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             <div className="mt-5 border-t border-[#eee] pt-4 text-[14px]">
               <div>
                 Vendido por{" "}
-                <a href="#" className="text-[#3483fa] hover:underline">
+                <a href="#" className="text-[#79C142] hover:underline">
                   {PRODUCT.seller}
                 </a>
               </div>
@@ -1663,15 +1663,15 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
 
             <ul className="mt-4 space-y-3 text-[13px]">
               <li className="flex gap-2">
-                <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#3483fa]" />
+                <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#79C142]" />
                 <span>
-                  <a href="#" className="text-[#3483fa] hover:underline">Compra Garantida</a>. Receba o produto que está esperando ou devolvemos o dinheiro.
+                  <a href="#" className="text-[#79C142] hover:underline">Compra Garantida</a>. Receba o produto que está esperando ou devolvemos o dinheiro.
                 </span>
               </li>
               <li className="flex gap-2">
-                <Gift className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#3483fa]" />
+                <Gift className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#79C142]" />
                 <span>
-                  <a href="#" className="text-[#3483fa] hover:underline">Vale-troca para presente</a>. A pessoa que o receber poderá trocá-lo.
+                  <a href="#" className="text-[#79C142] hover:underline">Vale-troca para presente</a>. A pessoa que o receber poderá trocá-lo.
                 </span>
               </li>
             </ul>
@@ -1696,7 +1696,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
               <div className="text-[48px] font-light leading-none">{PRODUCT.rating.toFixed(1)}</div>
               <div className="mt-1 flex">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-[#3483fa] text-[#3483fa]" strokeWidth={0} />
+                  <Star key={i} className="h-4 w-4 fill-[#79C142] text-[#79C142]" strokeWidth={0} />
                 ))}
               </div>
               <div className="mt-1 text-[13px] text-[#666]">{PRODUCT.reviewsCount} avaliações</div>
@@ -1712,7 +1712,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                     <span className="w-3 text-[#666]">{star}</span>
                     <div className="h-1.5 flex-1 overflow-hidden rounded bg-[#eee]">
                       <div
-                        className="h-full bg-[#3483fa]"
+                        className="h-full bg-[#79C142]"
                         style={{ width: `${(n / PRODUCT.reviewsCount) * 100}%` }}
                       />
                     </div>
@@ -1738,7 +1738,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                       <Star
                         key={i}
                         className={`h-3.5 w-3.5 ${
-                          i < r.rating ? "fill-[#3483fa] text-[#3483fa]" : "text-[#ddd]"
+                          i < r.rating ? "fill-[#79C142] text-[#79C142]" : "text-[#ddd]"
                         }`}
                         strokeWidth={0}
                       />
@@ -1763,7 +1763,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                               loading="lazy"
                               className="h-40 w-40 object-cover"
                             />
-                            <span className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#3483fa] shadow transition-transform group-hover:scale-105">
+                            <span className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#79C142] shadow transition-transform group-hover:scale-105">
                               <ZoomIn className="h-4 w-4" />
                             </span>
                           </button>
@@ -1843,13 +1843,13 @@ function MLHeader() {
   }, []);
 
   return (
-    <header className="bg-[#fff159]">
+    <header className="bg-white border-b border-gray-200">
       <div className="mx-auto max-w-[1200px] px-3 pb-3 pt-3 md:px-4 md:pb-0">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 md:flex md:gap-6">
           {/* Logo */}
           <a href="/mercadopromo" className="flex-shrink-0">
             <img
-              src={mlLogo}
+              src={logoUrl}
               alt="Mercado Livre"
               className="h-8 w-auto md:h-10"
               draggable={false}
@@ -1870,8 +1870,8 @@ function MLHeader() {
 
           {/* CTA + cart */}
           <div className="contents md:flex md:items-center md:gap-4">
-            <div className="hidden items-center gap-2 rounded-full border border-[#3483fa] bg-white px-3 py-1 text-[12px] text-[#333] lg:flex">
-              <span className="font-semibold text-[#3483fa]">ASSINE AGORA</span>
+            <div className="hidden items-center gap-2 rounded-full border border-[#79C142] bg-white px-3 py-1 text-[12px] text-[#333] lg:flex">
+              <span className="font-semibold text-[#79C142]">ASSINE AGORA</span>
               <span className="rounded-full bg-[#00c58f] px-1.5 text-[10px] font-bold text-white">GRÁTIS</span>
               <span className="font-semibold">MELI+</span>
               <span className="text-[10px] text-[#666]">
@@ -1931,7 +1931,7 @@ function ProductDescription({
           <ul className="space-y-1.5">
             {d.benefits.map((b) => (
               <li key={b.title} className="flex gap-2 text-[14px]">
-                <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#3483fa]" />
+                <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#79C142]" />
                 <span>
                   <b className="text-[#333]">{b.title}:</b>{" "}
                   <span className="text-[#555]">{b.result}</span>
@@ -1980,7 +1980,7 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
             type="button"
             onClick={onClose}
             aria-label="Fechar guia de tamanhos"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#3483fa] hover:bg-[#f2f6ff]"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#79C142] hover:bg-[#f2f6ff]"
           >
             <X className="h-5 w-5" />
           </button>
@@ -1994,7 +1994,7 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
                 Guia não disponível
               </div>
             </div>
-            <div className="border-b-2 border-[#3483fa] pb-3 font-medium text-[#3483fa]">Da peça</div>
+            <div className="border-b-2 border-[#79C142] pb-3 font-medium text-[#79C142]">Da peça</div>
           </div>
 
           <h3 className="text-[16px] font-semibold text-[#333]">Tabela de medidas para peças</h3>
@@ -2056,7 +2056,7 @@ function ZoomModal({ src, onClose }: { src: string; onClose: () => void }) {
           type="button"
           onClick={onClose}
           aria-label="Fechar imagem ampliada"
-          className="absolute -right-2 -top-2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#3483fa] shadow-lg hover:bg-[#f5f5f5]"
+          className="absolute -right-2 -top-2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#79C142] shadow-lg hover:bg-[#f5f5f5]"
         >
           <X className="h-5 w-5" />
         </button>
@@ -2086,7 +2086,7 @@ function SellerCard() {
           <div className="text-[15px] font-semibold text-[#333]">{SELLER.name}</div>
           <div className="text-[12px] text-[#666]">+1000 Seguidores &nbsp; +500 Produtos</div>
         </div>
-        <button className="rounded border border-[#3483fa] px-3 py-1 text-[12px] text-[#3483fa] hover:bg-[#e6f0ff]">
+        <button className="rounded border border-[#79C142] px-3 py-1 text-[12px] text-[#79C142] hover:bg-[#f2fbe8]">
           Seguir
         </button>
       </div>
@@ -2115,7 +2115,7 @@ function SellerCard() {
           Entrega no prazo
         </div>
       </div>
-      <button className="mt-4 w-full rounded-md bg-[#e6f0ff] py-2 text-[13px] font-semibold text-[#3483fa] hover:bg-[#d5e4fc]">
+      <button className="mt-4 w-full rounded-md bg-[#f2fbe8] py-2 text-[13px] font-semibold text-[#79C142] hover:bg-[#e5f7d3]">
         Ir para a página do vendedor
       </button>
     </aside>
@@ -2140,7 +2140,7 @@ function PaymentMethodsCard() {
           <img src={PAYMENT_METHODS.pix.src} alt={PAYMENT_METHODS.pix.name} className="h-5 max-w-[48px]" loading="lazy" />
         </span>
       </div>
-      <a href="#" className="mt-4 inline-block text-[13px] text-[#3483fa] hover:underline">
+      <a href="#" className="mt-4 inline-block text-[13px] text-[#79C142] hover:underline">
         Confira outros meios de pagamento
       </a>
     </aside>
