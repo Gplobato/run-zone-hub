@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Youtube, MessageCircle } from "lucide-react";
-import logoUrl from "@/assets/paze-logo.png";
+const logoUrl = "/logo.webp";
 
 const SUPPORT_PHONE = "11939147267";
 const SUPPORT_WA = `https://wa.me/55${SUPPORT_PHONE}`;

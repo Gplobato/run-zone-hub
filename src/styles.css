@@ -45,12 +45,12 @@
 :root {
   --radius: 0.5rem;
 
-  /* Paze palette (converted to oklch) */
-  --graphite: oklch(0.19 0.008 250);      /* #14171A */
-  --bone: oklch(0.949 0.017 85);           /* #F5F1E8 */
-  --sage: oklch(0.68 0.028 155);           /* #8FA398 */
-  --terracotta: oklch(0.573 0.16 38);      /* #C4441E */
-  --neutral: oklch(0.51 0.014 260);        /* #6B7280 */
+  /* Pagar.me palette */
+  --graphite: oklch(0.24 0.03 260);        /* Dark navy */
+  --bone: oklch(0.99 0 0);                 /* White/Off-white */
+  --sage: oklch(0.81 0.13 133);            /* Pagar.me Green (lighter accent) */
+  --terracotta: oklch(0.81 0.13 133);      /* Pagar.me Green (Primary) */
+  --neutral: oklch(0.55 0.02 260);         /* Gray */
 
   /* Semantic mapping — light (bone) surface */
   --background: var(--bone);

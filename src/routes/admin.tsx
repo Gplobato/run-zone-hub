@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { adminLogin, clearAdminSession, isAdminLoggedIn, setAdminLoggedIn } from "@/lib/admin-auth";
 import { PRODUCTS, formatBRL } from "@/lib/products";
-import logoUrl from "@/assets/paze-logo.png";
+const logoUrl = "/logo.webp";
 import { Lock, LogOut, ShieldCheck, CircleAlert, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({

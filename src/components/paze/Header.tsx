@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { ShoppingBag, Search, Menu, X } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useState } from "react";
-import logoUrl from "@/assets/paze-logo.png";
+const logoUrl = "/logo.webp";
 
 type NavItem =
   | { to: "/produtos"; label: string }
