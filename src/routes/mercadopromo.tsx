@@ -88,6 +88,9 @@ import kitPanos2 from "@/assets/mercadopromo/kitpanos-2.jpeg";
 import kitPanos3 from "@/assets/mercadopromo/kitpanos-3.jpeg";
 import kitPanosVideo from "@/assets/mercadopromo/kitpanos-video.mp4";
 import kitPanosReview1 from "@/assets/mercadopromo/kitpanos-review-1.webp";
+import kitSandaliasReview1 from "@/assets/mercadopromo/kitsandalias-review-1.png";
+import kitSandaliasReview2 from "@/assets/mercadopromo/kitsandalias-review-2.png";
+import kitSandaliasReview3 from "@/assets/mercadopromo/kitsandalias-review-3.png";
 
 const pagarMeLogoUrl = "/logo.webp";
 
@@ -807,9 +810,9 @@ const KIT_SANDALIAS_PRODUCT: Product = {
   title: "Kit 3 Sandálias Femininas Branca, Preta e Rosé",
   brand: "PAZE",
   seller: "Paze Oficial",
-  sold: "+100 vendidos",
-  rating: 4.9,
-  reviewsCount: 42,
+  sold: "+500 vendidos",
+  rating: 5.0,
+  reviewsCount: 127,
   price: 9990,
   compareAt: null,
   installments: { count: 6, valueCents: 1665 },
@@ -1152,22 +1155,25 @@ const KIT_SANDALIAS_REVIEWS: Review[] = [
     name: "ana.clara",
     verified: true,
     rating: 5,
-    text: "As três são lindas e combinam com tudo. A branca é delicada, a preta fica ótima com qualquer roupa e a rosé tem um brilho muito bonito. O kit vale muito a pena.",
+    text: "Eu fiquei apaixonada! As três são ainda mais bonitas pessoalmente, super confortáveis e vieram muito bem embaladas. A branca é delicada, a preta combina com tudo e a rosé é simplesmente perfeita. Foi uma das melhores compras que já fiz.",
     when: "há 2 semanas",
+    photo: kitSandaliasReview1,
   },
   {
     name: "mariana.s",
     verified: true,
     rating: 5,
-    text: "A rosé é ainda mais bonita pessoalmente e a preta virou minha favorita. Chegaram bem embaladas e o tamanho ficou certinho.",
+    text: "O kit é maravilhoso e o tamanho ficou certinho no pé. Já usei as três e recebi elogios com todas. Parecem sandálias bem mais caras, principalmente a rosé. Pelo preço, vale muito a pena mesmo!",
     when: "há 3 semanas",
+    photo: kitSandaliasReview2,
   },
   {
     name: "camila.r",
     verified: true,
     rating: 5,
-    text: "Gostei muito da variedade. Dá para montar vários looks e cada par saiu bem mais barato do que comprar separado.",
+    text: "Chegaram rápido e são lindas demais! Gostei muito da variedade porque consigo usar tanto no dia a dia quanto para sair. São leves, confortáveis e o acabamento me surpreendeu. Recomendo de olhos fechados.",
     when: "há 1 mês",
+    photo: kitSandaliasReview3,
   },
 ];
 
@@ -1305,7 +1311,10 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const priceSplit = formatBRLSplit(PRODUCT.price);
-  const fiveStarReviews = Math.max(1, Math.round(PRODUCT.reviewsCount * 0.9));
+  const fiveStarReviews =
+    PRODUCT.id === "mercadopromo-kit-sandalias"
+      ? PRODUCT.reviewsCount
+      : Math.max(1, Math.round(PRODUCT.reviewsCount * 0.9));
   const fourStarReviews = Math.max(0, PRODUCT.reviewsCount - fiveStarReviews);
   const ratingDistribution = [
     [5, fiveStarReviews],
