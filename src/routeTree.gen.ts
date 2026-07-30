@@ -9,58 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as BobojacoRouteImport } from './routes/bobojaco'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as JaquetaRouteImport } from './routes/jaqueta'
-import { Route as JaquetafemRouteImport } from './routes/jaquetafem'
-import { Route as KitpanosRouteImport } from './routes/kitpanos'
-import { Route as MercadopromoRouteImport } from './routes/mercadopromo'
-import { Route as Nb9060RouteImport } from './routes/nb-9060'
 import { Route as ProdutosRouteImport } from './routes/produtos'
-import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
+import { Route as Nb9060RouteImport } from './routes/nb-9060'
+import { Route as MercadopromoRouteImport } from './routes/mercadopromo'
+import { Route as KitsandaliasRouteImport } from './routes/kitsandalias'
+import { Route as KitpanosRouteImport } from './routes/kitpanos'
+import { Route as JaquetafemRouteImport } from './routes/jaquetafem'
+import { Route as JaquetaRouteImport } from './routes/jaqueta'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as BobojacoRouteImport } from './routes/bobojaco'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
+import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as ApiPublicWebhooksHypercashRouteImport } from './routes/api/public/webhooks/hypercash'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BobojacoRoute = BobojacoRouteImport.update({
-  id: '/bobojaco',
-  path: '/bobojaco',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JaquetaRoute = JaquetaRouteImport.update({
-  id: '/jaqueta',
-  path: '/jaqueta',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JaquetafemRoute = JaquetafemRouteImport.update({
-  id: '/jaquetafem',
-  path: '/jaquetafem',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KitpanosRoute = KitpanosRouteImport.update({
-  id: '/kitpanos',
-  path: '/kitpanos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MercadopromoRoute = MercadopromoRouteImport.update({
-  id: '/mercadopromo',
-  path: '/mercadopromo',
+const ProdutosRoute = ProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Nb9060Route = Nb9060RouteImport.update({
@@ -68,19 +34,59 @@ const Nb9060Route = Nb9060RouteImport.update({
   path: '/nb-9060',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProdutosRoute = ProdutosRouteImport.update({
-  id: '/produtos',
-  path: '/produtos',
+const MercadopromoRoute = MercadopromoRouteImport.update({
+  id: '/mercadopromo',
+  path: '/mercadopromo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
-  id: '/categoria/$slug',
-  path: '/categoria/$slug',
+const KitsandaliasRoute = KitsandaliasRouteImport.update({
+  id: '/kitsandalias',
+  path: '/kitsandalias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KitpanosRoute = KitpanosRouteImport.update({
+  id: '/kitpanos',
+  path: '/kitpanos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JaquetafemRoute = JaquetafemRouteImport.update({
+  id: '/jaquetafem',
+  path: '/jaquetafem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JaquetaRoute = JaquetaRouteImport.update({
+  id: '/jaqueta',
+  path: '/jaqueta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BobojacoRoute = BobojacoRouteImport.update({
+  id: '/bobojaco',
+  path: '/bobojaco',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProdutoSlugRoute = ProdutoSlugRouteImport.update({
   id: '/produto/$slug',
   path: '/produto/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
+  id: '/categoria/$slug',
+  path: '/categoria/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicWebhooksHypercashRoute =
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
   '/kitpanos': typeof KitpanosRoute
+  '/kitsandalias': typeof KitsandaliasRoute
   '/mercadopromo': typeof MercadopromoRoute
   '/nb-9060': typeof Nb9060Route
   '/produtos': typeof ProdutosRoute
@@ -113,6 +120,7 @@ export interface FileRoutesByTo {
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
   '/kitpanos': typeof KitpanosRoute
+  '/kitsandalias': typeof KitsandaliasRoute
   '/mercadopromo': typeof MercadopromoRoute
   '/nb-9060': typeof Nb9060Route
   '/produtos': typeof ProdutosRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
   '/kitpanos': typeof KitpanosRoute
+  '/kitsandalias': typeof KitsandaliasRoute
   '/mercadopromo': typeof MercadopromoRoute
   '/nb-9060': typeof Nb9060Route
   '/produtos': typeof ProdutosRoute
@@ -146,6 +155,7 @@ export interface FileRouteTypes {
     | '/jaqueta'
     | '/jaquetafem'
     | '/kitpanos'
+    | '/kitsandalias'
     | '/mercadopromo'
     | '/nb-9060'
     | '/produtos'
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/jaqueta'
     | '/jaquetafem'
     | '/kitpanos'
+    | '/kitsandalias'
     | '/mercadopromo'
     | '/nb-9060'
     | '/produtos'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/jaqueta'
     | '/jaquetafem'
     | '/kitpanos'
+    | '/kitsandalias'
     | '/mercadopromo'
     | '/nb-9060'
     | '/produtos'
@@ -192,6 +204,7 @@ export interface RootRouteChildren {
   JaquetaRoute: typeof JaquetaRoute
   JaquetafemRoute: typeof JaquetafemRoute
   KitpanosRoute: typeof KitpanosRoute
+  KitsandaliasRoute: typeof KitsandaliasRoute
   MercadopromoRoute: typeof MercadopromoRoute
   Nb9060Route: typeof Nb9060Route
   ProdutosRoute: typeof ProdutosRoute
@@ -202,60 +215,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bobojaco': {
-      id: '/bobojaco'
-      path: '/bobojaco'
-      fullPath: '/bobojaco'
-      preLoaderRoute: typeof BobojacoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/jaqueta': {
-      id: '/jaqueta'
-      path: '/jaqueta'
-      fullPath: '/jaqueta'
-      preLoaderRoute: typeof JaquetaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/jaquetafem': {
-      id: '/jaquetafem'
-      path: '/jaquetafem'
-      fullPath: '/jaquetafem'
-      preLoaderRoute: typeof JaquetafemRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/kitpanos': {
-      id: '/kitpanos'
-      path: '/kitpanos'
-      fullPath: '/kitpanos'
-      preLoaderRoute: typeof KitpanosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mercadopromo': {
-      id: '/mercadopromo'
-      path: '/mercadopromo'
-      fullPath: '/mercadopromo'
-      preLoaderRoute: typeof MercadopromoRouteImport
+    '/produtos': {
+      id: '/produtos'
+      path: '/produtos'
+      fullPath: '/produtos'
+      preLoaderRoute: typeof ProdutosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nb-9060': {
@@ -265,18 +229,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Nb9060RouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/produtos': {
-      id: '/produtos'
-      path: '/produtos'
-      fullPath: '/produtos'
-      preLoaderRoute: typeof ProdutosRouteImport
+    '/mercadopromo': {
+      id: '/mercadopromo'
+      path: '/mercadopromo'
+      fullPath: '/mercadopromo'
+      preLoaderRoute: typeof MercadopromoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/categoria/$slug': {
-      id: '/categoria/$slug'
-      path: '/categoria/$slug'
-      fullPath: '/categoria/$slug'
-      preLoaderRoute: typeof CategoriaSlugRouteImport
+    '/kitsandalias': {
+      id: '/kitsandalias'
+      path: '/kitsandalias'
+      fullPath: '/kitsandalias'
+      preLoaderRoute: typeof KitsandaliasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kitpanos': {
+      id: '/kitpanos'
+      path: '/kitpanos'
+      fullPath: '/kitpanos'
+      preLoaderRoute: typeof KitpanosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jaquetafem': {
+      id: '/jaquetafem'
+      path: '/jaquetafem'
+      fullPath: '/jaquetafem'
+      preLoaderRoute: typeof JaquetafemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jaqueta': {
+      id: '/jaqueta'
+      path: '/jaqueta'
+      fullPath: '/jaqueta'
+      preLoaderRoute: typeof JaquetaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bobojaco': {
+      id: '/bobojaco'
+      path: '/bobojaco'
+      fullPath: '/bobojaco'
+      preLoaderRoute: typeof BobojacoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/produto/$slug': {
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: '/produto/$slug'
       fullPath: '/produto/$slug'
       preLoaderRoute: typeof ProdutoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categoria/$slug': {
+      id: '/categoria/$slug'
+      path: '/categoria/$slug'
+      fullPath: '/categoria/$slug'
+      preLoaderRoute: typeof CategoriaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/webhooks/hypercash': {
@@ -304,6 +324,7 @@ const rootRouteChildren: RootRouteChildren = {
   JaquetaRoute: JaquetaRoute,
   JaquetafemRoute: JaquetafemRoute,
   KitpanosRoute: KitpanosRoute,
+  KitsandaliasRoute: KitsandaliasRoute,
   MercadopromoRoute: MercadopromoRoute,
   Nb9060Route: Nb9060Route,
   ProdutosRoute: ProdutosRoute,

@@ -1,7 +1,7 @@
 import { createFileRoute, useSearch, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
-import type { FormEvent, ReactNode } from "react";
+import type { CSSProperties, FormEvent, ReactNode } from "react";
 import {
   Check,
   CircleAlert,
@@ -28,9 +28,10 @@ import {
   Ruler,
   Ticket,
 } from "lucide-react";
-import { fbqTrack } from "@/lib/pixel";
+import { fbqTrack, fbqTrackSingle } from "@/lib/pixel";
 import { createZedyCheckout } from "@/lib/zedy.functions";
-const logoUrl = "/logo.webp";
+import pazeLogo from "@/assets/paze-logo.png";
+import mlLogo from "@/assets/mercadopromo/ml-logo.png";
 import pixLogo from "@/assets/mercadopromo/pix-logo.png";
 import payAmex from "@/assets/mercadopromo/pay-amex.png";
 import payElo from "@/assets/mercadopromo/pay-elo.png";
@@ -87,6 +88,8 @@ import kitPanos2 from "@/assets/mercadopromo/kitpanos-2.jpeg";
 import kitPanos3 from "@/assets/mercadopromo/kitpanos-3.jpeg";
 import kitPanosVideo from "@/assets/mercadopromo/kitpanos-video.mp4";
 import kitPanosReview1 from "@/assets/mercadopromo/kitpanos-review-1.webp";
+
+const pagarMeLogoUrl = "/logo.webp";
 
 // -----------------------------------------------------------------------------
 // /mercadopromo "” página standalone estilo Mercado Livre (produto único).
@@ -706,6 +709,20 @@ const BOBOJACO_PRODUCT: Product = {
   },
 };
 
+const KIT_SANDALIAS_PIXEL_ID = "1577403850715282";
+
+function trackProductEvent(
+  product: Product,
+  event: string,
+  params?: Record<string, unknown>,
+) {
+  if (product.id === "mercadopromo-kit-sandalias") {
+    fbqTrackSingle(KIT_SANDALIAS_PIXEL_ID, event, params);
+    return;
+  }
+  fbqTrack(event, params);
+}
+
 const KIT_PANOS_PRODUCT: Product = {
   id: "mercadopromo-kit-panos",
   title: "Pano de Prato Atoalhado 70x50 cm em Algodão – Alta Absorção e Durabilidade",
@@ -785,6 +802,89 @@ const KIT_PANOS_PRODUCT: Product = {
 };
 
 // Slug -> índice em PRODUCTS. Usado para URLs de anúncio: /mercadopromo?p=<slug>
+const KIT_SANDALIAS_PRODUCT: Product = {
+  id: "mercadopromo-kit-sandalias",
+  title: "Kit 3 Sandálias Femininas Branca, Preta e Rosé",
+  brand: "PAZE",
+  seller: "Paze Oficial",
+  sold: "+100 vendidos",
+  rating: 4.9,
+  reviewsCount: 42,
+  price: 9990,
+  compareAt: null,
+  installments: { count: 6, valueCents: 1665 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Calçados Femininos", "Sandálias"],
+  colors: [
+    {
+      key: "kit-3-cores",
+      label: "Branca, preta e rosé",
+      thumb: "https://assetsglobalbr.com/u/testimony/72ad024d.png",
+      gallery: [
+        { src: "https://assetsglobalbr.com/u/testimony/72ad024d.png", kind: "image" },
+        { src: "https://assetsglobalbr.com/u/testimony/5212b1e6.png", kind: "image" },
+        { src: "https://assetsglobalbr.com/u/testimony/6106dfdf.png", kind: "image" },
+        { src: "https://assetsglobalbr.com/u/testimony/17ef9a65.png", kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["34", "35", "36", "37", "38", "39", "40", "41"],
+  description: {
+    heading: "Kit com 3 Sandálias Femininas — Branca, Preta e Rosé",
+    intro: [
+      "Tenha uma opção perfeita para cada look sem precisar escolher apenas uma cor. O Kit Paze reúne três sandálias femininas versáteis nas cores branca, preta e rosé, ideais para combinar com vestidos, saias, calças, shorts e produções casuais ou mais arrumadas.",
+      "Cada modelo possui um acabamento diferente, trazendo variedade para o seu dia a dia: a branca tem detalhes trançados, a preta apresenta tiras cruzadas e a rosé conta com acabamento metalizado elegante.",
+      "Você leva as 3 sandálias por apenas R$ 99,90, o equivalente a somente R$ 33,30 por par.",
+    ],
+    steps: [
+      "Escolha sua numeração, do 34 ao 41.",
+      "Receba em casa um kit completo com as três cores.",
+      "Varie as combinações e tenha uma opção perfeita para cada look.",
+    ],
+    benefits: [
+      {
+        title: "Três modelos em um único kit",
+        result: "1 sandália branca, 1 sandália preta e 1 sandália rosé",
+        feeling: "Você renova os looks sem precisar escolher apenas uma cor.",
+      },
+      {
+        title: "Acabamentos diferentes",
+        result: "Detalhes trançados, tiras cruzadas e acabamento metalizado",
+        feeling: "Mais variedade para produções casuais ou mais arrumadas.",
+      },
+      {
+        title: "Somente R$ 33,30 por par",
+        result: "Três sandálias por apenas R$ 99,90",
+        feeling: "Mais opções pagando menos do que muitas lojas cobram por um par.",
+      },
+      {
+        title: "Cores fáceis de combinar",
+        result: "Branco, preto e rosé para acompanhar todo o guarda-roupa",
+        feeling: "Praticidade para combinar com vestidos, saias, calças e shorts.",
+      },
+    ],
+    quotes: [
+      "As três são lindas e combinam com tudo. O kit vale muito a pena.",
+      "A rosé é ainda mais bonita pessoalmente e a preta virou minha favorita.",
+      "Chegaram certinhas e o tamanho que escolhi ficou ótimo.",
+    ],
+    specs: [
+      "O kit contém: 1 sandália branca",
+      "O kit contém: 1 sandália preta",
+      "O kit contém: 1 sandália rosé",
+      "Numerações disponíveis: do 34 ao 41",
+      "Sandália branca: detalhes trançados",
+      "Sandália preta: tiras cruzadas",
+      "Sandália rosé: acabamento metalizado elegante",
+    ],
+    tip: "Escolha a numeração que você usa normalmente. Cada opção exibida na página corresponde ao grupo de numeração disponível no estoque.",
+    closing: [
+      "Uma escolha prática para renovar seus looks, variar as combinações e ter três modelos diferentes pagando menos do que muitas lojas cobram por apenas um par.",
+      "Garanta o seu tamanho enquanto houver disponibilidade em estoque.",
+    ],
+    warranty: "30 dias",
+  },
+};
+
 const PRODUCT_SLUGS: Record<string, number> = {
   jaquetafem: 0,
   bota: 1,
@@ -794,11 +894,12 @@ const PRODUCT_SLUGS: Record<string, number> = {
   "conjunto-soft-teddy": 5,
   bobojaco: 6,
   kitpanos: 7,
+  kitsandalias: 8,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT];
 
 const FEMALE_JACKET_VARIANT_IDS: Record<string, Record<string, number>> = {
   marrom: {
@@ -827,6 +928,17 @@ const BOBOJACO_VARIANT_IDS: Record<string, number> = {
   G: 250277311,
   GG: 250277319,
   XGG: 250277323,
+};
+
+const KIT_SANDALIAS_VARIANT_IDS: Record<string, number> = {
+  "34": 252579869,
+  "35": 252579869,
+  "36": 252579914,
+  "37": 252579914,
+  "38": 252579922,
+  "39": 252579922,
+  "40": 252579930,
+  "41": 252579930,
 };
 
 const SIZE_GUIDE = [
@@ -1035,6 +1147,30 @@ const KIT_PANOS_REVIEWS: Review[] = [
   },
 ];
 
+const KIT_SANDALIAS_REVIEWS: Review[] = [
+  {
+    name: "ana.clara",
+    verified: true,
+    rating: 5,
+    text: "As três são lindas e combinam com tudo. A branca é delicada, a preta fica ótima com qualquer roupa e a rosé tem um brilho muito bonito. O kit vale muito a pena.",
+    when: "há 2 semanas",
+  },
+  {
+    name: "mariana.s",
+    verified: true,
+    rating: 5,
+    text: "A rosé é ainda mais bonita pessoalmente e a preta virou minha favorita. Chegaram bem embaladas e o tamanho ficou certinho.",
+    when: "há 3 semanas",
+  },
+  {
+    name: "camila.r",
+    verified: true,
+    rating: 5,
+    text: "Gostei muito da variedade. Dá para montar vários looks e cada par saiu bem mais barato do que comprar separado.",
+    when: "há 1 mês",
+  },
+];
+
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
   [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
@@ -1044,6 +1180,7 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [SOFT_PRODUCT.id]: SOFT_REVIEWS,
   [BOBOJACO_PRODUCT.id]: BOBOJACO_REVIEWS,
   [KIT_PANOS_PRODUCT.id]: KIT_PANOS_REVIEWS,
+  [KIT_SANDALIAS_PRODUCT.id]: KIT_SANDALIAS_REVIEWS,
 };
 
 function formatBRL(cents: number) {
@@ -1144,6 +1281,15 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const COLORS = PRODUCT.colors;
   const SIZES = PRODUCT.sizes;
   const requiresSize = SIZES.length > 0;
+  const isMercadoLivreTheme = PRODUCT.id === "mercadopromo-kit-sandalias";
+  const promoTheme = {
+    "--promo-accent": isMercadoLivreTheme ? "#3483fa" : "#79C142",
+    "--promo-accent-hover": isMercadoLivreTheme ? "#2968c8" : "#6bb136",
+    "--promo-accent-soft": isMercadoLivreTheme ? "#e6f0ff" : "#f2fbe8",
+    "--promo-accent-soft-hover": isMercadoLivreTheme ? "#d5e4fc" : "#e5f7d3",
+    "--promo-header": isMercadoLivreTheme ? "#fff159" : "#bbf0b6",
+    "--promo-header-border": isMercadoLivreTheme ? "#fff159" : "#aae0a5",
+  } as CSSProperties;
 
   const [colorKey, setColorKey] = useState(COLORS[0].key);
   const color = useMemo(
@@ -1159,6 +1305,15 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const priceSplit = formatBRLSplit(PRODUCT.price);
+  const fiveStarReviews = Math.max(1, Math.round(PRODUCT.reviewsCount * 0.9));
+  const fourStarReviews = Math.max(0, PRODUCT.reviewsCount - fiveStarReviews);
+  const ratingDistribution = [
+    [5, fiveStarReviews],
+    [4, fourStarReviews],
+    [3, 0],
+    [2, 0],
+    [1, 0],
+  ];
 
   const createCheckout = useServerFn(createZedyCheckout);
 
@@ -1189,7 +1344,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       value: PRODUCT.price / 100,
       currency: "BRL",
     };
-    fbqTrack("ViewContent", params);
+    trackProductEvent(PRODUCT, "ViewContent", params);
   }, [PRODUCT.id, PRODUCT.price, PRODUCT.title, isBlockedLegacyJacket]);
 
   const selectProduct = (idx: number) => {
@@ -1209,8 +1364,14 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     PRODUCT.id === "mercadopromo-jaqueta-bobojaco-puffer" && size
       ? BOBOJACO_VARIANT_IDS[size]
       : undefined;
+  const selectedKitSandaliasVariantId =
+    PRODUCT.id === "mercadopromo-kit-sandalias" && size
+      ? KIT_SANDALIAS_VARIANT_IDS[size]
+      : undefined;
   const selectedZedyVariantId =
-    selectedFemaleJacketVariantId ?? selectedBobojacoVariantId;
+    selectedFemaleJacketVariantId ??
+    selectedBobojacoVariantId ??
+    selectedKitSandaliasVariantId;
 
   function validateSelection() {
     if (requiresSize && !size) {
@@ -1224,6 +1385,11 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     }
 
     if (PRODUCT.id === "mercadopromo-jaqueta-bobojaco-puffer" && !selectedBobojacoVariantId) {
+      setCheckoutError("Este tamanho não está disponível.");
+      return false;
+    }
+
+    if (PRODUCT.id === "mercadopromo-kit-sandalias" && !selectedKitSandaliasVariantId) {
       setCheckoutError("Este tamanho não está disponível.");
       return false;
     }
@@ -1289,16 +1455,16 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       contents: [{ id: selectedZedyVariantId ?? colorKey, size: size ?? "-", quantity: qty }],
     };
     if (isSoftProduct) {
-      fbqTrack("InitiateCheckout", params);
+      trackProductEvent(PRODUCT, "InitiateCheckout", params);
       goToSoftCheckout();
       return;
     }
     if (externalMainPixelCheckoutUrl) {
-      fbqTrack("InitiateCheckout", params);
+      trackProductEvent(PRODUCT, "InitiateCheckout", params);
       goToExternalMainPixelCheckout();
       return;
     }
-    fbqTrack("InitiateCheckout", params);
+    trackProductEvent(PRODUCT, "InitiateCheckout", params);
     void goToZedy();
   };
 
@@ -1316,19 +1482,19 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       contents: [{ id: selectedZedyVariantId ?? colorKey, size: size ?? "-", quantity: qty }],
     };
     if (isSoftProduct) {
-      fbqTrack("AddToCart", atcParams);
-      fbqTrack("InitiateCheckout", icParams);
+      trackProductEvent(PRODUCT, "AddToCart", atcParams);
+      trackProductEvent(PRODUCT, "InitiateCheckout", icParams);
       goToSoftCheckout();
       return;
     }
     if (externalMainPixelCheckoutUrl) {
-      fbqTrack("AddToCart", atcParams);
-      fbqTrack("InitiateCheckout", icParams);
+      trackProductEvent(PRODUCT, "AddToCart", atcParams);
+      trackProductEvent(PRODUCT, "InitiateCheckout", icParams);
       goToExternalMainPixelCheckout();
       return;
     }
-    fbqTrack("AddToCart", atcParams);
-    fbqTrack("InitiateCheckout", icParams);
+    trackProductEvent(PRODUCT, "AddToCart", atcParams);
+    trackProductEvent(PRODUCT, "InitiateCheckout", icParams);
     void goToZedy();
   };
 
@@ -1344,7 +1510,10 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   }
 
   return (
-    <div className="mercado-promo-page min-h-screen bg-[#ededed] text-[#333]">
+    <div
+      className="mercado-promo-page min-h-screen bg-[#ededed] text-[#333]"
+      style={promoTheme}
+    >
       <style>{`
         .mercado-promo-page,
           .mercado-promo-page h1,
@@ -1355,18 +1524,18 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
           text-transform: none !important;
         }
       `}</style>
-      <MLHeader />
+      <MLHeader mercadoLivreTheme={isMercadoLivreTheme} />
 
       {/* Breadcrumbs */}
       <div className="mx-auto hidden max-w-[1200px] px-4 py-3 text-[13px] md:block">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <a href="#" className="text-[#79C142] hover:underline">
+          <a href="#" className="text-[var(--promo-accent)] hover:underline">
             Voltar à lista
           </a>
           <span className="text-[#999]">|</span>
           {PRODUCT.categoryTrail.map((c, i) => (
             <span key={c} className="flex items-center gap-2">
-              <a href="#" className="text-[#79C142] hover:underline">
+              <a href="#" className="text-[var(--promo-accent)] hover:underline">
                 {c}
               </a>
               {i < PRODUCT.categoryTrail.length - 1 && (
@@ -1375,10 +1544,10 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             </span>
           ))}
           <div className="ml-auto flex gap-4">
-            <a href="#" className="text-[#79C142] hover:underline">
+            <a href="#" className="text-[var(--promo-accent)] hover:underline">
               Vender um igual
             </a>
-            <a href="#" className="text-[#79C142] hover:underline">
+            <a href="#" className="text-[var(--promo-accent)] hover:underline">
               Compartilhar
             </a>
           </div>
@@ -1395,7 +1564,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                 onClick={() => selectProduct(i)}
                 className={`whitespace-nowrap border-b-2 px-3 py-2 text-[13px] transition ${
                   activeIdx === i
-                    ? "border-[#79C142] text-[#79C142]"
+                    ? "border-[var(--promo-accent)] text-[var(--promo-accent)]"
                     : "border-transparent text-[#666] hover:text-[#333]"
                 }`}
               >
@@ -1419,7 +1588,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                     onMouseEnter={() => setActiveImg(media.src)}
                     onClick={() => setActiveImg(media.src)}
                     className={`aspect-square overflow-hidden rounded border bg-white ${
-                      activeImg === media.src ? "border-[#79C142]" : "border-[#e0e0e0]"
+                      activeImg === media.src ? "border-[var(--promo-accent)]" : "border-[#e0e0e0]"
                     }`}
                   >
                     {media.kind === "video" ? (
@@ -1448,7 +1617,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                   />
                 )}
                 <button className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow hover:bg-white">
-                  <Heart className="h-5 w-5 text-[#79C142]" />
+                  <Heart className="h-5 w-5 text-[var(--promo-accent)]" />
                 </button>
               </div>
             </div>
@@ -1459,7 +1628,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                   key={media.src}
                   onClick={() => setActiveImg(media.src)}
                   className={`h-14 w-14 flex-shrink-0 overflow-hidden rounded border ${
-                    activeImg === media.src ? "border-[#79C142]" : "border-[#e0e0e0]"
+                    activeImg === media.src ? "border-[var(--promo-accent)]" : "border-[#e0e0e0]"
                   }`}
                 >
                   {media.kind === "video" ? (
@@ -1484,19 +1653,22 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
               MAIS VENDIDO
             </div>
             <div className="mb-1 text-[13px] text-[#666]">
-              1º em <a href="#" className="text-[#79C142] hover:underline">Casacos e Jaquetas {PRODUCT.brand}</a>
+              1º em{" "}
+              <a href="#" className="text-[var(--promo-accent)] hover:underline">
+                {PRODUCT.categoryTrail.at(-1)} {PRODUCT.brand}
+              </a>
             </div>
             <h1 className="mb-2 text-[22px] font-semibold leading-tight text-[#333] md:text-[24px]">
               {PRODUCT.title}
             </h1>
             <div className="mb-4 flex items-center gap-2 text-[14px]">
-              <span className="text-[#79C142]">{PRODUCT.rating.toFixed(1)}</span>
+              <span className="text-[var(--promo-accent)]">{PRODUCT.rating.toFixed(1)}</span>
               <div className="flex">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-[#79C142] text-[#79C142]" strokeWidth={0} />
+                  <Star key={i} className="h-4 w-4 fill-[var(--promo-accent)] text-[var(--promo-accent)]" strokeWidth={0} />
                 ))}
               </div>
-              <span className="text-[#79C142]">({PRODUCT.reviewsCount})</span>
+              <span className="text-[var(--promo-accent)]">({PRODUCT.reviewsCount})</span>
             </div>
 
             <div className="mb-1 flex items-start gap-1">
@@ -1506,7 +1678,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             <div className="mb-1 text-[16px] text-[#00a650]">
               {PRODUCT.installments.count}x {formatBRL(PRODUCT.installments.valueCents)} sem juros
             </div>
-            <a href="#" className="mb-6 inline-block text-[13px] text-[#79C142] hover:underline">
+            <a href="#" className="mb-6 inline-block text-[13px] text-[var(--promo-accent)] hover:underline">
               Ver os meios de pagamento
             </a>
 
@@ -1523,7 +1695,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                     onClick={() => setColorKey(c.key)}
                     title={c.label}
                     className={`h-11 w-11 overflow-hidden rounded border-2 bg-white ${
-                      colorKey === c.key ? "border-[#79C142]" : "border-transparent hover:border-[#999]"
+                      colorKey === c.key ? "border-[var(--promo-accent)]" : "border-transparent hover:border-[#999]"
                     }`}
                   >
                     <img src={c.thumb} alt={c.label} className="h-full w-full object-cover" />
@@ -1545,26 +1717,30 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                       onClick={() => setSize(s)}
                       className={`min-w-[54px] rounded border px-3 py-2 text-[14px] ${
                         size === s
-                          ? "border-[#79C142] bg-[#f2fbe8] text-[#79C142]"
-                          : "border-[#c7c7c7] bg-white text-[#333] hover:border-[#79C142]"
+                          ? "border-[var(--promo-accent)] bg-[var(--promo-accent-soft)] text-[var(--promo-accent)]"
+                          : "border-[#c7c7c7] bg-white text-[#333] hover:border-[var(--promo-accent)]"
                       } ${size === null ? "border-dashed" : ""}`}
                     >
                       {s}
                     </button>
                   ))}
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setSizeGuideOpen(true)}
-                  className="mt-3 inline-flex items-center gap-1 text-[13px] text-[#79C142] hover:underline"
-                >
-                  <Ruler className="h-3.5 w-3.5" /> Guia de tamanhos
-                </button>
-                <div className="mt-2">
-                  <a href="#" className="inline-flex items-center gap-1 text-[13px] text-[#79C142] hover:underline">
-                    Perfeito para 100% <ChevronDown className="h-3 w-3" />
-                  </a>
-                </div>
+                {PRODUCT.id !== "mercadopromo-kit-sandalias" && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setSizeGuideOpen(true)}
+                      className="mt-3 inline-flex items-center gap-1 text-[13px] text-[var(--promo-accent)] hover:underline"
+                    >
+                      <Ruler className="h-3.5 w-3.5" /> Guia de tamanhos
+                    </button>
+                    <div className="mt-2">
+                      <a href="#" className="inline-flex items-center gap-1 text-[13px] text-[var(--promo-accent)] hover:underline">
+                        Perfeito para 100% <ChevronDown className="h-3 w-3" />
+                      </a>
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -1578,14 +1754,14 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             <p className="text-[14px]">
               <span className="text-[#00a650]">Chegará grátis amanhã</span> por ser sua primeira compra
             </p>
-            <a href="#" className="mt-1 inline-block text-[13px] text-[#79C142] hover:underline">
+            <a href="#" className="mt-1 inline-block text-[13px] text-[var(--promo-accent)] hover:underline">
               Mais detalhes e formas de entrega
             </a>
 
             <p className="mt-4 text-[14px]">
               <span className="text-[#00a650]">Retire grátis</span> a partir de segunda-feira em uma agência Mercado Livre
             </p>
-            <a href="#" className="text-[13px] text-[#79C142] hover:underline">
+            <a href="#" className="text-[13px] text-[var(--promo-accent)] hover:underline">
               Ver no mapa
             </a>
 
@@ -1625,7 +1801,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             <button
               onClick={onBuy}
               disabled={checkoutLoading}
-              className="mt-5 w-full rounded-md bg-[#79C142] py-3 text-[16px] font-semibold text-white hover:bg-[#6bb136] disabled:opacity-70"
+              className="mt-5 w-full rounded-md bg-[var(--promo-accent)] py-3 text-[16px] font-semibold text-white hover:bg-[var(--promo-accent-hover)] disabled:opacity-70"
             >
               {checkoutLoading ? (
                 <span className="inline-flex items-center gap-2">
@@ -1638,7 +1814,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             <button
               onClick={onAddToCart}
               disabled={checkoutLoading}
-              className="mt-2 w-full rounded-md bg-[#f2fbe8] py-3 text-[16px] font-semibold text-[#79C142] hover:bg-[#e5f7d3] disabled:opacity-70"
+              className="mt-2 w-full rounded-md bg-[var(--promo-accent-soft)] py-3 text-[16px] font-semibold text-[var(--promo-accent)] hover:bg-[var(--promo-accent-soft-hover)] disabled:opacity-70"
             >
               <span className="inline-flex items-center gap-2">
                 <ShoppingCart className="h-4 w-4" /> Adicionar ao carrinho
@@ -1654,7 +1830,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
             <div className="mt-5 border-t border-[#eee] pt-4 text-[14px]">
               <div>
                 Vendido por{" "}
-                <a href="#" className="text-[#79C142] hover:underline">
+                <a href="#" className="text-[var(--promo-accent)] hover:underline">
                   {PRODUCT.seller}
                 </a>
               </div>
@@ -1663,15 +1839,15 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
 
             <ul className="mt-4 space-y-3 text-[13px]">
               <li className="flex gap-2">
-                <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#79C142]" />
+                <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--promo-accent)]" />
                 <span>
-                  <a href="#" className="text-[#79C142] hover:underline">Compra Garantida</a>. Receba o produto que está esperando ou devolvemos o dinheiro.
+                  <a href="#" className="text-[var(--promo-accent)] hover:underline">Compra Garantida</a>. Receba o produto que está esperando ou devolvemos o dinheiro.
                 </span>
               </li>
               <li className="flex gap-2">
-                <Gift className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#79C142]" />
+                <Gift className="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--promo-accent)]" />
                 <span>
-                  <a href="#" className="text-[#79C142] hover:underline">Vale-troca para presente</a>. A pessoa que o receber poderá trocá-lo.
+                  <a href="#" className="text-[var(--promo-accent)] hover:underline">Vale-troca para presente</a>. A pessoa que o receber poderá trocá-lo.
                 </span>
               </li>
             </ul>
@@ -1682,7 +1858,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
 
         <div className="border-t border-[#eee] p-4 md:p-6">
           <div className="grid gap-4 md:grid-cols-2">
-            <SellerCard />
+            <SellerCard seller={PRODUCT.seller} />
             <PaymentMethodsCard />
           </div>
         </div>
@@ -1696,23 +1872,17 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
               <div className="text-[48px] font-light leading-none">{PRODUCT.rating.toFixed(1)}</div>
               <div className="mt-1 flex">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-[#79C142] text-[#79C142]" strokeWidth={0} />
+                  <Star key={i} className="h-4 w-4 fill-[var(--promo-accent)] text-[var(--promo-accent)]" strokeWidth={0} />
                 ))}
               </div>
               <div className="mt-1 text-[13px] text-[#666]">{PRODUCT.reviewsCount} avaliações</div>
               <div className="mt-4 space-y-1">
-                {[
-                  [5, 8],
-                  [4, 1],
-                  [3, 0],
-                  [2, 0],
-                  [1, 0],
-                ].map(([star, n]) => (
+                {ratingDistribution.map(([star, n]) => (
                   <div key={star} className="flex items-center gap-2 text-[13px]">
                     <span className="w-3 text-[#666]">{star}</span>
                     <div className="h-1.5 flex-1 overflow-hidden rounded bg-[#eee]">
                       <div
-                        className="h-full bg-[#79C142]"
+                        className="h-full bg-[var(--promo-accent)]"
                         style={{ width: `${(n / PRODUCT.reviewsCount) * 100}%` }}
                       />
                     </div>
@@ -1738,7 +1908,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                       <Star
                         key={i}
                         className={`h-3.5 w-3.5 ${
-                          i < r.rating ? "fill-[#79C142] text-[#79C142]" : "text-[#ddd]"
+                          i < r.rating ? "fill-[var(--promo-accent)] text-[var(--promo-accent)]" : "text-[#ddd]"
                         }`}
                         strokeWidth={0}
                       />
@@ -1763,7 +1933,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                               loading="lazy"
                               className="h-40 w-40 object-cover"
                             />
-                            <span className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#79C142] shadow transition-transform group-hover:scale-105">
+                            <span className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[var(--promo-accent)] shadow transition-transform group-hover:scale-105">
                               <ZoomIn className="h-4 w-4" />
                             </span>
                           </button>
@@ -1789,7 +1959,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
 
 
 // ---------------- Header ----------------
-function MLHeader() {
+function MLHeader({ mercadoLivreTheme }: { mercadoLivreTheme: boolean }) {
   const [destination, setDestination] = useState("Casa");
 
   useEffect(() => {
@@ -1843,14 +2013,14 @@ function MLHeader() {
   }, []);
 
   return (
-    <header className="bg-[#bbf0b6] border-b border-[#aae0a5]">
+    <header className="border-b border-[var(--promo-header-border)] bg-[var(--promo-header)]">
       <div className="mx-auto max-w-[1200px] px-3 pb-3 pt-3 md:px-4 md:pb-0">
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 md:flex md:gap-6">
           {/* Logo */}
           <a href="/mercadopromo" className="flex-shrink-0">
             <img
-              src={logoUrl}
-              alt="Mercado Livre"
+              src={mercadoLivreTheme ? mlLogo : pagarMeLogoUrl}
+              alt={mercadoLivreTheme ? "Mercado Livre" : "Pagar.me"}
               className="h-8 w-auto md:h-10"
               draggable={false}
             />
@@ -1870,8 +2040,8 @@ function MLHeader() {
 
           {/* CTA + cart */}
           <div className="contents md:flex md:items-center md:gap-4">
-            <div className="hidden items-center gap-2 rounded-full border border-[#79C142] bg-white px-3 py-1 text-[12px] text-[#333] lg:flex">
-              <span className="font-semibold text-[#79C142]">ASSINE AGORA</span>
+            <div className="hidden items-center gap-2 rounded-full border border-[var(--promo-accent)] bg-white px-3 py-1 text-[12px] text-[#333] lg:flex">
+              <span className="font-semibold text-[var(--promo-accent)]">ASSINE AGORA</span>
               <span className="rounded-full bg-[#00c58f] px-1.5 text-[10px] font-bold text-white">GRÁTIS</span>
               <span className="font-semibold">MELI+</span>
               <span className="text-[10px] text-[#666]">
@@ -1931,7 +2101,7 @@ function ProductDescription({
           <ul className="space-y-1.5">
             {d.benefits.map((b) => (
               <li key={b.title} className="flex gap-2 text-[14px]">
-                <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#79C142]" />
+                <span className="mt-1 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--promo-accent)]" />
                 <span>
                   <b className="text-[#333]">{b.title}:</b>{" "}
                   <span className="text-[#555]">{b.result}</span>
@@ -1980,7 +2150,7 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
             type="button"
             onClick={onClose}
             aria-label="Fechar guia de tamanhos"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[#79C142] hover:bg-[#f2f6ff]"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--promo-accent)] hover:bg-[#f2f6ff]"
           >
             <X className="h-5 w-5" />
           </button>
@@ -1994,7 +2164,7 @@ function SizeGuideModal({ onClose }: { onClose: () => void }) {
                 Guia não disponível
               </div>
             </div>
-            <div className="border-b-2 border-[#79C142] pb-3 font-medium text-[#79C142]">Da peça</div>
+            <div className="border-b-2 border-[var(--promo-accent)] pb-3 font-medium text-[var(--promo-accent)]">Da peça</div>
           </div>
 
           <h3 className="text-[16px] font-semibold text-[#333]">Tabela de medidas para peças</h3>
@@ -2056,7 +2226,7 @@ function ZoomModal({ src, onClose }: { src: string; onClose: () => void }) {
           type="button"
           onClick={onClose}
           aria-label="Fechar imagem ampliada"
-          className="absolute -right-2 -top-2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#79C142] shadow-lg hover:bg-[#f5f5f5]"
+          className="absolute -right-2 -top-2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-[var(--promo-accent)] shadow-lg hover:bg-[#f5f5f5]"
         >
           <X className="h-5 w-5" />
         </button>
@@ -2070,23 +2240,25 @@ function ZoomModal({ src, onClose }: { src: string; onClose: () => void }) {
   );
 }
 
-function SellerCard() {
+function SellerCard({ seller }: { seller: string }) {
+  const isPazeSeller = seller === "Paze Oficial";
+
   return (
     <aside className="rounded-md border border-[#e6e6e6] p-4">
       <div className="flex items-center gap-3">
         <div className="h-12 w-12 overflow-hidden rounded-full bg-[#eee]">
           <img
-            src={SELLER.image}
-            alt={SELLER.name}
+            src={isPazeSeller ? pazeLogo : SELLER.image}
+            alt={seller}
             className="h-full w-full object-cover"
             loading="lazy"
           />
         </div>
         <div className="flex-1">
-          <div className="text-[15px] font-semibold text-[#333]">{SELLER.name}</div>
+          <div className="text-[15px] font-semibold text-[#333]">{seller}</div>
           <div className="text-[12px] text-[#666]">+1000 Seguidores &nbsp; +500 Produtos</div>
         </div>
-        <button className="rounded border border-[#79C142] px-3 py-1 text-[12px] text-[#79C142] hover:bg-[#f2fbe8]">
+        <button className="rounded border border-[var(--promo-accent)] px-3 py-1 text-[12px] text-[var(--promo-accent)] hover:bg-[var(--promo-accent-soft)]">
           Seguir
         </button>
       </div>
@@ -2115,7 +2287,7 @@ function SellerCard() {
           Entrega no prazo
         </div>
       </div>
-      <button className="mt-4 w-full rounded-md bg-[#f2fbe8] py-2 text-[13px] font-semibold text-[#79C142] hover:bg-[#e5f7d3]">
+      <button className="mt-4 w-full rounded-md bg-[var(--promo-accent-soft)] py-2 text-[13px] font-semibold text-[var(--promo-accent)] hover:bg-[var(--promo-accent-soft-hover)]">
         Ir para a página do vendedor
       </button>
     </aside>
@@ -2140,7 +2312,7 @@ function PaymentMethodsCard() {
           <img src={PAYMENT_METHODS.pix.src} alt={PAYMENT_METHODS.pix.name} className="h-5 max-w-[48px]" loading="lazy" />
         </span>
       </div>
-      <a href="#" className="mt-4 inline-block text-[13px] text-[#79C142] hover:underline">
+      <a href="#" className="mt-4 inline-block text-[13px] text-[var(--promo-accent)] hover:underline">
         Confira outros meios de pagamento
       </a>
     </aside>
