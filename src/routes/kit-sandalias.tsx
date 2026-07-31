@@ -42,18 +42,45 @@ const COLORS = [
   },
 ];
 
-// Numerações da página original: 33 e 39 esgotados.
-const SIZES = ["33", "34", "35", "36", "37", "38", "39", "40"];
-const SOLD_OUT_SIZES = ["33", "39"];
+// Todas as numerações disponíveis.
+const SIZES = ["33", "34", "35", "36", "37", "38", "39", "40", "41"];
+const SOLD_OUT_SIZES: string[] = [];
 
 const VARIANT_IDS: Record<string, number> = {
+  "33": 252579869,
   "34": 252579869,
   "35": 252579869,
   "36": 252579914,
   "37": 252579914,
   "38": 252579922,
+  "39": 252579922,
   "40": 252579930,
+  "41": 252579930,
 };
+
+const REVIEWS = [
+  {
+    name: "ana.clara",
+    rating: 5,
+    when: "há 2 semanas",
+    text: "Eu fiquei apaixonada! A sandália é ainda mais bonita pessoalmente, super confortável e veio muito bem embalada. O couro é macio e o acabamento é impecável. Foi uma das melhores compras que já fiz.",
+    photo: review1,
+  },
+  {
+    name: "mariana.s",
+    rating: 5,
+    when: "há 3 semanas",
+    text: "Maravilhosa e o tamanho ficou certinho no pé. Já usei duas vezes e recebi elogios. Mesmo com o salto alto, a plataforma deixa o calce bem confortável. Vale muito a pena!",
+    photo: review2,
+  },
+  {
+    name: "camila.r",
+    rating: 5,
+    when: "há 1 mês",
+    text: "Chegou rápido e é linda demais! Consigo usar tanto para trabalhar quanto para sair. Leve, confortável e o acabamento me surpreendeu. Recomendo de olhos fechados.",
+    photo: review3,
+  },
+];
 
 const NAV = ["NEW IN", "SAPATOS", "BOLSAS", "RESORT 27", "BOTAS", "FALL SALE", "BLOG"];
 
