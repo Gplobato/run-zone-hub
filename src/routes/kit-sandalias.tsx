@@ -386,36 +386,57 @@ function KitSandaliasSchutzPage() {
             {descOpen && (
               <div className="mt-3 space-y-4 text-[13px] leading-relaxed text-black/75">
                 <p>
-                  Para quem não tem medo de se destacar, a Sandália Meia Pata Riviera
-                  representa o equilíbrio perfeito entre a ousadia máxima e a sofisticação
-                  urbana. No formato tamanco (mule), ela traz uma tira larga sobre o peito do
-                  pé que garante o calce fácil e um visual incrivelmente limpo e moderno.
+                  Um kit completo com <strong className="text-[#111]">3 sandálias
+                  femininas</strong> de salto bloco: uma branca, uma preta e uma rosé. Três
+                  acabamentos diferentes para montar looks distintos sem precisar comprar
+                  pares avulsos.
                 </p>
                 <p>
-                  A combinação do salto agulha vertiginoso com a imponente plataforma meia
-                  pata cria uma silhueta ultra-alongada, poderosa e cheia de atitude. Com
-                  acabamento premium e design ergonômico, esse modelo é a escolha definitiva
-                  para transformar qualquer produção minimalista em um look de passarela.
+                  O salto bloco baixo garante firmeza e conforto para usar o dia inteiro, e a
+                  palmilha acolchoada acompanha o formato do pé. São cores neutras e fáceis de
+                  combinar, do trabalho ao fim de semana.
                 </p>
                 <div>
                   <p className="font-semibold text-[#111]">Características</p>
                   <ul className="mt-2 list-disc space-y-1 pl-5">
-                    <li>Material externo: Couro legítimo</li>
-                    <li>Forro: Couro</li>
-                    <li>Solado: Borracha antiderrapante</li>
-                    <li>Cor: {COLORS[colorIdx].label}</li>
-                    <li>Tamanho do salto: 14 cm</li>
-                    <li>Altura da plataforma: 4 cm</li>
-                    <li>Formato: Tamanco (mule) com tira larga</li>
-                    <li>Numerações: do 33 ao 41</li>
-                    <li>Referência: S2272300080004</li>
+                    <li>
+                      <strong className="text-[#111]">Três modelos em um único kit:</strong> 1
+                      sandália branca, 1 preta e 1 rosé
+                    </li>
+                    <li>
+                      <strong className="text-[#111]">Acabamentos diferentes:</strong> detalhes
+                      trançados, tiras cruzadas e acabamento metalizado
+                    </li>
+                    <li>
+                      <strong className="text-[#111]">Somente R$ 33,30 por par:</strong> três
+                      sandálias por apenas R$ 99,90
+                    </li>
+                    <li>
+                      <strong className="text-[#111]">Cores fáceis de combinar:</strong> branco,
+                      preto e rosé para acompanhar todo o guarda-roupa
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-[#111]">Especificações</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5">
+                    <li>O kit contém: 1 sandália branca</li>
+                    <li>O kit contém: 1 sandália preta</li>
+                    <li>O kit contém: 1 sandália rosé</li>
+                    <li>Numerações disponíveis: do 34 ao 41</li>
+                    <li>Sandália branca: detalhes trançados</li>
+                    <li>Sandália preta: tiras cruzadas</li>
+                    <li>Sandália rosé: acabamento metalizado elegante</li>
+                    <li>Salto: bloco baixo</li>
+                    <li>Palmilha: acolchoada</li>
                   </ul>
                 </div>
                 <p className="text-[12px] text-black/55">
-                  Garantia do vendedor: 30 dias.
+                  Garantia do vendedor: 30 dias. Limitado a 1 kit por CPF.
                 </p>
               </div>
             )}
+
           </div>
         </aside>
       </div>
