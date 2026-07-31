@@ -47,7 +47,7 @@ const maskCEP = (v: string) => onlyDigits(v).slice(0, 8).replace(/(\d{5})(\d)/, 
 
 export const Route = createFileRoute("/checkout-schutz")({
   validateSearch: (search: Record<string, unknown>) => ({
-    size: typeof search.size === "string" ? search.size : undefined,
+    tam: typeof search.tam === "string" ? search.tam : undefined,
     color: typeof search.color === "string" ? search.color : undefined,
   }),
   head: () => ({
@@ -120,7 +120,7 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 function SchutzCheckout() {
-  const { size: searchSize } = Route.useSearch();
+  const { tam: searchSize } = Route.useSearch();
   const navigate = useNavigate();
   const createPix = useServerFn(createSchutzPix);
   const createCard = useServerFn(createSchutzCard);
@@ -603,7 +603,7 @@ function SchutzCheckout() {
                         setError(null);
                         navigate({
                           to: "/checkout-schutz",
-                          search: { size: s, color: undefined },
+                          search: { tam: s, color: undefined },
                         });
                       }}
                       className={`h-[44px] min-w-[52px] flex-1 border text-[13px] transition-colors sm:flex-none ${
