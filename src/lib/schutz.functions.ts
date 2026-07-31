@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest, getRequestHeader } from "@tanstack/react-start/server";
+import { UTMIFY_TRACKING_KEYS, type UtmifyTracking } from "@/lib/utmify";
 
 const HYPERCASH_URL = "https://api.hypercashbrasil.com.br";
 
@@ -138,6 +139,7 @@ export type SchutzPixInput = {
   neighborhood: string;
   city: string;
   state: string;
+  tracking?: UtmifyTracking;
 };
 
 function isValidCPF(cpf: string) {
@@ -182,6 +184,12 @@ function validateOrderInput(data: SchutzPixInput) {
   if (!city) throw new Error("Informe a cidade.");
   const state = trim(data.state, 2).toUpperCase();
   if (!UFS.has(state)) throw new Error("UF inválida.");
+  const tracking = Object.fromEntries(
+    UTMIFY_TRACKING_KEYS.flatMap((key) => {
+      const value = trim(data.tracking?.[key], 255);
+      return value ? [[key, value]] : [];
+    }),
+  ) as UtmifyTracking;
 
   return {
     productSlug: data.productSlug,
@@ -198,6 +206,7 @@ function validateOrderInput(data: SchutzPixInput) {
     neighborhood,
     city,
     state,
+    tracking,
   };
 }
 
@@ -257,7 +266,12 @@ export const createSchutzPix = createServerFn({ method: "POST" })
       traceable: true,
       ip: clientIp,
       postbackUrl,
-      metadata: { pedido_ref: orderRef, produto: data.productSlug, tamanho: data.size },
+      metadata: {
+        pedido_ref: orderRef,
+        produto: data.productSlug,
+        tamanho: data.size,
+        ...data.tracking,
+      },
       pix: { expiresInDays: 1 },
     };
 
@@ -419,6 +433,7 @@ export const createSchutzCard = createServerFn({ method: "POST" })
         pedido_ref: orderRef,
         produto: data.productSlug,
         tamanho: data.size,
+        ...data.tracking,
         session_id: data.sessionId || undefined,
         three_ds: data.threeDsStatus || undefined,
       },

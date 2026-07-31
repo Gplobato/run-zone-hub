@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { fbqTrackSingle, fbqTrackPageViewOnce } from "@/lib/pixel";
-import gallery1 from "@/assets/kit-sandalias/kit-sandalia-1.jpg.asset.json";
-import gallery2 from "@/assets/kit-sandalias/kit-sandalia-2.jpg.asset.json";
-import gallery3 from "@/assets/kit-sandalias/kit-sandalia-3.jpg.asset.json";
+import { installUtmifyTracking } from "@/lib/utmify";
+import gallery1 from "@/assets/kit-sandalias/kit-sandalias-oficial-v2-1.png";
+import gallery2 from "@/assets/kit-sandalias/kit-sandalias-oficial-v2-2.png";
+import gallery3 from "@/assets/kit-sandalias/kit-sandalias-oficial-v2-3.png";
 
 const PIXEL_ID = "1577403850715282";
 
@@ -13,9 +14,9 @@ const PRICE = 99.9;
 const CARD_PRICE = 117.53;
 const DESCRIPTION =
   "Kit com 3 sandálias femininas de salto bloco: branca com detalhes trançados, preta com tiras cruzadas e rosé com acabamento metalizado. Três pares por R$ 99,90 — apenas R$ 33,30 cada. Numerações do 34 ao 41.";
-const OG_IMAGE = `https://run-zone-hub.lovable.app${gallery1.url}`;
+const OG_IMAGE = gallery1;
 
-const GALLERY = [gallery1.url, gallery2.url, gallery3.url];
+const GALLERY = [gallery1, gallery2, gallery3];
 
 
 
@@ -115,6 +116,7 @@ function KitSandaliasSchutzPage() {
   );
 
   useEffect(() => {
+    installUtmifyTracking();
     fbqTrackPageViewOnce(PIXEL_ID);
     fbqTrackSingle(PIXEL_ID, "ViewContent", baseParams);
   }, [baseParams]);
@@ -138,6 +140,9 @@ function KitSandaliasSchutzPage() {
     if (loading) return;
     if (!validate()) return;
     fbqTrackSingle(PIXEL_ID, event, baseParams);
+    if (event === "InitiateCheckout") {
+      window.sessionStorage.setItem("meta-initiate-checkout-kit-sandalias", "1");
+    }
     setLoading(true);
     navigate({
       to: "/checkout-schutz",

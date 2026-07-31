@@ -17,6 +17,8 @@ import {
   onlyDigits,
   validateCard,
 } from "@/lib/fastsoft";
+import productImage from "@/assets/kit-sandalias/kit-sandalias-oficial-v2-1.png";
+import { captureUtmifyTracking, installUtmifyTracking } from "@/lib/utmify";
 
 const PIXEL_ID = "1577403850715282";
 const PRODUCT_SLUG = "sandalia-meia-pata-riviera";
@@ -25,7 +27,7 @@ const PIX_PRICE_CENTS = 9990;
 const CARD_PRICE_CENTS = 11753;
 const MAX_INSTALLMENTS = 12;
 const SHIPPING_FROM_CENTS = 3490;
-const PRODUCT_IMAGE = "/__l5e/assets-v1/8b9de10e-5a06-4194-91a1-b2108c24bbad/kit-sandalia-1.jpg";
+const PRODUCT_IMAGE = productImage;
 
 const SIZES = ["34", "35", "36", "37", "38", "39", "40", "41"];
 
@@ -173,15 +175,20 @@ function SchutzCheckout() {
   }, []);
 
   useEffect(() => {
+    installUtmifyTracking();
     fbqTrackPageViewOnce(PIXEL_ID);
-    fbqTrackSingle(PIXEL_ID, "InitiateCheckout", {
-      content_ids: [PRODUCT_SLUG],
-      content_name: PRODUCT_NAME,
-      content_type: "product",
-      num_items: 1,
-      value: PIX_PRICE_CENTS / 100,
-      currency: "BRL",
-    });
+    const initiated = window.sessionStorage.getItem("meta-initiate-checkout-kit-sandalias");
+    if (!initiated) {
+      fbqTrackSingle(PIXEL_ID, "InitiateCheckout", {
+        content_ids: [PRODUCT_SLUG],
+        content_name: PRODUCT_NAME,
+        content_type: "product",
+        num_items: 1,
+        value: PIX_PRICE_CENTS / 100,
+        currency: "BRL",
+      });
+      window.sessionStorage.setItem("meta-initiate-checkout-kit-sandalias", "1");
+    }
   }, []);
 
 
@@ -239,11 +246,19 @@ function SchutzCheckout() {
   }, [pix]);
 
   useEffect(() => {
-    // Compra concluída dentro da própria página: PIX confirmado ou cartão aprovado.
-    const isApproved = status === "paid" || status === "authorized";
-    if (!isApproved || purchaseFired.current) return;
+    // Compra concluída dentro da própria página: somente após confirmação do pagamento.
+    if (status !== "paid" || purchaseFired.current) return;
     const transactionId = pix?.transactionId ?? cardResult?.transactionId;
     if (!transactionId) return;
+    const storageKey = `meta-purchase-${PIXEL_ID}-${transactionId}`;
+    try {
+      if (window.localStorage.getItem(storageKey)) {
+        purchaseFired.current = true;
+        return;
+      }
+    } catch {
+      // O eventID ainda permite deduplicação caso o armazenamento esteja bloqueado.
+    }
     purchaseFired.current = true;
     fbqTrackSingle(
       PIXEL_ID,
@@ -262,6 +277,11 @@ function SchutzCheckout() {
       // eventID para deduplicar caso a Conversions API envie o mesmo pedido.
       { eventID: `purchase-${transactionId}` },
     );
+    try {
+      window.localStorage.setItem(storageKey, new Date().toISOString());
+    } catch {
+      // Alguns navegadores bloqueiam localStorage em modos de privacidade.
+    }
   }, [status, done, total, pix, cardResult]);
 
 
@@ -296,7 +316,13 @@ function SchutzCheckout() {
     try {
       if (method === "pix") {
         const res = await createPix({
-          data: { productSlug: PRODUCT_SLUG, size, quantity: 1, ...form },
+          data: {
+            productSlug: PRODUCT_SLUG,
+            size,
+            quantity: 1,
+            ...form,
+            tracking: captureUtmifyTracking(),
+          },
         });
         setPix({
           transactionId: res.transactionId,
@@ -429,6 +455,7 @@ function SchutzCheckout() {
         size,
         quantity: 1,
         ...form,
+        tracking: captureUtmifyTracking(),
         cardToken,
         installments,
         sessionId,
