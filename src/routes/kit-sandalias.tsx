@@ -90,7 +90,7 @@ export const Route = createFileRoute("/kit-sandalias")({
       { property: "og:title", content: PRODUCT_NAME },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:image", content: OG_IMAGE },
-      { property: "product:price:amount", content: "890.00" },
+      { property: "product:price:amount", content: "99.90" },
       { property: "product:price:currency", content: "BRL" },
       { property: "product:brand", content: "Schutz" },
       { property: "product:availability", content: "in stock" },
