@@ -305,3 +305,142 @@ export const getSchutzOrderStatus = createServerFn({ method: "POST" })
       status: normalizeStatus(tx?.status),
     };
   });
+
+export type SchutzCardInput = SchutzPixInput & {
+  /** Token gerado pelo SDK FastSoft no navegador. Nunca persistido. */
+  cardToken: string;
+  installments: number;
+  sessionId?: string;
+  threeDsStatus?: string;
+};
+
+/** Preço autoritativo por método — o navegador nunca envia valores. */
+export const getSchutzQuote = createServerFn({ method: "GET" }).handler(async () => {
+  const product = SCHUTZ_CATALOG["sandalia-meia-pata-riviera"];
+  return {
+    pixAmountCents: product.unitPriceCents,
+    cardAmountCents: product.cardPriceCents,
+    maxInstallments: MAX_INSTALLMENTS,
+    shippingFeeCents: SHIPPING_FEE_CENTS,
+  };
+});
+
+export const createSchutzCard = createServerFn({ method: "POST" })
+  .inputValidator((data: SchutzCardInput) => {
+    const base = validateOrderInput(data);
+    const cardToken = trim(data?.cardToken, 512);
+    if (!cardToken || cardToken.length < 8) throw new Error("Não foi possível validar os dados do cartão. Confira as informações.");
+    const installments = Math.max(
+      1,
+      Math.min(MAX_INSTALLMENTS, Math.floor(Number(data?.installments) || 1)),
+    );
+    return {
+      ...base,
+      cardToken,
+      installments,
+      sessionId: trim(data?.sessionId, 64),
+      threeDsStatus: trim(data?.threeDsStatus, 32),
+    };
+  })
+  .handler(async ({ data }) => {
+    const product = SCHUTZ_CATALOG[data.productSlug];
+    const amount = product.cardPriceCents * data.quantity + SHIPPING_FEE_CENTS;
+
+    let clientIp: string | undefined;
+    let postbackUrl: string | undefined;
+    try {
+      clientIp =
+        getRequestHeader("cf-connecting-ip") ||
+        getRequestHeader("x-forwarded-for")?.split(",")[0]?.trim() ||
+        undefined;
+      postbackUrl = `${new URL(getRequest().url).origin}/api/public/webhooks/hypercash`;
+    } catch {
+      // fora de um contexto de request
+    }
+
+    const orderRef = `schutz-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+    const payload = {
+      amount,
+      currency: "BRL",
+      paymentMethod: "CREDIT_CARD",
+      installments: data.installments,
+      card: { hash: data.cardToken },
+      customer: {
+        name: data.name,
+        email: data.email,
+        document: { number: data.document, type: "CPF" },
+        phone: data.phone,
+        externaRef: `cliente-${data.document.slice(0, 3)}${data.document.slice(-2)}`,
+      },
+      shipping: {
+        fee: SHIPPING_FEE_CENTS,
+        address: {
+          street: data.street,
+          streetNumber: data.streetNumber,
+          complement: data.complement || "",
+          zipCode: data.zipCode,
+          neighborhood: data.neighborhood,
+          city: data.city,
+          state: data.state,
+          country: "br",
+        },
+      },
+      items: [
+        {
+          title: `${product.title} — Tam. ${data.size}`,
+          unitPrice: product.cardPriceCents,
+          quantity: data.quantity,
+          tangible: true,
+          externalRef: `${product.externalRef}-${data.size}`,
+        },
+      ],
+      traceable: true,
+      ip: clientIp,
+      postbackUrl,
+      metadata: {
+        pedido_ref: orderRef,
+        produto: data.productSlug,
+        tamanho: data.size,
+        session_id: data.sessionId || undefined,
+        three_ds: data.threeDsStatus || undefined,
+      },
+    };
+
+    const body = await hcFetch("/api/user/transactions", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+
+    const tx = body?.data ?? body;
+    const transactionId = tx?.id ?? tx?.transactionId ?? null;
+    if (!transactionId) {
+      console.error("[schutz-card] resposta sem transação", { at: new Date().toISOString() });
+      throw new Error("Não foi possível processar o pagamento. Tente novamente.");
+    }
+
+    const status = normalizeStatus(tx?.status ?? "PROCESSING");
+    console.info("[schutz-card] transação criada", {
+      orderRef,
+      transactionId: String(transactionId),
+      status,
+      installments: data.installments,
+      at: new Date().toISOString(),
+    });
+
+    return {
+      success: true as const,
+      orderRef,
+      transactionId: String(transactionId),
+      status,
+      amountCents: amount,
+      installments: data.installments,
+      card: {
+        brand: (tx?.card?.brand as string | undefined) ?? null,
+        lastDigits: (tx?.card?.lastDigits as string | undefined) ?? null,
+      },
+      refusedReason: (tx?.refusedReason as string | undefined) ?? null,
+      productTitle: product.title,
+      size: data.size,
+    };
+  });
