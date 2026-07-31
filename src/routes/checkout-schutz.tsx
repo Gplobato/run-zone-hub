@@ -129,6 +129,9 @@ function SchutzCheckout() {
   const getStatus = useServerFn(getSchutzOrderStatus);
 
   const [method, setMethod] = useState<"pix" | "card">("pix");
+  useEffect(() => {
+    if (searchSize && SIZES.includes(searchSize)) setSize(searchSize);
+  }, [searchSize]);
   const [size, setSize] = useState<string>(
     searchSize && SIZES.includes(searchSize) ? searchSize : "",
   );
