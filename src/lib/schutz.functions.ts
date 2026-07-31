@@ -8,11 +8,20 @@ const onlyDigits = (value: string) => (value || "").replace(/\D+/g, "");
 /** Catálogo autoritativo — preços em centavos, nunca vindos do navegador. */
 const SCHUTZ_CATALOG: Record<
   string,
-  { title: string; unitPriceCents: number; externalRef: string; sizes: string[] }
+  {
+    title: string;
+    /** Preço à vista no PIX (já com 15% de desconto). */
+    unitPriceCents: number;
+    /** Preço cheio, usado no cartão de crédito. */
+    cardPriceCents: number;
+    externalRef: string;
+    sizes: string[];
+  }
 > = {
   "sandalia-meia-pata-riviera": {
     title: "Sandália Meia Pata Couro Preta",
-    unitPriceCents: 89000,
+    unitPriceCents: 9990,
+    cardPriceCents: 11753,
     externalRef: "S2272300080004",
     sizes: ["33", "34", "35", "36", "37", "38", "39", "40", "41"],
   },
@@ -20,6 +29,8 @@ const SCHUTZ_CATALOG: Record<
 
 const SHIPPING_FEE_CENTS = 0;
 const MAX_QTY = 5;
+const MAX_INSTALLMENTS = Number(process.env.CARD_MAX_INSTALLMENTS ?? 12) || 12;
+
 
 const UFS = new Set([
   "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB",
