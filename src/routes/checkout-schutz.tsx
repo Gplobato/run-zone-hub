@@ -46,10 +46,12 @@ const maskPhone = (v: string) => {
 const maskCEP = (v: string) => onlyDigits(v).slice(0, 8).replace(/(\d{5})(\d)/, "$1-$2");
 
 export const Route = createFileRoute("/checkout-schutz")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    tam: typeof search.tam === "string" ? search.tam : undefined,
-    color: typeof search.color === "string" ? search.color : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>) => {
+    const out: { tam?: string; color?: string } = {};
+    if (typeof search.tam === "string" && search.tam) out.tam = search.tam;
+    if (typeof search.color === "string" && search.color) out.color = search.color;
+    return out;
+  },
   head: () => ({
     meta: [
       { title: "Pagamento seguro | SCHUTZ" },
