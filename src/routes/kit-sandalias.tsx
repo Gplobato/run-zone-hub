@@ -159,6 +159,66 @@ function KitSandaliasSchutzPage() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-[#111]">
+      {welcomeOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setWelcomeOpen(false)}
+        >
+          <div
+            className="w-full max-w-[420px] animate-in bg-white p-6 shadow-xl sm:p-7"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-[10px] font-semibold tracking-[0.18em] text-black/50">
+              SCHUTZ · CONDIÇÃO ESPECIAL
+            </p>
+            <h2 className="mt-3 text-[20px] font-semibold leading-snug">
+              Apenas 1 compra por CPF
+            </h2>
+            <ul className="mt-4 space-y-2.5 text-[13px] leading-relaxed text-black/70">
+              <li className="flex gap-2">
+                <span className="text-[#1a7f37]">✓</span>
+                <span>
+                  <strong className="text-[#111]">15% OFF no PIX</strong> — já aplicado no
+                  valor de R$ 99,90.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[#1a7f37]">✓</span>
+                <span>
+                  <strong className="text-[#111]">Frete grátis</strong> para todo o Brasil,
+                  entrega em 1 a 3 dias úteis.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[#1a7f37]">✓</span>
+                <span>Limitado a 1 unidade por CPF enquanto durar o estoque.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[#1a7f37]">✓</span>
+                <span>Pagamento no PIX ou cartão em até 12x sem juros.</span>
+              </li>
+            </ul>
+            <button
+              type="button"
+              onClick={() => setWelcomeOpen(false)}
+              className="mt-6 h-[52px] w-full bg-[#0d1b2a] text-[13px] font-semibold tracking-[0.12em] text-white"
+            >
+              QUERO APROVEITAR
+            </button>
+            <button
+              type="button"
+              onClick={() => setWelcomeOpen(false)}
+              className="mt-2 h-[40px] w-full text-[12px] text-black/50"
+            >
+              Continuar navegando
+            </button>
+          </div>
+        </div>
+      )}
+
+
       <noscript>
         <img
           height="1"
