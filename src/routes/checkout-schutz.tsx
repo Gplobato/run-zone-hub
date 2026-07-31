@@ -6,6 +6,7 @@ import {
   createSchutzCard,
   createSchutzPix,
   getSchutzOrderStatus,
+  getSchutzPublicKey,
 } from "@/lib/schutz.functions";
 import { fbqTrackSingle, fbqTrackPageViewOnce, fbqTrackCustomSingle } from "@/lib/pixel";
 import {
