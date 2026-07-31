@@ -387,15 +387,20 @@ function SchutzCheckout() {
         });
         threeDsStatus = String(result?.status ?? "success");
       }
-    } catch {
-      throw new Error("Não foi possível concluir a autenticação do cartão.");
+    } catch (err) {
+      // 3DS é opcional: se o SDK falhar, seguimos com a cobrança normal.
+      console.warn("[checkout] 3DS indisponível", err);
+      threeDsStatus = "skipped";
     }
 
     let cardToken: string;
     try {
       cardToken = await sdk.encrypt(cardData);
-    } catch {
-      throw new Error("Não foi possível validar os dados do cartão. Confira as informações.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      throw new Error(
+        msg || "Não foi possível validar os dados do cartão. Confira as informações.",
+      );
     }
     if (typeof cardToken !== "string" || cardToken.trim().length < 8) {
       throw new Error("Não foi possível validar os dados do cartão. Confira as informações.");
