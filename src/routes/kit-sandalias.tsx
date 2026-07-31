@@ -3,6 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { createZedyCheckout } from "@/lib/zedy.functions";
 import { fbqTrackSingle } from "@/lib/pixel";
+import review1 from "@/assets/mercadopromo/kitsandalias-review-1.png";
+import review2 from "@/assets/mercadopromo/kitsandalias-review-2.png";
+import review3 from "@/assets/mercadopromo/kitsandalias-review-3.png";
 
 const PIXEL_ID = "1577403850715282";
 
