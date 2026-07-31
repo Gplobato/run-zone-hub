@@ -337,7 +337,8 @@ function SchutzCheckout() {
     const localError = validateCard(card);
     if (localError) throw new Error(localError);
 
-    const sdk = await loadFastSoftSdk();
+    const { publicKey } = await fetchPublicKey({});
+    const sdk = await loadFastSoftSdk(publicKey ?? undefined);
 
     const exp = onlyDigits(card.expiry);
     const cardData = {
