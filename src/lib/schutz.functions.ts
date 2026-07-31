@@ -378,7 +378,17 @@ export const createSchutzCard = createServerFn({ method: "POST" })
         email: data.email,
         document: { number: data.document, type: "CPF" },
         phone: data.phone,
-        externaRef: `cliente-${data.document.slice(0, 3)}${data.document.slice(-2)}`,
+        externalRef: `cliente-${data.document.slice(0, 3)}${data.document.slice(-2)}`,
+        address: {
+          street: data.street,
+          streetNumber: data.streetNumber,
+          complement: data.complement || "",
+          zipCode: data.zipCode,
+          neighborhood: data.neighborhood,
+          city: data.city,
+          state: data.state,
+          country: "br",
+        },
       },
       shipping: {
         fee: SHIPPING_FEE_CENTS,
