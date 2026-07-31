@@ -272,25 +272,26 @@ function KitSandaliasSchutzPage() {
           </p>
 
 
-          {/* Cor */}
+          {/* O que vem no kit */}
           <p className="mt-7 text-[13px]">
-            <strong>Cor:</strong> {COLORS[colorIdx].label}
+            <strong>O kit contém:</strong> 3 pares — {KIT_COLOR}
           </p>
-          <div className="mt-2 flex gap-2">
-            {COLORS.map((c, i) => (
-              <button
+          <div className="mt-2 grid grid-cols-3 gap-2">
+            {KIT_ITEMS.map((c) => (
+              <div
                 key={c.label}
-                type="button"
-                onClick={() => setColorIdx(i)}
-                aria-label={c.label}
-                className={`h-[108px] w-[86px] border bg-[#f7f7f7] p-1 ${
-                  i === colorIdx ? "border-[#111]" : "border-black/15"
-                }`}
+                className="border border-black/15 bg-[#fafafa] px-2 py-3 text-center"
               >
-                <img src={c.thumb} alt={c.label} className="h-full w-full object-contain" />
-              </button>
+                <span
+                  className="mx-auto block h-7 w-7 rounded-full border border-black/10"
+                  style={{ background: c.swatch }}
+                />
+                <p className="mt-2 text-[12px] font-semibold">{c.label}</p>
+                <p className="mt-0.5 text-[10px] leading-tight text-black/55">{c.detail}</p>
+              </div>
             ))}
           </div>
+
 
           {/* Tamanho */}
           <div className="mt-7 flex items-center justify-between">
