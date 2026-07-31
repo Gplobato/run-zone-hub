@@ -4,6 +4,9 @@ import { fbqTrackSingle } from "@/lib/pixel";
 import review1 from "@/assets/mercadopromo/kitsandalias-review-1.png";
 import review2 from "@/assets/mercadopromo/kitsandalias-review-2.png";
 import review3 from "@/assets/mercadopromo/kitsandalias-review-3.png";
+import gallery1 from "@/assets/kit-sandalias/kit-sandalia-1.jpg.asset.json";
+import gallery2 from "@/assets/kit-sandalias/kit-sandalia-2.jpg.asset.json";
+import gallery3 from "@/assets/kit-sandalias/kit-sandalia-3.jpg.asset.json";
 
 const PIXEL_ID = "1577403850715282";
 
