@@ -12,7 +12,8 @@ const PIXEL_ID = "1577403850715282";
 
 const PRODUCT_ID = "mercadopromo-kit-sandalias";
 const PRODUCT_NAME = "Sandália Meia Pata Couro Preta";
-const PRICE = 890;
+const PRICE = 99.9;
+const CARD_PRICE = 117.53;
 const DESCRIPTION =
   "Sandália Meia Pata Riviera em couro preto, formato tamanco (mule) com tira larga sobre o peito do pé, salto agulha de 14 cm e plataforma meia pata.";
 const OG_IMAGE = `https://run-zone-hub.lovable.app${gallery1.url}`;
@@ -89,7 +90,7 @@ export const Route = createFileRoute("/kit-sandalias")({
       { property: "og:title", content: PRODUCT_NAME },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:image", content: OG_IMAGE },
-      { property: "product:price:amount", content: "890.00" },
+      { property: "product:price:amount", content: "99.90" },
       { property: "product:price:currency", content: "BRL" },
       { property: "product:brand", content: "Schutz" },
       { property: "product:availability", content: "in stock" },
@@ -112,6 +113,7 @@ function KitSandaliasSchutzPage() {
   const [error, setError] = useState<string | null>(null);
   const [cep, setCep] = useState("");
   const [shippingChecked, setShippingChecked] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(true);
 
   const navigate = useNavigate();
 
@@ -152,12 +154,72 @@ function KitSandaliasSchutzPage() {
     setLoading(true);
     navigate({
       to: "/checkout-schutz",
-      search: { size: size!, color: COLORS[colorIdx].label },
+      search: { tam: size!, color: COLORS[colorIdx].label },
     });
   }
 
   return (
     <div className="min-h-screen bg-white font-sans text-[#111]">
+      {welcomeOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 sm:items-center sm:p-4"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setWelcomeOpen(false)}
+        >
+          <div
+            className="w-full max-w-[420px] animate-in bg-white p-6 shadow-xl sm:p-7"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-[10px] font-semibold tracking-[0.18em] text-black/50">
+              SCHUTZ · CONDIÇÃO ESPECIAL
+            </p>
+            <h2 className="mt-3 text-[20px] font-semibold leading-snug">
+              Apenas 1 compra por CPF
+            </h2>
+            <ul className="mt-4 space-y-2.5 text-[13px] leading-relaxed text-black/70">
+              <li className="flex gap-2">
+                <span className="text-[#1a7f37]">✓</span>
+                <span>
+                  <strong className="text-[#111]">15% OFF no PIX</strong> — já aplicado no
+                  valor de R$ 99,90.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[#1a7f37]">✓</span>
+                <span>
+                  <strong className="text-[#111]">Frete grátis</strong> para todo o Brasil,
+                  entrega em 1 a 3 dias úteis.
+                </span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[#1a7f37]">✓</span>
+                <span>Limitado a 1 unidade por CPF enquanto durar o estoque.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="text-[#1a7f37]">✓</span>
+                <span>Pagamento no PIX ou cartão em até 12x sem juros.</span>
+              </li>
+            </ul>
+            <button
+              type="button"
+              onClick={() => setWelcomeOpen(false)}
+              className="mt-6 h-[52px] w-full bg-[#0d1b2a] text-[13px] font-semibold tracking-[0.12em] text-white"
+            >
+              QUERO APROVEITAR
+            </button>
+            <button
+              type="button"
+              onClick={() => setWelcomeOpen(false)}
+              className="mt-2 h-[40px] w-full text-[12px] text-black/50"
+            >
+              Continuar navegando
+            </button>
+          </div>
+        </div>
+      )}
+
+
       <noscript>
         <img
           height="1"
@@ -212,11 +274,15 @@ function KitSandaliasSchutzPage() {
             PRÉ-VENDA
           </span>
           <h1 className="mt-3 text-[17px] font-semibold">{PRODUCT_NAME}</h1>
-          <p className="mt-3 text-[22px] font-medium">R$ 890</p>
-          <p className="mt-1 text-[13px] text-black/60">ou 6x de R$148,33 sem juros</p>
-          <p className="mt-2 text-[13px] text-black/70">
-            Receba até <strong>R$ 89,00</strong> de cashback
+          <p className="mt-1 text-[14px] text-black/45 line-through">R$ 117,53</p>
+          <p className="mt-1 text-[26px] font-medium sm:text-[22px]">R$ 99,90</p>
+          <p className="mt-1 text-[13px] text-black/60">
+            ou 12x de R$ 9,79 sem juros no cartão
           </p>
+          <p className="mt-2 border border-[#1a7f37]/30 bg-[#1a7f37]/10 px-3 py-2 text-[13px] font-medium text-[#1a7f37]">
+            ✓ 15% de desconto exclusivo no PIX — já aplicado neste valor
+          </p>
+
 
           {/* Cor */}
           <p className="mt-7 text-[13px]">

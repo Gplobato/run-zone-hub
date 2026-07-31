@@ -73,7 +73,7 @@ function ZedyProductsPage() {
 
   useEffect(() => {
     let active = true;
-    const sort = sortMap[sortKey];
+    const sort = sortMap[sortKey as keyof typeof sortMap];
     setIsLoading(true);
     setError(null);
 
@@ -139,7 +139,7 @@ function ZedyProductsPage() {
               e.preventDefault();
               const form = new FormData(e.currentTarget);
               const q = String(form.get("q") ?? "").trim() || undefined;
-              navigate({ search: (s) => ({ ...s, q, page: 1 }) });
+              navigate({ search: (s: Record<string, unknown>) => ({ ...s, q, page: 1 }) });
             }}
           >
             <Search className="h-4 w-4 text-muted-foreground" />
@@ -157,7 +157,7 @@ function ZedyProductsPage() {
             value={sortKey}
             onChange={(e) =>
               navigate({
-                search: (s) => ({
+                search: (s: Record<string, unknown>) => ({
                   ...s,
                   sort: e.target.value as keyof typeof sortMap,
                   page: 1,
@@ -202,7 +202,7 @@ function ZedyProductsPage() {
           <div className="mt-8 flex items-center justify-center gap-3 font-mono text-xs uppercase tracking-widest">
             <button
               disabled={page <= 1}
-              onClick={() => navigate({ search: (s) => ({ ...s, page: page - 1 }) })}
+              onClick={() => navigate({ search: (s: Record<string, unknown>) => ({ ...s, page: page - 1 }) })}
               className="rounded-sm border border-[color:var(--graphite)]/20 px-3 py-2 disabled:opacity-40"
             >
               Anterior
@@ -212,7 +212,7 @@ function ZedyProductsPage() {
             </span>
             <button
               disabled={page >= pagination.totalPages}
-              onClick={() => navigate({ search: (s) => ({ ...s, page: page + 1 }) })}
+              onClick={() => navigate({ search: (s: Record<string, unknown>) => ({ ...s, page: page + 1 }) })}
               className="rounded-sm border border-[color:var(--graphite)]/20 px-3 py-2 disabled:opacity-40"
             >
               Proxima
