@@ -129,12 +129,18 @@ function SchutzCheckout() {
   const getStatus = useServerFn(getSchutzOrderStatus);
 
   const [method, setMethod] = useState<"pix" | "card">("pix");
-  useEffect(() => {
-    if (searchSize && SIZES.includes(searchSize)) setSize(searchSize);
-  }, [searchSize]);
   const [size, setSize] = useState<string>(
     searchSize && SIZES.includes(searchSize) ? searchSize : "",
   );
+  useEffect(() => {
+    const fromUrl =
+      searchSize ??
+      (typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("tam")
+        : null);
+    if (fromUrl && SIZES.includes(fromUrl)) setSize(fromUrl);
+  }, [searchSize]);
+
   const [form, setForm] = useState(initialForm);
   const [card, setCard] = useState(initialCard);
   const [installments, setInstallments] = useState(1);
