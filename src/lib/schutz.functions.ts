@@ -19,11 +19,11 @@ const SCHUTZ_CATALOG: Record<
   }
 > = {
   "sandalia-meia-pata-riviera": {
-    title: "Sandália Meia Pata Couro Preta",
+    title: "Kit com 3 Sandálias Femininas — Branca, Preta e Rosé",
     unitPriceCents: 9990,
     cardPriceCents: 11753,
     externalRef: "S2272300080004",
-    sizes: ["33", "34", "35", "36", "37", "38", "39", "40", "41"],
+    sizes: ["34", "35", "36", "37", "38", "39", "40", "41"],
   },
 };
 

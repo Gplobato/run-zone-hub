@@ -19,14 +19,14 @@ import {
 
 const PIXEL_ID = "1577403850715282";
 const PRODUCT_SLUG = "sandalia-meia-pata-riviera";
-const PRODUCT_NAME = "Sandália Meia Pata Couro Preta";
+const PRODUCT_NAME = "Kit com 3 Sandálias Femininas — Branca, Preta e Rosé";
 const PIX_PRICE_CENTS = 9990;
 const CARD_PRICE_CENTS = 11753;
 const MAX_INSTALLMENTS = 12;
 const SHIPPING_FROM_CENTS = 3490;
 const PRODUCT_IMAGE =
   "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/hfb/h63/h00/h00/13436215230494/Midres-Headless-S2272300080004-01.jpg";
-const SIZES = ["33", "34", "35", "36", "37", "38", "39", "40", "41"];
+const SIZES = ["34", "35", "36", "37", "38", "39", "40", "41"];
 
 const brl = (cents: number) =>
   (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -59,7 +59,7 @@ export const Route = createFileRoute("/checkout-schutz")({
       {
         name: "description",
         content:
-          "Finalize sua compra da Sandália Meia Pata Riviera com PIX ou cartão de crédito. Pagamento 100% seguro.",
+          "Finalize sua compra do Kit com 3 Sandálias Femininas com PIX ou cartão de crédito. Pagamento 100% seguro.",
       },
       { property: "og:type", content: "website" },
       { property: "og:title", content: "Pagamento seguro | SCHUTZ" },
