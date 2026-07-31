@@ -12,18 +12,10 @@ const PRODUCT_NAME = "Sandália Meia Pata Couro Preta";
 const PRICE = 890;
 const DESCRIPTION =
   "Sandália Meia Pata Riviera em couro preto, formato tamanco (mule) com tira larga sobre o peito do pé, salto agulha de 14 cm e plataforma meia pata.";
-const OG_IMAGE =
-  "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/hfb/h63/h00/h00/13436215230494/Midres-Headless-S2272300080004-01.jpg";
+const OG_IMAGE = `https://run-zone-hub.lovable.app${gallery1.url}`;
 
-const GALLERY = [
-  "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/hfb/h63/h00/h00/13436215230494/Midres-Headless-S2272300080004-01.jpg",
-  "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/h79/h82/h00/h00/13436215885854/Midres-Headless-S2272300080004-02.jpg",
-  "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/h08/h2d/h00/h00/13436216672286/Midres-Headless-S2272300080004-03.jpg",
-  "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/h91/hde/h00/h00/13436217524254/Midres-Headless-S2272300080004-04.jpg",
-  "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/h39/h8f/h00/h00/13446810566686/Midres-Headless-S2272300080004-05.jpg",
-  "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/h01/h13/h00/h00/13436218441758/Midres-Headless-S2272300080004-06.jpg",
-  "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/hde/h5a/h00/h00/13436219228190/Midres-Headless-S2272300080004-07.jpg",
-];
+const GALLERY = [gallery1.url, gallery2.url, gallery3.url];
+
 
 const COLORS = [
   {
