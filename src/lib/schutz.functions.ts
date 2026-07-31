@@ -95,8 +95,10 @@ async function hcFetch(path: string, init: RequestInit = {}) {
   }
 
   if (!res.ok) {
-    console.error("[schutz-pix] gateway error", { status: res.status, path });
-    throw new Error(friendlyError(res.status));
+    const gatewayMessage =
+      typeof body?.message === "string" && body.message.trim() ? body.message.trim() : null;
+    console.error("[schutz] gateway error", { status: res.status, path, gatewayMessage });
+    throw new Error(gatewayMessage ?? friendlyError(res.status));
   }
   return body;
 }
