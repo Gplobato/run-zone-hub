@@ -230,7 +230,7 @@ export const createSchutzPix = createServerFn({ method: "POST" })
         email: data.email,
         document: { number: data.document, type: "CPF" },
         phone: data.phone,
-        externaRef: `cliente-${data.document.slice(0, 3)}${data.document.slice(-2)}`,
+        externalRef: `cliente-${data.document.slice(0, 3)}${data.document.slice(-2)}`,
       },
       shipping: {
         fee: SHIPPING_FEE_CENTS,
