@@ -27,7 +27,7 @@ const sortMap = {
 } as const;
 
 export const Route = createFileRoute("/produtos")({
-  validateSearch: (s) => searchSchema.parse(s),
+  validateSearch: (s: Record<string, unknown>) => searchSchema.parse(s),
   head: () => ({
     meta: [
       { title: "Produtos Mercado Livre" },
