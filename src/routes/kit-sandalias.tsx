@@ -92,8 +92,8 @@ export const Route = createFileRoute("/kit-sandalias")({
 });
 
 function KitSandaliasSchutzPage() {
-  const [colorIdx, setColorIdx] = useState(0);
   const [size, setSize] = useState<string | null>(null);
+
   const [descOpen, setDescOpen] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
