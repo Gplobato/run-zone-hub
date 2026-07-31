@@ -117,6 +117,8 @@ function KitSandaliasSchutzPage() {
   const [descOpen, setDescOpen] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cep, setCep] = useState("");
+  const [shippingChecked, setShippingChecked] = useState(false);
 
   const createCheckout = useServerFn(createZedyCheckout);
 
