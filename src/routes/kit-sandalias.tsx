@@ -213,11 +213,15 @@ function KitSandaliasSchutzPage() {
             PRÉ-VENDA
           </span>
           <h1 className="mt-3 text-[17px] font-semibold">{PRODUCT_NAME}</h1>
-          <p className="mt-3 text-[22px] font-medium">R$ 890</p>
-          <p className="mt-1 text-[13px] text-black/60">ou 6x de R$148,33 sem juros</p>
-          <p className="mt-2 text-[13px] text-black/70">
-            Receba até <strong>R$ 89,00</strong> de cashback
+          <p className="mt-1 text-[14px] text-black/45 line-through">R$ 117,53</p>
+          <p className="mt-1 text-[26px] font-medium sm:text-[22px]">R$ 99,90</p>
+          <p className="mt-1 text-[13px] text-black/60">
+            ou 12x de R$ 9,79 sem juros no cartão
           </p>
+          <p className="mt-2 border border-[#1a7f37]/30 bg-[#1a7f37]/10 px-3 py-2 text-[13px] font-medium text-[#1a7f37]">
+            ✓ 15% de desconto exclusivo no PIX — já aplicado neste valor
+          </p>
+
 
           {/* Cor */}
           <p className="mt-7 text-[13px]">
