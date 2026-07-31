@@ -17,6 +17,7 @@ import { Route as KitpanosRouteImport } from './routes/kitpanos'
 import { Route as KitSandaliasRouteImport } from './routes/kit-sandalias'
 import { Route as JaquetafemRouteImport } from './routes/jaquetafem'
 import { Route as JaquetaRouteImport } from './routes/jaqueta'
+import { Route as CheckoutSchutzRouteImport } from './routes/checkout-schutz'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as BobojacoRouteImport } from './routes/bobojaco'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -65,6 +66,11 @@ const JaquetaRoute = JaquetaRouteImport.update({
   path: '/jaqueta',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutSchutzRoute = CheckoutSchutzRouteImport.update({
+  id: '/checkout-schutz',
+  path: '/checkout-schutz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/bobojaco': typeof BobojacoRoute
   '/checkout': typeof CheckoutRoute
+  '/checkout-schutz': typeof CheckoutSchutzRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
   '/kit-sandalias': typeof KitSandaliasRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/bobojaco': typeof BobojacoRoute
   '/checkout': typeof CheckoutRoute
+  '/checkout-schutz': typeof CheckoutSchutzRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
   '/kit-sandalias': typeof KitSandaliasRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/bobojaco': typeof BobojacoRoute
   '/checkout': typeof CheckoutRoute
+  '/checkout-schutz': typeof CheckoutSchutzRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
   '/kit-sandalias': typeof KitSandaliasRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/bobojaco'
     | '/checkout'
+    | '/checkout-schutz'
     | '/jaqueta'
     | '/jaquetafem'
     | '/kit-sandalias'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/bobojaco'
     | '/checkout'
+    | '/checkout-schutz'
     | '/jaqueta'
     | '/jaquetafem'
     | '/kit-sandalias'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/bobojaco'
     | '/checkout'
+    | '/checkout-schutz'
     | '/jaqueta'
     | '/jaquetafem'
     | '/kit-sandalias'
@@ -213,6 +225,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   BobojacoRoute: typeof BobojacoRoute
   CheckoutRoute: typeof CheckoutRoute
+  CheckoutSchutzRoute: typeof CheckoutSchutzRoute
   JaquetaRoute: typeof JaquetaRoute
   JaquetafemRoute: typeof JaquetafemRoute
   KitSandaliasRoute: typeof KitSandaliasRoute
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JaquetaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout-schutz': {
+      id: '/checkout-schutz'
+      path: '/checkout-schutz'
+      fullPath: '/checkout-schutz'
+      preLoaderRoute: typeof CheckoutSchutzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout': {
       id: '/checkout'
       path: '/checkout'
@@ -341,6 +361,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   BobojacoRoute: BobojacoRoute,
   CheckoutRoute: CheckoutRoute,
+  CheckoutSchutzRoute: CheckoutSchutzRoute,
   JaquetaRoute: JaquetaRoute,
   JaquetafemRoute: JaquetafemRoute,
   KitSandaliasRoute: KitSandaliasRoute,

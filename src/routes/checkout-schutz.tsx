@@ -255,7 +255,10 @@ function SchutzCheckout() {
                       onClick={() => {
                         setSize(s);
                         setError(null);
-                        navigate({ to: "/checkout-schutz", search: { size: s } });
+                        navigate({
+                          to: "/checkout-schutz",
+                          search: { size: s, color: undefined },
+                        });
                       }}
                       className={`h-[42px] w-[52px] border text-[13px] transition-colors ${
                         size === s
