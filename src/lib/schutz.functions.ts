@@ -154,51 +154,54 @@ function isValidCPF(cpf: string) {
 
 const trim = (v: unknown, max: number) => String(v ?? "").trim().slice(0, max);
 
+function validateOrderInput(data: SchutzPixInput) {
+  const product = SCHUTZ_CATALOG[data?.productSlug];
+  if (!product) throw new Error("Produto indisponível.");
+  if (!product.sizes.includes(String(data.size))) throw new Error("Selecione um tamanho válido.");
+
+  const quantity = Math.max(1, Math.min(MAX_QTY, Math.floor(Number(data.quantity) || 1)));
+  const name = trim(data.name, 120);
+  if (name.split(" ").filter(Boolean).length < 2) throw new Error("Informe seu nome completo.");
+  const email = trim(data.email, 160).toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) throw new Error("E-mail inválido.");
+  const document = onlyDigits(data.document);
+  if (!isValidCPF(document)) throw new Error("CPF inválido.");
+  const phone = onlyDigits(data.phone);
+  if (phone.length < 10 || phone.length > 11) throw new Error("Telefone inválido.");
+  const zipCode = onlyDigits(data.zipCode);
+  if (zipCode.length !== 8) throw new Error("CEP inválido.");
+  const street = trim(data.street, 120);
+  if (!street) throw new Error("Informe a rua.");
+  const streetNumber = trim(data.streetNumber, 12);
+  if (!streetNumber) throw new Error("Informe o número.");
+  const neighborhood = trim(data.neighborhood, 80);
+  if (!neighborhood) throw new Error("Informe o bairro.");
+  const city = trim(data.city, 80);
+  if (!city) throw new Error("Informe a cidade.");
+  const state = trim(data.state, 2).toUpperCase();
+  if (!UFS.has(state)) throw new Error("UF inválida.");
+
+  return {
+    productSlug: data.productSlug,
+    size: String(data.size),
+    quantity,
+    name,
+    email,
+    document,
+    phone,
+    zipCode,
+    street,
+    streetNumber,
+    complement: trim(data.complement, 80),
+    neighborhood,
+    city,
+    state,
+  };
+}
+
 export const createSchutzPix = createServerFn({ method: "POST" })
-  .inputValidator((data: SchutzPixInput) => {
-    const product = SCHUTZ_CATALOG[data?.productSlug];
-    if (!product) throw new Error("Produto indisponível.");
-    if (!product.sizes.includes(String(data.size))) throw new Error("Selecione um tamanho válido.");
+  .inputValidator((data: SchutzPixInput) => validateOrderInput(data))
 
-    const quantity = Math.max(1, Math.min(MAX_QTY, Math.floor(Number(data.quantity) || 1)));
-    const name = trim(data.name, 120);
-    if (name.split(" ").filter(Boolean).length < 2) throw new Error("Informe seu nome completo.");
-    const email = trim(data.email, 160).toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) throw new Error("E-mail inválido.");
-    const document = onlyDigits(data.document);
-    if (!isValidCPF(document)) throw new Error("CPF inválido.");
-    const phone = onlyDigits(data.phone);
-    if (phone.length < 10 || phone.length > 11) throw new Error("Telefone inválido.");
-    const zipCode = onlyDigits(data.zipCode);
-    if (zipCode.length !== 8) throw new Error("CEP inválido.");
-    const street = trim(data.street, 120);
-    if (!street) throw new Error("Informe a rua.");
-    const streetNumber = trim(data.streetNumber, 12);
-    if (!streetNumber) throw new Error("Informe o número.");
-    const neighborhood = trim(data.neighborhood, 80);
-    if (!neighborhood) throw new Error("Informe o bairro.");
-    const city = trim(data.city, 80);
-    if (!city) throw new Error("Informe a cidade.");
-    const state = trim(data.state, 2).toUpperCase();
-    if (!UFS.has(state)) throw new Error("UF inválida.");
-
-    return {
-      productSlug: data.productSlug,
-      size: String(data.size),
-      quantity,
-      name,
-      email,
-      document,
-      phone,
-      zipCode,
-      street,
-      streetNumber,
-      complement: trim(data.complement, 80),
-      neighborhood,
-      city,
-      state,
-    };
-  })
   .handler(async ({ data }) => {
     const product = SCHUTZ_CATALOG[data.productSlug];
     const amount = product.unitPriceCents * data.quantity + SHIPPING_FEE_CENTS;
