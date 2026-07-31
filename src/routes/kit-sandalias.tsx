@@ -458,12 +458,7 @@ function KitSandaliasSchutzPage() {
                 <span className="text-[#111]">★★★★★</span> · {r.when}
               </div>
               <p className="mt-2 text-[13px] leading-relaxed text-black/75">{r.text}</p>
-              <img
-                src={r.photo}
-                alt={`Foto de ${r.name}`}
-                loading="lazy"
-                className="mt-3 aspect-square w-[140px] rounded-sm bg-[#f5f5f5] object-cover"
-              />
+
             </div>
           ))}
         </div>
