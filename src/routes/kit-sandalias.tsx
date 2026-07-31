@@ -1,9 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { fbqTrackSingle } from "@/lib/pixel";
-import review1 from "@/assets/mercadopromo/kitsandalias-review-1.png";
-import review2 from "@/assets/mercadopromo/kitsandalias-review-2.png";
-import review3 from "@/assets/mercadopromo/kitsandalias-review-3.png";
+import { fbqTrackSingle, fbqTrackPageViewOnce } from "@/lib/pixel";
 import gallery1 from "@/assets/kit-sandalias/kit-sandalia-1.jpg.asset.json";
 import gallery2 from "@/assets/kit-sandalias/kit-sandalia-2.jpg.asset.json";
 import gallery3 from "@/assets/kit-sandalias/kit-sandalia-3.jpg.asset.json";
@@ -11,40 +8,31 @@ import gallery3 from "@/assets/kit-sandalias/kit-sandalia-3.jpg.asset.json";
 const PIXEL_ID = "1577403850715282";
 
 const PRODUCT_ID = "mercadopromo-kit-sandalias";
-const PRODUCT_NAME = "Sandália Meia Pata Couro Preta";
+const PRODUCT_NAME = "Kit com 3 Sandálias Femininas — Branca, Preta e Rosé";
 const PRICE = 99.9;
 const CARD_PRICE = 117.53;
 const DESCRIPTION =
-  "Sandália Meia Pata Riviera em couro preto, formato tamanco (mule) com tira larga sobre o peito do pé, salto agulha de 14 cm e plataforma meia pata.";
+  "Kit com 3 sandálias femininas de salto bloco: branca com detalhes trançados, preta com tiras cruzadas e rosé com acabamento metalizado. Três pares por R$ 99,90 — apenas R$ 33,30 cada. Numerações do 34 ao 41.";
 const OG_IMAGE = `https://run-zone-hub.lovable.app${gallery1.url}`;
 
 const GALLERY = [gallery1.url, gallery2.url, gallery3.url];
 
 
-const COLORS = [
-  {
-    label: "Preto",
-    thumb:
-      "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/hf6/hb1/h00/h00/13436214968350/Thumbnail-Headless-S2272300080004-01.jpg?w=1920&q=100",
-  },
-  {
-    label: "Marrom",
-    thumb:
-      "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/h52/hca/h00/h00/13436188885022/Thumbnail-Headless-S2272300080002-01.jpg?w=1920&q=100",
-  },
-  {
-    label: "Prata",
-    thumb:
-      "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/hcd/hf2/h00/h00/13436183642142/Thumbnail-Headless-S2272300080001-01.jpg?w=1920&q=100",
-  },
+
+// O kit já vem com as três cores — não há escolha de cor.
+const KIT_COLOR = "Branca + Preta + Rosé";
+
+const KIT_ITEMS = [
+  { label: "Branca", detail: "Detalhes trançados", swatch: "#f2efe9" },
+  { label: "Preta", detail: "Tiras cruzadas", swatch: "#141414" },
+  { label: "Rosé", detail: "Acabamento metalizado", swatch: "#c98a68" },
 ];
 
-// Todas as numerações disponíveis.
-const SIZES = ["33", "34", "35", "36", "37", "38", "39", "40", "41"];
+// Numerações disponíveis: do 34 ao 41.
+const SIZES = ["34", "35", "36", "37", "38", "39", "40", "41"];
 const SOLD_OUT_SIZES: string[] = [];
 
 const VARIANT_IDS: Record<string, number> = {
-  "33": 252579869,
   "34": 252579869,
   "35": 252579869,
   "36": 252579914,
@@ -60,24 +48,22 @@ const REVIEWS = [
     name: "ana.clara",
     rating: 5,
     when: "há 2 semanas",
-    text: "Eu fiquei apaixonada! A sandália é ainda mais bonita pessoalmente, super confortável e veio muito bem embalada. O couro é macio e o acabamento é impecável. Foi uma das melhores compras que já fiz.",
-    photo: review1,
+    text: "Eu fiquei apaixonada! Chegaram os três pares certinhos e cada um é mais bonito que o outro. A preta de tiras cruzadas virou minha favorita. Confortáveis e muito bem embaladas.",
   },
   {
     name: "mariana.s",
     rating: 5,
     when: "há 3 semanas",
-    text: "Maravilhosa e o tamanho ficou certinho no pé. Já usei duas vezes e recebi elogios. Mesmo com o salto alto, a plataforma deixa o calce bem confortável. Vale muito a pena!",
-    photo: review2,
+    text: "Melhor custo-benefício que já achei. Três sandálias por esse preço é surreal. O salto bloco é firme e dá pra usar o dia todo sem machucar. A numeração ficou perfeita no pé.",
   },
   {
     name: "camila.r",
     rating: 5,
     when: "há 1 mês",
-    text: "Chegou rápido e é linda demais! Consigo usar tanto para trabalhar quanto para sair. Leve, confortável e o acabamento me surpreendeu. Recomendo de olhos fechados.",
-    photo: review3,
+    text: "Chegou rápido e combina com tudo. A branca eu uso no trabalho, a preta pra sair e a rosé em festa. Acabamento muito melhor do que eu esperava. Recomendo de olhos fechados.",
   },
 ];
+
 
 const NAV = ["NEW IN", "SAPATOS", "BOLSAS", "RESORT 27", "BOTAS", "FALL SALE", "BLOG"];
 
@@ -106,8 +92,8 @@ export const Route = createFileRoute("/kit-sandalias")({
 });
 
 function KitSandaliasSchutzPage() {
-  const [colorIdx, setColorIdx] = useState(0);
   const [size, setSize] = useState<string | null>(null);
+
   const [descOpen, setDescOpen] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -129,6 +115,7 @@ function KitSandaliasSchutzPage() {
   );
 
   useEffect(() => {
+    fbqTrackPageViewOnce(PIXEL_ID);
     fbqTrackSingle(PIXEL_ID, "ViewContent", baseParams);
   }, [baseParams]);
 
@@ -154,9 +141,10 @@ function KitSandaliasSchutzPage() {
     setLoading(true);
     navigate({
       to: "/checkout-schutz",
-      search: { tam: size!, color: COLORS[colorIdx].label },
+      search: { tam: size!, color: KIT_COLOR },
     });
   }
+
 
   return (
     <div className="min-h-screen bg-white font-sans text-[#111]">
@@ -284,25 +272,26 @@ function KitSandaliasSchutzPage() {
           </p>
 
 
-          {/* Cor */}
+          {/* O que vem no kit */}
           <p className="mt-7 text-[13px]">
-            <strong>Cor:</strong> {COLORS[colorIdx].label}
+            <strong>O kit contém:</strong> 3 pares — {KIT_COLOR}
           </p>
-          <div className="mt-2 flex gap-2">
-            {COLORS.map((c, i) => (
-              <button
+          <div className="mt-2 grid grid-cols-3 gap-2">
+            {KIT_ITEMS.map((c) => (
+              <div
                 key={c.label}
-                type="button"
-                onClick={() => setColorIdx(i)}
-                aria-label={c.label}
-                className={`h-[108px] w-[86px] border bg-[#f7f7f7] p-1 ${
-                  i === colorIdx ? "border-[#111]" : "border-black/15"
-                }`}
+                className="border border-black/15 bg-[#fafafa] px-2 py-3 text-center"
               >
-                <img src={c.thumb} alt={c.label} className="h-full w-full object-contain" />
-              </button>
+                <span
+                  className="mx-auto block h-7 w-7 rounded-full border border-black/10"
+                  style={{ background: c.swatch }}
+                />
+                <p className="mt-2 text-[12px] font-semibold">{c.label}</p>
+                <p className="mt-0.5 text-[10px] leading-tight text-black/55">{c.detail}</p>
+              </div>
             ))}
           </div>
+
 
           {/* Tamanho */}
           <div className="mt-7 flex items-center justify-between">
@@ -397,36 +386,57 @@ function KitSandaliasSchutzPage() {
             {descOpen && (
               <div className="mt-3 space-y-4 text-[13px] leading-relaxed text-black/75">
                 <p>
-                  Para quem não tem medo de se destacar, a Sandália Meia Pata Riviera
-                  representa o equilíbrio perfeito entre a ousadia máxima e a sofisticação
-                  urbana. No formato tamanco (mule), ela traz uma tira larga sobre o peito do
-                  pé que garante o calce fácil e um visual incrivelmente limpo e moderno.
+                  Um kit completo com <strong className="text-[#111]">3 sandálias
+                  femininas</strong> de salto bloco: uma branca, uma preta e uma rosé. Três
+                  acabamentos diferentes para montar looks distintos sem precisar comprar
+                  pares avulsos.
                 </p>
                 <p>
-                  A combinação do salto agulha vertiginoso com a imponente plataforma meia
-                  pata cria uma silhueta ultra-alongada, poderosa e cheia de atitude. Com
-                  acabamento premium e design ergonômico, esse modelo é a escolha definitiva
-                  para transformar qualquer produção minimalista em um look de passarela.
+                  O salto bloco baixo garante firmeza e conforto para usar o dia inteiro, e a
+                  palmilha acolchoada acompanha o formato do pé. São cores neutras e fáceis de
+                  combinar, do trabalho ao fim de semana.
                 </p>
                 <div>
                   <p className="font-semibold text-[#111]">Características</p>
                   <ul className="mt-2 list-disc space-y-1 pl-5">
-                    <li>Material externo: Couro legítimo</li>
-                    <li>Forro: Couro</li>
-                    <li>Solado: Borracha antiderrapante</li>
-                    <li>Cor: {COLORS[colorIdx].label}</li>
-                    <li>Tamanho do salto: 14 cm</li>
-                    <li>Altura da plataforma: 4 cm</li>
-                    <li>Formato: Tamanco (mule) com tira larga</li>
-                    <li>Numerações: do 33 ao 41</li>
-                    <li>Referência: S2272300080004</li>
+                    <li>
+                      <strong className="text-[#111]">Três modelos em um único kit:</strong> 1
+                      sandália branca, 1 preta e 1 rosé
+                    </li>
+                    <li>
+                      <strong className="text-[#111]">Acabamentos diferentes:</strong> detalhes
+                      trançados, tiras cruzadas e acabamento metalizado
+                    </li>
+                    <li>
+                      <strong className="text-[#111]">Somente R$ 33,30 por par:</strong> três
+                      sandálias por apenas R$ 99,90
+                    </li>
+                    <li>
+                      <strong className="text-[#111]">Cores fáceis de combinar:</strong> branco,
+                      preto e rosé para acompanhar todo o guarda-roupa
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-[#111]">Especificações</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5">
+                    <li>O kit contém: 1 sandália branca</li>
+                    <li>O kit contém: 1 sandália preta</li>
+                    <li>O kit contém: 1 sandália rosé</li>
+                    <li>Numerações disponíveis: do 34 ao 41</li>
+                    <li>Sandália branca: detalhes trançados</li>
+                    <li>Sandália preta: tiras cruzadas</li>
+                    <li>Sandália rosé: acabamento metalizado elegante</li>
+                    <li>Salto: bloco baixo</li>
+                    <li>Palmilha: acolchoada</li>
                   </ul>
                 </div>
                 <p className="text-[12px] text-black/55">
-                  Garantia do vendedor: 30 dias.
+                  Garantia do vendedor: 30 dias. Limitado a 1 kit por CPF.
                 </p>
               </div>
             )}
+
           </div>
         </aside>
       </div>
@@ -448,12 +458,7 @@ function KitSandaliasSchutzPage() {
                 <span className="text-[#111]">★★★★★</span> · {r.when}
               </div>
               <p className="mt-2 text-[13px] leading-relaxed text-black/75">{r.text}</p>
-              <img
-                src={r.photo}
-                alt={`Foto de ${r.name}`}
-                loading="lazy"
-                className="mt-3 aspect-square w-[140px] rounded-sm bg-[#f5f5f5] object-cover"
-              />
+
             </div>
           ))}
         </div>
