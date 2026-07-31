@@ -7,7 +7,7 @@ import {
   createSchutzPix,
   getSchutzOrderStatus,
 } from "@/lib/schutz.functions";
-import { fbqTrackSingle } from "@/lib/pixel";
+import { fbqTrackSingle, fbqTrackPageViewOnce, fbqTrackCustomSingle } from "@/lib/pixel";
 import {
   loadFastSoftSdk,
   maskCardNumber,
@@ -171,14 +171,17 @@ function SchutzCheckout() {
   }, []);
 
   useEffect(() => {
+    fbqTrackPageViewOnce(PIXEL_ID);
     fbqTrackSingle(PIXEL_ID, "InitiateCheckout", {
       content_ids: [PRODUCT_SLUG],
       content_name: PRODUCT_NAME,
       content_type: "product",
+      num_items: 1,
       value: PIX_PRICE_CENTS / 100,
       currency: "BRL",
     });
   }, []);
+
 
   // Busca de endereço pelo CEP + simulação do frete
   useEffect(() => {
@@ -234,17 +237,31 @@ function SchutzCheckout() {
   }, [pix]);
 
   useEffect(() => {
-    if (status === "paid" && !purchaseFired.current) {
-      purchaseFired.current = true;
-      fbqTrackSingle(PIXEL_ID, "Purchase", {
+    // Compra concluída dentro da própria página: PIX confirmado ou cartão aprovado.
+    const isApproved = status === "paid" || status === "authorized";
+    if (!isApproved || purchaseFired.current) return;
+    const transactionId = pix?.transactionId ?? cardResult?.transactionId;
+    if (!transactionId) return;
+    purchaseFired.current = true;
+    fbqTrackSingle(
+      PIXEL_ID,
+      "Purchase",
+      {
         content_ids: [PRODUCT_SLUG],
+        contents: [{ id: PRODUCT_SLUG, quantity: 1 }],
         content_name: PRODUCT_NAME,
         content_type: "product",
+        num_items: 1,
         value: (done?.amountCents ?? total) / 100,
         currency: "BRL",
-      });
-    }
-  }, [status, done, total]);
+        payment_method: cardResult ? "credit_card" : "pix",
+        order_id: done?.orderRef,
+      },
+      // eventID para deduplicar caso a Conversions API envie o mesmo pedido.
+      { eventID: `purchase-${transactionId}` },
+    );
+  }, [status, done, total, pix, cardResult]);
+
 
   const countdown = useMemo(() => {
     if (!pix?.expirationDate) return null;
@@ -287,11 +304,26 @@ function SchutzCheckout() {
           orderRef: res.orderRef,
           size: res.size,
         });
+        const pixParams = {
+          content_ids: [PRODUCT_SLUG],
+          content_name: PRODUCT_NAME,
+          content_type: "product",
+          num_items: 1,
+          value: res.amountCents / 100,
+          currency: "BRL",
+        };
+        fbqTrackSingle(PIXEL_ID, "AddPaymentInfo", {
+          ...pixParams,
+          payment_method: "pix",
+        });
+        fbqTrackCustomSingle(PIXEL_ID, "PixGerado", pixParams);
         setStatus(res.status === "paid" ? "paid" : "pending");
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
         await payWithCard();
       }
+
+
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Não foi possível concluir o pagamento.",

@@ -29,11 +29,33 @@ export function fbqInit(pixelId: string) {
   window.__pazeInitializedPixels[pixelId] = true;
 }
 
-export function fbqTrackSingle(pixelId: string, event: string, params?: Record<string, unknown>) {
+export function fbqTrackSingle(
+
+  pixelId: string,
+  event: string,
+  params?: Record<string, unknown>,
+  options?: { eventID?: string },
+) {
   if (typeof window === "undefined" || typeof window.fbq !== "function") return;
   fbqInit(pixelId);
+  if (options) {
+    window.fbq("trackSingle", pixelId, event, params, options);
+    return;
+  }
   window.fbq("trackSingle", pixelId, event, params);
 }
+
+
+export function fbqTrackCustomSingle(
+  pixelId: string,
+  event: string,
+  params?: Record<string, unknown>,
+) {
+  if (typeof window === "undefined" || typeof window.fbq !== "function") return;
+  fbqInit(pixelId);
+  window.fbq("trackSingleCustom", pixelId, event, params);
+}
+
 
 export function fbqTrackPageViewOnce(pixelId: string) {
   if (typeof window === "undefined" || typeof window.fbq !== "function") return;

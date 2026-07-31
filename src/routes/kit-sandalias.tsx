@@ -1,9 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { fbqTrackSingle } from "@/lib/pixel";
-import review1 from "@/assets/mercadopromo/kitsandalias-review-1.png";
-import review2 from "@/assets/mercadopromo/kitsandalias-review-2.png";
-import review3 from "@/assets/mercadopromo/kitsandalias-review-3.png";
+import { fbqTrackSingle, fbqTrackPageViewOnce } from "@/lib/pixel";
 import gallery1 from "@/assets/kit-sandalias/kit-sandalia-1.jpg.asset.json";
 import gallery2 from "@/assets/kit-sandalias/kit-sandalia-2.jpg.asset.json";
 import gallery3 from "@/assets/kit-sandalias/kit-sandalia-3.jpg.asset.json";
@@ -11,40 +8,31 @@ import gallery3 from "@/assets/kit-sandalias/kit-sandalia-3.jpg.asset.json";
 const PIXEL_ID = "1577403850715282";
 
 const PRODUCT_ID = "mercadopromo-kit-sandalias";
-const PRODUCT_NAME = "Sandália Meia Pata Couro Preta";
+const PRODUCT_NAME = "Kit com 3 Sandálias Femininas — Branca, Preta e Rosé";
 const PRICE = 99.9;
 const CARD_PRICE = 117.53;
 const DESCRIPTION =
-  "Sandália Meia Pata Riviera em couro preto, formato tamanco (mule) com tira larga sobre o peito do pé, salto agulha de 14 cm e plataforma meia pata.";
+  "Kit com 3 sandálias femininas de salto bloco: branca com detalhes trançados, preta com tiras cruzadas e rosé com acabamento metalizado. Três pares por R$ 99,90 — apenas R$ 33,30 cada. Numerações do 34 ao 41.";
 const OG_IMAGE = `https://run-zone-hub.lovable.app${gallery1.url}`;
 
 const GALLERY = [gallery1.url, gallery2.url, gallery3.url];
 
 
-const COLORS = [
-  {
-    label: "Preto",
-    thumb:
-      "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/hf6/hb1/h00/h00/13436214968350/Thumbnail-Headless-S2272300080004-01.jpg?w=1920&q=100",
-  },
-  {
-    label: "Marrom",
-    thumb:
-      "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/h52/hca/h00/h00/13436188885022/Thumbnail-Headless-S2272300080002-01.jpg?w=1920&q=100",
-  },
-  {
-    label: "Prata",
-    thumb:
-      "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/hcd/hf2/h00/h00/13436183642142/Thumbnail-Headless-S2272300080001-01.jpg?w=1920&q=100",
-  },
+
+// O kit já vem com as três cores — não há escolha de cor.
+const KIT_COLOR = "Branca + Preta + Rosé";
+
+const KIT_ITEMS = [
+  { label: "Branca", detail: "Detalhes trançados", swatch: "#f2efe9" },
+  { label: "Preta", detail: "Tiras cruzadas", swatch: "#141414" },
+  { label: "Rosé", detail: "Acabamento metalizado", swatch: "#c98a68" },
 ];
 
-// Todas as numerações disponíveis.
-const SIZES = ["33", "34", "35", "36", "37", "38", "39", "40", "41"];
+// Numerações disponíveis: do 34 ao 41.
+const SIZES = ["34", "35", "36", "37", "38", "39", "40", "41"];
 const SOLD_OUT_SIZES: string[] = [];
 
 const VARIANT_IDS: Record<string, number> = {
-  "33": 252579869,
   "34": 252579869,
   "35": 252579869,
   "36": 252579914,
@@ -60,24 +48,22 @@ const REVIEWS = [
     name: "ana.clara",
     rating: 5,
     when: "há 2 semanas",
-    text: "Eu fiquei apaixonada! A sandália é ainda mais bonita pessoalmente, super confortável e veio muito bem embalada. O couro é macio e o acabamento é impecável. Foi uma das melhores compras que já fiz.",
-    photo: review1,
+    text: "Eu fiquei apaixonada! Chegaram os três pares certinhos e cada um é mais bonito que o outro. A preta de tiras cruzadas virou minha favorita. Confortáveis e muito bem embaladas.",
   },
   {
     name: "mariana.s",
     rating: 5,
     when: "há 3 semanas",
-    text: "Maravilhosa e o tamanho ficou certinho no pé. Já usei duas vezes e recebi elogios. Mesmo com o salto alto, a plataforma deixa o calce bem confortável. Vale muito a pena!",
-    photo: review2,
+    text: "Melhor custo-benefício que já achei. Três sandálias por esse preço é surreal. O salto bloco é firme e dá pra usar o dia todo sem machucar. A numeração ficou perfeita no pé.",
   },
   {
     name: "camila.r",
     rating: 5,
     when: "há 1 mês",
-    text: "Chegou rápido e é linda demais! Consigo usar tanto para trabalhar quanto para sair. Leve, confortável e o acabamento me surpreendeu. Recomendo de olhos fechados.",
-    photo: review3,
+    text: "Chegou rápido e combina com tudo. A branca eu uso no trabalho, a preta pra sair e a rosé em festa. Acabamento muito melhor do que eu esperava. Recomendo de olhos fechados.",
   },
 ];
+
 
 const NAV = ["NEW IN", "SAPATOS", "BOLSAS", "RESORT 27", "BOTAS", "FALL SALE", "BLOG"];
 
