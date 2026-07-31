@@ -1,7 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { createZedyCheckout } from "@/lib/zedy.functions";
 import { fbqTrackSingle } from "@/lib/pixel";
 import review1 from "@/assets/mercadopromo/kitsandalias-review-1.png";
 import review2 from "@/assets/mercadopromo/kitsandalias-review-2.png";
@@ -120,7 +118,7 @@ function KitSandaliasSchutzPage() {
   const [cep, setCep] = useState("");
   const [shippingChecked, setShippingChecked] = useState(false);
 
-  const createCheckout = useServerFn(createZedyCheckout);
+  const navigate = useNavigate();
 
   const baseParams = useMemo(
     () => ({
@@ -157,17 +155,10 @@ function KitSandaliasSchutzPage() {
     if (!validate()) return;
     fbqTrackSingle(PIXEL_ID, event, baseParams);
     setLoading(true);
-    try {
-      const { url } = await createCheckout({
-        data: { items: [{ variantId: variantId!, quantity: 1 }] },
-      });
-      window.location.href = url;
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Falha ao abrir o pagamento. Tente novamente.",
-      );
-      setLoading(false);
-    }
+    navigate({
+      to: "/checkout-schutz",
+      search: { size: size!, color: COLORS[colorIdx].label },
+    });
   }
 
   return (
