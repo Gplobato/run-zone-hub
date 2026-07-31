@@ -302,23 +302,34 @@ function KitSandaliasSchutzPage() {
           <p className="mt-4 text-center text-[13px] underline">Quero de presente</p>
 
           <div className="mt-8 border-t border-black/10 pt-6">
-            <p className="text-[13px] font-semibold">
-              Verificar disponibilidade nas lojas próximas a você
-            </p>
+            <p className="text-[13px] font-semibold">Verificar o valor do frete</p>
             <div className="mt-3 flex">
               <input
+                value={cep}
+                onChange={(e) => setCep(e.target.value)}
                 placeholder="_____-___"
                 className="h-[46px] flex-1 border border-black/25 px-3 text-[13px] outline-none"
               />
               <button
                 type="button"
+                onClick={() => setShippingChecked(true)}
                 className="h-[46px] border border-l-0 border-black/25 px-4 text-[12px] font-semibold tracking-wide"
               >
                 CONSULTAR
               </button>
             </div>
-            <p className="mt-3 text-[13px] underline">Compartilhar minha localização</p>
+            {shippingChecked && (
+              <div className="mt-3 border border-black/10 bg-[#f7f7f7] p-3">
+                <p className="text-[13px]">
+                  Frete: <strong className="text-[#1a7f37]">R$ 0,00</strong>
+                </p>
+                <p className="mt-1 text-[12px] text-black/60">
+                  Limitado a 1 por CPF.
+                </p>
+              </div>
+            )}
           </div>
+
 
           {/* Descrição */}
           <div className="mt-8 border-t border-black/10 pt-5">
