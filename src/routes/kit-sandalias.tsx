@@ -113,6 +113,7 @@ function KitSandaliasSchutzPage() {
   const [error, setError] = useState<string | null>(null);
   const [cep, setCep] = useState("");
   const [shippingChecked, setShippingChecked] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(true);
 
   const navigate = useNavigate();
 
