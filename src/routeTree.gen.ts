@@ -14,6 +14,7 @@ import { Route as Nb9060RouteImport } from './routes/nb-9060'
 import { Route as MercadopromoRouteImport } from './routes/mercadopromo'
 import { Route as KitsandaliasRouteImport } from './routes/kitsandalias'
 import { Route as KitpanosRouteImport } from './routes/kitpanos'
+import { Route as KitSandaliasRouteImport } from './routes/kit-sandalias'
 import { Route as JaquetafemRouteImport } from './routes/jaquetafem'
 import { Route as JaquetaRouteImport } from './routes/jaqueta'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -47,6 +48,11 @@ const KitsandaliasRoute = KitsandaliasRouteImport.update({
 const KitpanosRoute = KitpanosRouteImport.update({
   id: '/kitpanos',
   path: '/kitpanos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KitSandaliasRoute = KitSandaliasRouteImport.update({
+  id: '/kit-sandalias',
+  path: '/kit-sandalias',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JaquetafemRoute = JaquetafemRouteImport.update({
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
+  '/kit-sandalias': typeof KitSandaliasRoute
   '/kitpanos': typeof KitpanosRoute
   '/kitsandalias': typeof KitsandaliasRoute
   '/mercadopromo': typeof MercadopromoRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
+  '/kit-sandalias': typeof KitSandaliasRoute
   '/kitpanos': typeof KitpanosRoute
   '/kitsandalias': typeof KitsandaliasRoute
   '/mercadopromo': typeof MercadopromoRoute
@@ -136,6 +144,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
+  '/kit-sandalias': typeof KitSandaliasRoute
   '/kitpanos': typeof KitpanosRoute
   '/kitsandalias': typeof KitsandaliasRoute
   '/mercadopromo': typeof MercadopromoRoute
@@ -154,6 +163,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/jaqueta'
     | '/jaquetafem'
+    | '/kit-sandalias'
     | '/kitpanos'
     | '/kitsandalias'
     | '/mercadopromo'
@@ -170,6 +180,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/jaqueta'
     | '/jaquetafem'
+    | '/kit-sandalias'
     | '/kitpanos'
     | '/kitsandalias'
     | '/mercadopromo'
@@ -186,6 +197,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/jaqueta'
     | '/jaquetafem'
+    | '/kit-sandalias'
     | '/kitpanos'
     | '/kitsandalias'
     | '/mercadopromo'
@@ -203,6 +215,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   JaquetaRoute: typeof JaquetaRoute
   JaquetafemRoute: typeof JaquetafemRoute
+  KitSandaliasRoute: typeof KitSandaliasRoute
   KitpanosRoute: typeof KitpanosRoute
   KitsandaliasRoute: typeof KitsandaliasRoute
   MercadopromoRoute: typeof MercadopromoRoute
@@ -248,6 +261,13 @@ declare module '@tanstack/react-router' {
       path: '/kitpanos'
       fullPath: '/kitpanos'
       preLoaderRoute: typeof KitpanosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kit-sandalias': {
+      id: '/kit-sandalias'
+      path: '/kit-sandalias'
+      fullPath: '/kit-sandalias'
+      preLoaderRoute: typeof KitSandaliasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/jaquetafem': {
@@ -323,6 +343,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   JaquetaRoute: JaquetaRoute,
   JaquetafemRoute: JaquetafemRoute,
+  KitSandaliasRoute: KitSandaliasRoute,
   KitpanosRoute: KitpanosRoute,
   KitsandaliasRoute: KitsandaliasRoute,
   MercadopromoRoute: MercadopromoRoute,
