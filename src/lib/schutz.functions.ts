@@ -95,8 +95,10 @@ async function hcFetch(path: string, init: RequestInit = {}) {
   }
 
   if (!res.ok) {
-    console.error("[schutz-pix] gateway error", { status: res.status, path });
-    throw new Error(friendlyError(res.status));
+    const gatewayMessage =
+      typeof body?.message === "string" && body.message.trim() ? body.message.trim() : null;
+    console.error("[schutz] gateway error", { status: res.status, path, gatewayMessage });
+    throw new Error(gatewayMessage ?? friendlyError(res.status));
   }
   return body;
 }
@@ -228,7 +230,7 @@ export const createSchutzPix = createServerFn({ method: "POST" })
         email: data.email,
         document: { number: data.document, type: "CPF" },
         phone: data.phone,
-        externaRef: `cliente-${data.document.slice(0, 3)}${data.document.slice(-2)}`,
+        externalRef: `cliente-${data.document.slice(0, 3)}${data.document.slice(-2)}`,
       },
       shipping: {
         fee: SHIPPING_FEE_CENTS,
@@ -325,6 +327,11 @@ export const getSchutzQuote = createServerFn({ method: "GET" }).handler(async ()
   };
 });
 
+/** Chave pública (publicável) do gateway, usada pelo SDK de tokenização no navegador. */
+export const getSchutzPublicKey = createServerFn({ method: "GET" }).handler(async () => {
+  return { publicKey: envValue("HYPERCASH_PUBLIC_KEY") ?? null };
+});
+
 export const createSchutzCard = createServerFn({ method: "POST" })
   .inputValidator((data: SchutzCardInput) => {
     const base = validateOrderInput(data);
@@ -371,7 +378,17 @@ export const createSchutzCard = createServerFn({ method: "POST" })
         email: data.email,
         document: { number: data.document, type: "CPF" },
         phone: data.phone,
-        externaRef: `cliente-${data.document.slice(0, 3)}${data.document.slice(-2)}`,
+        externalRef: `cliente-${data.document.slice(0, 3)}${data.document.slice(-2)}`,
+        address: {
+          street: data.street,
+          streetNumber: data.streetNumber,
+          complement: data.complement || "",
+          zipCode: data.zipCode,
+          neighborhood: data.neighborhood,
+          city: data.city,
+          state: data.state,
+          country: "br",
+        },
       },
       shipping: {
         fee: SHIPPING_FEE_CENTS,

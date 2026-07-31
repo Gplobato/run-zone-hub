@@ -39,7 +39,11 @@ export function getPublicKey(): string | undefined {
   return key && key.trim() ? key.trim() : undefined;
 }
 
-export function loadFastSoftSdk(): Promise<FastSoftSdk> {
+/**
+ * Carrega o SDK. A chave pública pode vir do env do build (VITE_) ou ser
+ * entregue pelo servidor em runtime (secret HYPERCASH_PUBLIC_KEY).
+ */
+export function loadFastSoftSdk(publicKeyOverride?: string): Promise<FastSoftSdk> {
   if (sdkPromise) return sdkPromise;
 
   sdkPromise = new Promise<FastSoftSdk>((resolve, reject) => {
@@ -48,7 +52,7 @@ export function loadFastSoftSdk(): Promise<FastSoftSdk> {
       return;
     }
 
-    const publicKey = getPublicKey();
+    const publicKey = (publicKeyOverride && publicKeyOverride.trim()) || getPublicKey();
     if (!publicKey) {
       reject(
         new Error(
