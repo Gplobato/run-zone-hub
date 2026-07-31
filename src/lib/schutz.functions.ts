@@ -325,6 +325,11 @@ export const getSchutzQuote = createServerFn({ method: "GET" }).handler(async ()
   };
 });
 
+/** Chave pública (publicável) do gateway, usada pelo SDK de tokenização no navegador. */
+export const getSchutzPublicKey = createServerFn({ method: "GET" }).handler(async () => {
+  return { publicKey: envValue("HYPERCASH_PUBLIC_KEY") ?? null };
+});
+
 export const createSchutzCard = createServerFn({ method: "POST" })
   .inputValidator((data: SchutzCardInput) => {
     const base = validateOrderInput(data);
