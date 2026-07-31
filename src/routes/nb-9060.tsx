@@ -155,7 +155,7 @@ function Nb9060Page() {
 
   const [selectedColor, setSelectedColor] = useState<AvailableColor>(COLORS[0]);
   const [selectedSize, setSelectedSize] = useState<(typeof SIZES)[number]>(SIZES[0]);
-  const [activeImage, setActiveImage] = useState(COLORS[0].image);
+  const [activeImage, setActiveImage] = useState<string>(COLORS[0].image);
   const [qty, setQty] = useState(1);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>(1);
