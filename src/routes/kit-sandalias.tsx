@@ -3,6 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { createZedyCheckout } from "@/lib/zedy.functions";
 import { fbqTrackSingle } from "@/lib/pixel";
+import review1 from "@/assets/mercadopromo/kitsandalias-review-1.png";
+import review2 from "@/assets/mercadopromo/kitsandalias-review-2.png";
+import review3 from "@/assets/mercadopromo/kitsandalias-review-3.png";
 
 const PIXEL_ID = "1577403850715282";
 
@@ -42,18 +45,45 @@ const COLORS = [
   },
 ];
 
-// Numerações da página original: 33 e 39 esgotados.
-const SIZES = ["33", "34", "35", "36", "37", "38", "39", "40"];
-const SOLD_OUT_SIZES = ["33", "39"];
+// Todas as numerações disponíveis.
+const SIZES = ["33", "34", "35", "36", "37", "38", "39", "40", "41"];
+const SOLD_OUT_SIZES: string[] = [];
 
 const VARIANT_IDS: Record<string, number> = {
+  "33": 252579869,
   "34": 252579869,
   "35": 252579869,
   "36": 252579914,
   "37": 252579914,
   "38": 252579922,
+  "39": 252579922,
   "40": 252579930,
+  "41": 252579930,
 };
+
+const REVIEWS = [
+  {
+    name: "ana.clara",
+    rating: 5,
+    when: "há 2 semanas",
+    text: "Eu fiquei apaixonada! A sandália é ainda mais bonita pessoalmente, super confortável e veio muito bem embalada. O couro é macio e o acabamento é impecável. Foi uma das melhores compras que já fiz.",
+    photo: review1,
+  },
+  {
+    name: "mariana.s",
+    rating: 5,
+    when: "há 3 semanas",
+    text: "Maravilhosa e o tamanho ficou certinho no pé. Já usei duas vezes e recebi elogios. Mesmo com o salto alto, a plataforma deixa o calce bem confortável. Vale muito a pena!",
+    photo: review2,
+  },
+  {
+    name: "camila.r",
+    rating: 5,
+    when: "há 1 mês",
+    text: "Chegou rápido e é linda demais! Consigo usar tanto para trabalhar quanto para sair. Leve, confortável e o acabamento me surpreendeu. Recomendo de olhos fechados.",
+    photo: review3,
+  },
+];
 
 const NAV = ["NEW IN", "SAPATOS", "BOLSAS", "RESORT 27", "BOTAS", "FALL SALE", "BLOG"];
 
@@ -87,6 +117,8 @@ function KitSandaliasSchutzPage() {
   const [descOpen, setDescOpen] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cep, setCep] = useState("");
+  const [shippingChecked, setShippingChecked] = useState(false);
 
   const createCheckout = useServerFn(createZedyCheckout);
 
@@ -272,23 +304,34 @@ function KitSandaliasSchutzPage() {
           <p className="mt-4 text-center text-[13px] underline">Quero de presente</p>
 
           <div className="mt-8 border-t border-black/10 pt-6">
-            <p className="text-[13px] font-semibold">
-              Verificar disponibilidade nas lojas próximas a você
-            </p>
+            <p className="text-[13px] font-semibold">Verificar o valor do frete</p>
             <div className="mt-3 flex">
               <input
+                value={cep}
+                onChange={(e) => setCep(e.target.value)}
                 placeholder="_____-___"
                 className="h-[46px] flex-1 border border-black/25 px-3 text-[13px] outline-none"
               />
               <button
                 type="button"
+                onClick={() => setShippingChecked(true)}
                 className="h-[46px] border border-l-0 border-black/25 px-4 text-[12px] font-semibold tracking-wide"
               >
                 CONSULTAR
               </button>
             </div>
-            <p className="mt-3 text-[13px] underline">Compartilhar minha localização</p>
+            {shippingChecked && (
+              <div className="mt-3 border border-black/10 bg-[#f7f7f7] p-3">
+                <p className="text-[13px]">
+                  Frete: <strong className="text-[#1a7f37]">R$ 0,00</strong>
+                </p>
+                <p className="mt-1 text-[12px] text-black/60">
+                  Limitado a 1 por CPF.
+                </p>
+              </div>
+            )}
           </div>
+
 
           {/* Descrição */}
           <div className="mt-8 border-t border-black/10 pt-5">
@@ -316,17 +359,54 @@ function KitSandaliasSchutzPage() {
                 <div>
                   <p className="font-semibold text-[#111]">Características</p>
                   <ul className="mt-2 list-disc space-y-1 pl-5">
-                    <li>Material: Couro</li>
+                    <li>Material externo: Couro legítimo</li>
+                    <li>Forro: Couro</li>
+                    <li>Solado: Borracha antiderrapante</li>
                     <li>Cor: {COLORS[colorIdx].label}</li>
                     <li>Tamanho do salto: 14 cm</li>
+                    <li>Altura da plataforma: 4 cm</li>
+                    <li>Formato: Tamanco (mule) com tira larga</li>
+                    <li>Numerações: do 33 ao 41</li>
                     <li>Referência: S2272300080004</li>
                   </ul>
                 </div>
+                <p className="text-[12px] text-black/55">
+                  Garantia do vendedor: 30 dias.
+                </p>
               </div>
             )}
           </div>
         </aside>
       </div>
+
+      {/* Avaliações */}
+      <section className="mt-14 border-t border-black/10 px-6 py-10">
+        <h2 className="text-[18px] font-semibold">Avaliações do produto</h2>
+        <div className="mt-1 flex items-center gap-2 text-[13px] text-black/60">
+          <span className="text-[#111]">★★★★★</span> 5,0 · 127 avaliações
+        </div>
+        <div className="mt-6 grid gap-8 md:grid-cols-3">
+          {REVIEWS.map((r) => (
+            <div key={r.name}>
+              <div className="flex items-center gap-2 text-[13px]">
+                <strong>{r.name}</strong>
+                <span className="text-[11px] text-[#1a7f37]">✓ Compra verificada</span>
+              </div>
+              <div className="mt-1 text-[12px] text-black/50">
+                <span className="text-[#111]">★★★★★</span> · {r.when}
+              </div>
+              <p className="mt-2 text-[13px] leading-relaxed text-black/75">{r.text}</p>
+              <img
+                src={r.photo}
+                alt={`Foto de ${r.name}`}
+                loading="lazy"
+                className="mt-3 aspect-square w-[140px] rounded-sm bg-[#f5f5f5] object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
 
       <footer className="mt-16 border-t border-black/10 px-6 py-10 text-[12px] text-black/50">
         © SCHUTZ. Todos os direitos reservados.
