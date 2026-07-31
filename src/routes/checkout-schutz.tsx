@@ -24,8 +24,8 @@ const PIX_PRICE_CENTS = 9990;
 const CARD_PRICE_CENTS = 11753;
 const MAX_INSTALLMENTS = 12;
 const SHIPPING_FROM_CENTS = 3490;
-const PRODUCT_IMAGE =
-  "https://secure-static.schutz.com.br/medias/sys_master/schutz/schutz/hfb/h63/h00/h00/13436215230494/Midres-Headless-S2272300080004-01.jpg";
+const PRODUCT_IMAGE = "/__l5e/assets-v1/8b9de10e-5a06-4194-91a1-b2108c24bbad/kit-sandalia-1.jpg";
+
 const SIZES = ["34", "35", "36", "37", "38", "39", "40", "41"];
 
 const brl = (cents: number) =>
