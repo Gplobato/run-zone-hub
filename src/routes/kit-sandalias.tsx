@@ -12,7 +12,8 @@ const PIXEL_ID = "1577403850715282";
 
 const PRODUCT_ID = "mercadopromo-kit-sandalias";
 const PRODUCT_NAME = "Sandália Meia Pata Couro Preta";
-const PRICE = 890;
+const PRICE = 99.9;
+const CARD_PRICE = 117.53;
 const DESCRIPTION =
   "Sandália Meia Pata Riviera em couro preto, formato tamanco (mule) com tira larga sobre o peito do pé, salto agulha de 14 cm e plataforma meia pata.";
 const OG_IMAGE = `https://run-zone-hub.lovable.app${gallery1.url}`;
