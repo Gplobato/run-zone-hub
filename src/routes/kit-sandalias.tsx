@@ -115,6 +115,7 @@ function KitSandaliasSchutzPage() {
   );
 
   useEffect(() => {
+    fbqTrackPageViewOnce(PIXEL_ID);
     fbqTrackSingle(PIXEL_ID, "ViewContent", baseParams);
   }, [baseParams]);
 
@@ -140,9 +141,10 @@ function KitSandaliasSchutzPage() {
     setLoading(true);
     navigate({
       to: "/checkout-schutz",
-      search: { tam: size!, color: COLORS[colorIdx].label },
+      search: { tam: size!, color: KIT_COLOR },
     });
   }
+
 
   return (
     <div className="min-h-screen bg-white font-sans text-[#111]">
