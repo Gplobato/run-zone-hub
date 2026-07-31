@@ -359,17 +359,54 @@ function KitSandaliasSchutzPage() {
                 <div>
                   <p className="font-semibold text-[#111]">Características</p>
                   <ul className="mt-2 list-disc space-y-1 pl-5">
-                    <li>Material: Couro</li>
+                    <li>Material externo: Couro legítimo</li>
+                    <li>Forro: Couro</li>
+                    <li>Solado: Borracha antiderrapante</li>
                     <li>Cor: {COLORS[colorIdx].label}</li>
                     <li>Tamanho do salto: 14 cm</li>
+                    <li>Altura da plataforma: 4 cm</li>
+                    <li>Formato: Tamanco (mule) com tira larga</li>
+                    <li>Numerações: do 33 ao 41</li>
                     <li>Referência: S2272300080004</li>
                   </ul>
                 </div>
+                <p className="text-[12px] text-black/55">
+                  Garantia do vendedor: 30 dias.
+                </p>
               </div>
             )}
           </div>
         </aside>
       </div>
+
+      {/* Avaliações */}
+      <section className="mt-14 border-t border-black/10 px-6 py-10">
+        <h2 className="text-[18px] font-semibold">Avaliações do produto</h2>
+        <div className="mt-1 flex items-center gap-2 text-[13px] text-black/60">
+          <span className="text-[#111]">★★★★★</span> 5,0 · 127 avaliações
+        </div>
+        <div className="mt-6 grid gap-8 md:grid-cols-3">
+          {REVIEWS.map((r) => (
+            <div key={r.name}>
+              <div className="flex items-center gap-2 text-[13px]">
+                <strong>{r.name}</strong>
+                <span className="text-[11px] text-[#1a7f37]">✓ Compra verificada</span>
+              </div>
+              <div className="mt-1 text-[12px] text-black/50">
+                <span className="text-[#111]">★★★★★</span> · {r.when}
+              </div>
+              <p className="mt-2 text-[13px] leading-relaxed text-black/75">{r.text}</p>
+              <img
+                src={r.photo}
+                alt={`Foto de ${r.name}`}
+                loading="lazy"
+                className="mt-3 aspect-square w-[140px] rounded-sm bg-[#f5f5f5] object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
 
       <footer className="mt-16 border-t border-black/10 px-6 py-10 text-[12px] text-black/50">
         © SCHUTZ. Todos os direitos reservados.
