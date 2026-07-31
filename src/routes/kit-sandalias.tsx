@@ -154,7 +154,7 @@ function KitSandaliasSchutzPage() {
     setLoading(true);
     navigate({
       to: "/checkout-schutz",
-      search: { size: size!, color: COLORS[colorIdx].label },
+      search: { tam: size!, color: COLORS[colorIdx].label },
     });
   }
 
