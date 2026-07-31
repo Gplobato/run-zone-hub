@@ -129,6 +129,7 @@ function SchutzCheckout() {
   const createPix = useServerFn(createSchutzPix);
   const createCard = useServerFn(createSchutzCard);
   const getStatus = useServerFn(getSchutzOrderStatus);
+  const fetchPublicKey = useServerFn(getSchutzPublicKey);
 
   const [method, setMethod] = useState<"pix" | "card">("pix");
   const [size, setSize] = useState<string>(
