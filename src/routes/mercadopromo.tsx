@@ -91,6 +91,9 @@ import kitPanosReview1 from "@/assets/mercadopromo/kitpanos-review-1.webp";
 import kitSandaliasReview1 from "@/assets/mercadopromo/kitsandalias-review-1.png";
 import kitSandaliasReview2 from "@/assets/mercadopromo/kitsandalias-review-2.png";
 import kitSandaliasReview3 from "@/assets/mercadopromo/kitsandalias-review-3.png";
+import roboAspirador1 from "@/assets/mercadopromo/robo-aspirador-1.jpg";
+import roboAspirador2 from "@/assets/mercadopromo/robo-aspirador-2.jpg";
+import roboAspirador3 from "@/assets/mercadopromo/robo-aspirador-3.jpg";
 
 const pagarMeLogoUrl = "/logo.webp";
 
@@ -713,12 +716,17 @@ const BOBOJACO_PRODUCT: Product = {
 };
 
 const KIT_SANDALIAS_PIXEL_ID = "1577403850715282";
+const ROBOASPIRADOR_PIXEL_ID = "2202849697230187";
 
 function trackProductEvent(
   product: Product,
   event: string,
   params?: Record<string, unknown>,
 ) {
+  if (product.id === "mercadopromo-robo-aspirador") {
+    fbqTrackSingle(ROBOASPIRADOR_PIXEL_ID, event, params);
+    return;
+  }
   if (product.id === "mercadopromo-kit-sandalias") {
     fbqTrackSingle(KIT_SANDALIAS_PIXEL_ID, event, params);
     return;
@@ -888,6 +896,103 @@ const KIT_SANDALIAS_PRODUCT: Product = {
   },
 };
 
+const ROBOASPIRADOR_PRODUCT: Product = {
+  id: "mercadopromo-robo-aspirador",
+  title: "Robô Aspirador de Pó Inteligente Wi-Fi Varre, Aspira e Passa Pano Mop Automático",
+  brand: "ROBOCLEAN",
+  seller: "Skhati Wear",
+  sold: "+3 mil vendidos",
+  rating: 5.0,
+  reviewsCount: 428,
+  price: 15990,
+  compareAt: 69990,
+  installments: { count: 6, valueCents: 2665 },
+  categoryTrail: ["Eletrodomésticos", "Pequenos Eletrodomésticos", "Robôs Aspiradores"],
+  colors: [
+    {
+      key: "preto",
+      label: "Preto Titanium",
+      thumb: roboAspirador1,
+      gallery: [
+        { src: roboAspirador1, kind: "image" },
+        { src: roboAspirador2, kind: "image" },
+        { src: roboAspirador3, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["Bivolt (110V/220V)"],
+  description: {
+    heading: "Robô Aspirador de Pó Inteligente Wi-Fi 3 em 1 — Varre, Aspira e Passa Pano",
+    intro: [
+      "Cansado de perder horas do seu dia varrendo e passando pano pela casa? Conheça a revolução na limpeza doméstica inteligente.",
+      "O Robô Aspirador de Pó Inteligente combina alta potência de sucção de 3000Pa, navegação inteligente com sensores anti-queda e anti-colisão, e sistema 3 em 1 (varre, aspira e passa pano mop simultaneamente).",
+      "Conecte ao seu smartphone via Wi-Fi ou controle pelo controle remoto. Limpa facilmente pisos frios, amadeirados, carpetes e tapetes, alcançando os cantos mais difíceis sob móveis e sofás.",
+      "Com bateria de longa duração e retorno automático para a base de carregamento, você tem a casa sempre impecável sem mover um dedo.",
+    ],
+    steps: [
+      "Ligue o Robô Aspirador e conecte ao aplicativo Wi-Fi no celular ou use o botão inteligente de toque rápido.",
+      "Selecione o modo de limpeza desejado (automático, cantos, espiral ou mop com água).",
+      "Relaxe e aproveite seu tempo livre enquanto o robô limpa toda a casa e retorna sozinho para recarregar.",
+    ],
+    benefits: [
+      {
+        title: "Sistema 3 em 1 Completo",
+        result: "Varre, aspira e passa pano com reservatório de água inteligente",
+        feeling: "Casa limpa e cheirosa todos os dias sem nenhum esforço.",
+      },
+      {
+        title: "Potência de Sucção 3000Pa",
+        result: "Remove poeira, pelos de pets, migalhas e sujeiras profundas de tapetes",
+        feeling: "Livre-se dos pelos de animais espalhados pela casa.",
+      },
+      {
+        title: "Sensores Anti-Queda e Anti-Colisão",
+        result: "Desvia de móveis, degraus e escadas com extrema precisão",
+        feeling: "Tranquilidade total para deixar o robô limpando sozinho.",
+      },
+      {
+        title: "Design Ultra Slim 7.5cm",
+        result: "Entra facilmente debaixo de camas, sofás e armários baixos",
+        feeling: "Chega nos lugares onde a vassoura tradicional nunca alcança.",
+      },
+      {
+        title: "Controle por Aplicativo Wi-Fi",
+        result: "Agende horários de limpeza e controle tudo pelo celular mesmo longe de casa",
+        feeling: "Chegar em casa do trabalho e encontrar tudo limpinho.",
+      },
+      {
+        title: "Bateria de Longa Duração & Carga Auto",
+        result: "Até 120 minutos de autonomia contínua e retorno automático à base",
+        feeling: "Autonomia suficiente para limpar apartamentos e casas grandes.",
+      },
+    ],
+    quotes: [
+      "“Melhor compra do ano! Aspira todos os pelos dos meus dois cachorros e passa pano super bem. Valeu cada centavo.” — cliente verificado",
+      "“Silencioso e muito eficiente. Entra debaixo da minha cama e do sofá sem travar. O aplicativo é fácil de usar.” — cliente verificado",
+      "“Surpreendeu pela potência pelo preço promocional de R$ 159,90. Chegou super rápido e bem embalado. Recomendo!” — cliente verificado",
+    ],
+    specs: [
+      "Funções: 3 em 1 (Varre, Aspira e Passa Pano Mop)",
+      "Potência de sucção: 3000 Pa (motor brushless de alta performance)",
+      "Navegação: Sensores infravermelhos anti-colisão e anti-queda",
+      "Conectividade: Wi-Fi 2.4GHz + Aplicativo Smartphone (Android/iOS) + Controle Remoto",
+      "Capacidade do reservatório de pó: 600ml (filtro HEPA lavável anti-alérgico)",
+      "Capacidade do reservatório de água: 300ml (controle inteligente de fluxo)",
+      "Bateria: Lítio 2600 mAh (autonomia de até 120 min de uso contínuo)",
+      "Voltagem: Bivolt Automático (110V - 220V)",
+      "Nível de ruído: Ultra silencioso (< 58 dB)",
+      "Altura do produto: 7.5 cm (ultra slim para alcançar sob móveis)",
+      "Itens inclusos: 1 Robô Aspirador, 1 Base de Carregamento, 1 Controle Remoto, 2 Escovas Laterais Reserva, 1 Pano Mop Microfibra, 1 Filtro HEPA, 1 Manual de Instruções",
+    ],
+    tip: "Para melhor resultado no modo Mop (passar pano), umedeça levemente o pano de microfibra antes de fixar na base e adicione algumas gotas do seu limpador perfumado favorito no reservatório de água.",
+    closing: [
+      "Compra 100% protegida pelo Mercado Livre com garantia de satisfação e devolução grátis em até 30 dias.",
+      "Aproveite o preço promocional exclusivo de lançamento de R$ 699,90 por apenas R$ 159,90 com frete grátis para todo o Brasil!",
+    ],
+    warranty: "30 dias de garantia com devolução grátis pelo Mercado Livre",
+  },
+};
+
 const PRODUCT_SLUGS: Record<string, number> = {
   jaquetafem: 0,
   bota: 1,
@@ -898,11 +1003,13 @@ const PRODUCT_SLUGS: Record<string, number> = {
   bobojaco: 6,
   kitpanos: 7,
   kitsandalias: 8,
+  roboaspirador: 9,
+  "robo-aspirador": 9,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT];
 
 const FEMALE_JACKET_VARIANT_IDS: Record<string, Record<string, number>> = {
   marrom: {
@@ -1177,6 +1284,33 @@ const KIT_SANDALIAS_REVIEWS: Review[] = [
   },
 ];
 
+const ROBOASPIRADOR_REVIEWS: Review[] = [
+  {
+    name: "fernando.mota",
+    verified: true,
+    rating: 5,
+    text: "Excelente robô aspirador! Tenho 2 gatos em casa e ele limpa todos os pelos do chão e do tapete com facilidade. O aplicativo conectou de primeira no Wi-Fi. Muito silencioso e bateria dura bastante. Recomendo demais!",
+    when: "há 2 semanas",
+    photo: roboAspirador1,
+  },
+  {
+    name: "patricia.albuquerque",
+    verified: true,
+    rating: 5,
+    text: "Superou minhas expectativas! Ele varre, aspira e passa pano de verdade. O reservatório de água umedece o pano na medida certa sem encharcar o piso amadeirado. Design slim passa por baixo dos móveis. Nota 10!",
+    when: "há 3 semanas",
+    photo: roboAspirador2,
+  },
+  {
+    name: "ricardo.silva",
+    verified: true,
+    rating: 5,
+    text: "Chegou muito rápido no Mercado Livre, muito bem embalado. A base de carregamento funciona perfeitamente, quando a bateria tá acabando ele volta sozinho pra carregar. Pelo valor promocional de R$ 159,90 é disparado o melhor custo-benefício.",
+    when: "há 1 mês",
+    photo: roboAspirador3,
+  },
+];
+
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
   [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
@@ -1187,6 +1321,7 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [BOBOJACO_PRODUCT.id]: BOBOJACO_REVIEWS,
   [KIT_PANOS_PRODUCT.id]: KIT_PANOS_REVIEWS,
   [KIT_SANDALIAS_PRODUCT.id]: KIT_SANDALIAS_REVIEWS,
+  [ROBOASPIRADOR_PRODUCT.id]: ROBOASPIRADOR_REVIEWS,
 };
 
 function formatBRL(cents: number) {
@@ -1442,6 +1577,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const EXTERNAL_MAIN_PIXEL_CHECKOUTS: Record<string, string> = {
     "mercadopromo-jaqueta-termica-masc":
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767842421&store=33937",
+    "mercadopromo-robo-aspirador":
+      "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393759721155&store=33937",
   };
   const externalMainPixelCheckoutUrl = EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
 
