@@ -718,12 +718,17 @@ const BOBOJACO_PRODUCT: Product = {
 
 const KIT_SANDALIAS_PIXEL_ID = "1577403850715282";
 const ROBOASPIRADOR_PIXEL_ID = "2202849697230187";
+const JAQUETAFEM_PIXEL_ID = "1108161594900025";
 
 function trackProductEvent(
   product: Product,
   event: string,
   params?: Record<string, unknown>,
 ) {
+  if (product.id === "mercadopromo-jaqueta-courino") {
+    fbqTrackSingle(JAQUETAFEM_PIXEL_ID, event, params);
+    return;
+  }
   if (product.id === "mercadopromo-robo-aspirador") {
     fbqTrackSingle(ROBOASPIRADOR_PIXEL_ID, event, params);
     return;
@@ -1423,7 +1428,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const requiresSize = SIZES.length > 0;
   const isMercadoLivreTheme =
     PRODUCT.id === "mercadopromo-kit-sandalias" ||
-    PRODUCT.id === "mercadopromo-robo-aspirador";
+    PRODUCT.id === "mercadopromo-robo-aspirador" ||
+    PRODUCT.id === "mercadopromo-jaqueta-courino";
   const promoTheme = {
     "--promo-accent": isMercadoLivreTheme ? "#3483fa" : "#79C142",
     "--promo-accent-hover": isMercadoLivreTheme ? "#2968c8" : "#6bb136",
