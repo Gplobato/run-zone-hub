@@ -91,7 +91,7 @@ import kitPanosReview1 from "@/assets/mercadopromo/kitpanos-review-1.webp";
 import kitSandaliasReview1 from "@/assets/mercadopromo/kitsandalias-review-1.png";
 import kitSandaliasReview2 from "@/assets/mercadopromo/kitsandalias-review-2.png";
 import kitSandaliasReview3 from "@/assets/mercadopromo/kitsandalias-review-3.png";
-import roboAspiradorMain from "@/assets/mercadopromo/robo-aspirador-main.webp";
+import roboAspiradorRb from "@/assets/mercadopromo/robo-aspirador-rb.webp";
 import roboAspirador1 from "@/assets/mercadopromo/robo-aspirador-1.jpg";
 import roboAspirador2 from "@/assets/mercadopromo/robo-aspirador-2.jpg";
 import roboAspirador3 from "@/assets/mercadopromo/robo-aspirador-3.jpg";
@@ -913,9 +913,9 @@ const ROBOASPIRADOR_PRODUCT: Product = {
     {
       key: "preto",
       label: "Preto Titanium",
-      thumb: roboAspiradorMain,
+      thumb: roboAspiradorRb,
       gallery: [
-        { src: roboAspiradorMain, kind: "image" },
+        { src: roboAspiradorRb, kind: "image" },
         { src: roboAspirador1, kind: "image" },
         { src: roboAspirador2, kind: "image" },
         { src: roboAspirador3, kind: "image" },
