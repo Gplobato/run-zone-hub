@@ -91,6 +91,7 @@ import kitPanosReview1 from "@/assets/mercadopromo/kitpanos-review-1.webp";
 import kitSandaliasReview1 from "@/assets/mercadopromo/kitsandalias-review-1.png";
 import kitSandaliasReview2 from "@/assets/mercadopromo/kitsandalias-review-2.png";
 import kitSandaliasReview3 from "@/assets/mercadopromo/kitsandalias-review-3.png";
+import roboAspiradorMain from "@/assets/mercadopromo/robo-aspirador-main.webp";
 import roboAspirador1 from "@/assets/mercadopromo/robo-aspirador-1.jpg";
 import roboAspirador2 from "@/assets/mercadopromo/robo-aspirador-2.jpg";
 import roboAspirador3 from "@/assets/mercadopromo/robo-aspirador-3.jpg";
@@ -912,8 +913,9 @@ const ROBOASPIRADOR_PRODUCT: Product = {
     {
       key: "preto",
       label: "Preto Titanium",
-      thumb: roboAspirador1,
+      thumb: roboAspiradorMain,
       gallery: [
+        { src: roboAspiradorMain, kind: "image" },
         { src: roboAspirador1, kind: "image" },
         { src: roboAspirador2, kind: "image" },
         { src: roboAspirador3, kind: "image" },
@@ -1291,7 +1293,6 @@ const ROBOASPIRADOR_REVIEWS: Review[] = [
     rating: 5,
     text: "Excelente robô aspirador! Tenho 2 gatos em casa e ele limpa todos os pelos do chão e do tapete com facilidade. O aplicativo conectou de primeira no Wi-Fi. Muito silencioso e bateria dura bastante. Recomendo demais!",
     when: "há 2 semanas",
-    photo: roboAspirador1,
   },
   {
     name: "patricia.albuquerque",
@@ -1299,7 +1300,6 @@ const ROBOASPIRADOR_REVIEWS: Review[] = [
     rating: 5,
     text: "Superou minhas expectativas! Ele varre, aspira e passa pano de verdade. O reservatório de água umedece o pano na medida certa sem encharcar o piso amadeirado. Design slim passa por baixo dos móveis. Nota 10!",
     when: "há 3 semanas",
-    photo: roboAspirador2,
   },
   {
     name: "ricardo.silva",
@@ -1307,7 +1307,6 @@ const ROBOASPIRADOR_REVIEWS: Review[] = [
     rating: 5,
     text: "Chegou muito rápido no Mercado Livre, muito bem embalado. A base de carregamento funciona perfeitamente, quando a bateria tá acabando ele volta sozinho pra carregar. Pelo valor promocional de R$ 159,90 é disparado o melhor custo-benefício.",
     when: "há 1 mês",
-    photo: roboAspirador3,
   },
 ];
 
@@ -1422,7 +1421,9 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const COLORS = PRODUCT.colors;
   const SIZES = PRODUCT.sizes;
   const requiresSize = SIZES.length > 0;
-  const isMercadoLivreTheme = PRODUCT.id === "mercadopromo-kit-sandalias";
+  const isMercadoLivreTheme =
+    PRODUCT.id === "mercadopromo-kit-sandalias" ||
+    PRODUCT.id === "mercadopromo-robo-aspirador";
   const promoTheme = {
     "--promo-accent": isMercadoLivreTheme ? "#3483fa" : "#79C142",
     "--promo-accent-hover": isMercadoLivreTheme ? "#2968c8" : "#6bb136",

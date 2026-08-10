@@ -6,7 +6,7 @@ const PRODUCT_TITLE = "Robô Aspirador de Pó Inteligente Wi-Fi Varre, Aspira e 
 const DESCRIPTION =
   "Robô Aspirador de Pó Inteligente Wi-Fi Varre, Aspira e Passa Pano com Sensor Anti-Queda e Mop Automático. Compra segura, frete grátis e devolução em até 30 dias.";
 const OG_IMAGE =
-  "/src/assets/mercadopromo/robo-aspirador-1.jpg";
+  "/src/assets/mercadopromo/robo-aspirador-main.webp";
 
 export const Route = createFileRoute("/roboaspirador")({
   head: () => ({
