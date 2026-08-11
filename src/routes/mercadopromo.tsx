@@ -95,6 +95,8 @@ import roboAspiradorRb from "@/assets/mercadopromo/robo-aspirador-rb.webp";
 import roboAspirador1 from "@/assets/mercadopromo/robo-aspirador-1.jpg";
 import roboAspirador2 from "@/assets/mercadopromo/robo-aspirador-2.jpg";
 import roboAspirador3 from "@/assets/mercadopromo/robo-aspirador-3.jpg";
+import bodyModelador1 from "@/assets/mercadopromo/bodymodelador-1.png";
+import bodyModelador2 from "@/assets/mercadopromo/bodymodelador-2.png";
 
 const pagarMeLogoUrl = "/logo.webp";
 
@@ -725,7 +727,7 @@ function trackProductEvent(
   event: string,
   params?: Record<string, unknown>,
 ) {
-  if (product.id === "mercadopromo-jaqueta-courino") {
+  if (product.id === "mercadopromo-jaqueta-courino" || product.id === "mercadopromo-body-modelador") {
     fbqTrackSingle(JAQUETAFEM_PIXEL_ID, event, params);
     return;
   }
@@ -1005,6 +1007,75 @@ const ROBOASPIRADOR_PRODUCT: Product = {
   },
 };
 
+const BODYMODELADOR_PRODUCT: Product = {
+  id: "mercadopromo-body-modelador",
+  title: "Body Modelador Feminino Alta Compressão — Pague 1 e Leve 2",
+  brand: "SKATHI",
+  seller: "Skhati Wear",
+  sold: "+3 mil vendidos",
+  rating: 5.0,
+  reviewsCount: 184,
+  price: 5990,
+  compareAt: 14990,
+  installments: { count: 6, valueCents: 998 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Roupas Femininas", "Lingerie e Moda Íntima", "Modeladores"],
+  colors: [
+    {
+      key: "kit-preto-branco",
+      label: "Kit 2x (Preto e Branco)",
+      thumb: bodyModelador1,
+      gallery: [
+        { src: bodyModelador1, kind: "image" },
+        { src: bodyModelador2, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["P", "M", "G", "GG", "XG"],
+  description: {
+    heading: "Body Modelador Feminino Alta Compressão — Pague 1 e Leve 2",
+    intro: [
+      "Realce suas curvas e deixe a silhueta mais definida com o Body Modelador Feminino. Desenvolvido com tecido de alta compressão, ele ajuda a modelar a cintura, alinhar o abdômen e valorizar o corpo, mantendo conforto para usar durante o dia.",
+      "🔥 OFERTA ESPECIAL: PAGUE 1 E LEVE 2 BODYS! Você recebe 2 unidades pelo preço de 1.",
+    ],
+    steps: [
+      "Escolha o seu tamanho de acordo com a tabela de numerações (P ao XG).",
+      "Receba em casa 2 unidades do Body Modelador de Alta Compressão (Preto e Branco).",
+      "Vista por baixo de vestidos, calças, saias ou jeans e sinta o efeito modelador imediato.",
+    ],
+    benefits: [
+      { title: "Efeito modelador imediato", result: "Ajuda a deixar a cintura mais marcada e desenhada.", feeling: "Valoriza a silhueta em qualquer look." },
+      { title: "Compressão de abdômen", result: "Auxilia na compressão suave e alinhamento do abdômen.", feeling: "Sustentação firme e confortável." },
+      { title: "Tecido confortável e flexível", result: "Valoriza as curvas naturais do corpo sem machucar.", feeling: "Discreto e suave no contato com a pele." },
+      { title: "Não marca sob a roupa", result: "Ideal para usar por baixo de vestidos, calças e saias.", feeling: "Acabamento invisível na rotina." },
+      { title: "Alças largas e fecho inferior", result: "Alças reforçadas para sustentação + fechamento inferior prático.", feeling: "Praticidade e conforto em todos os momentos." },
+    ],
+    quotes: [
+      "“Efeito modelador incrível! Modela a cintura perfeitamente e não marca sob o vestido.” — cliente verificada",
+      "“Promoção maravilhosa, vem 2 bodys de altíssima qualidade. O M ficou certinho!” — cliente verificada",
+      "“Muito confortável para usar o dia todo no trabalho. Recomendo!” — cliente verificada",
+    ],
+    specs: [
+      "Oferta Especial: PAGUE 1 E LEVE 2 (Você recebe 2 unidades)",
+      "Cores inclusas no kit: Preto e Branco",
+      "Tamanho P: veste numeração 36 – 38",
+      "Tamanho M: veste numeração 40 – 42",
+      "Tamanho G: veste numeração 44 – 46",
+      "Tamanho GG: veste numeração 48 – 50",
+      "Tamanho XG: veste numeração 52 – 54",
+      "Material: Tecido de alta compressão flexível e respirável",
+      "Fechamento: Fecho inferior prático + alças largas de alta sustentação",
+      "Conteúdo da embalagem: 2x Body Modelador Feminino (Preto e Branco)",
+    ],
+    tip: "Importante: a tabela acima é uma referência aproximada. Por se tratar de uma peça modeladora com compressão, o caimento pode variar conforme as medidas e o formato do corpo. Se preferir menos compressão, considere pedir um tamanho maior.",
+    closing: [
+      "Compre com a confiança do Mercado Livre: compra 100% protegida e devolução grátis em até 30 dias.",
+      "Garanta seu kit PAGUE 1 E LEVE 2 por apenas R$ 59,90 enquanto durar o estoque promocional!",
+    ],
+    warranty: "30 dias de garantia com devolução grátis pelo Mercado Livre",
+  },
+};
+
+
 const PRODUCT_SLUGS: Record<string, number> = {
   jaquetafem: 0,
   bota: 1,
@@ -1018,11 +1089,14 @@ const PRODUCT_SLUGS: Record<string, number> = {
   roboaspirador: 9,
   "robo-aspirador": 9,
   aspirador: 9,
+  bodymodelador: 10,
+  "body-modelador": 10,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT, BODYMODELADOR_PRODUCT];
+
 
 const FEMALE_JACKET_VARIANT_IDS: Record<string, Record<string, number>> = {
   marrom: {
@@ -1321,6 +1395,30 @@ const ROBOASPIRADOR_REVIEWS: Review[] = [
   },
 ];
 
+const BODYMODELADOR_REVIEWS: Review[] = [
+  {
+    name: "camila.siqueira",
+    verified: true,
+    rating: 5,
+    text: "Comprei o tamanho M e serviu perfeitamente! Modela muito bem a cintura e disfarça o abdômen sem apertar demais. O tecido é macio e os fechos inferiores facilitam demais no dia a dia. Chegou super rápido!",
+    when: "há 1 semana",
+  },
+  {
+    name: "renata.almeida",
+    verified: true,
+    rating: 5,
+    text: "Incrível a promoção de levar 2 unidades! Veio o preto e o branco, ambos de altíssima qualidade. Uso por baixo de vestidos de festa e fica impecável, não marca nada. Recomendo de olhos fechados.",
+    when: "há 2 semanas",
+  },
+  {
+    name: "patricia.oliveira",
+    verified: true,
+    rating: 5,
+    text: "Chegou super bem embalado no Mercado Livre. O Pague 1 Leve 2 vale muito a pena por R$ 59,90. As alças largas sustentam super bem os ombros. Ótima compra!",
+    when: "há 3 semanas",
+  },
+];
+
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
   [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
@@ -1332,7 +1430,9 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [KIT_PANOS_PRODUCT.id]: KIT_PANOS_REVIEWS,
   [KIT_SANDALIAS_PRODUCT.id]: KIT_SANDALIAS_REVIEWS,
   [ROBOASPIRADOR_PRODUCT.id]: ROBOASPIRADOR_REVIEWS,
+  [BODYMODELADOR_PRODUCT.id]: BODYMODELADOR_REVIEWS,
 };
+
 
 function formatBRL(cents: number) {
   return `R$ ${(cents / 100).toFixed(2).replace(".", ",")}`;
@@ -1435,7 +1535,9 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const isMercadoLivreTheme =
     PRODUCT.id === "mercadopromo-kit-sandalias" ||
     PRODUCT.id === "mercadopromo-robo-aspirador" ||
-    PRODUCT.id === "mercadopromo-jaqueta-courino";
+    PRODUCT.id === "mercadopromo-jaqueta-courino" ||
+    PRODUCT.id === "mercadopromo-body-modelador";
+
   const promoTheme = {
     "--promo-accent": isMercadoLivreTheme ? "#3483fa" : "#79C142",
     "--promo-accent-hover": isMercadoLivreTheme ? "#2968c8" : "#6bb136",
@@ -1587,13 +1689,26 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   }
 
   // Product-specific external checkouts. Female jacket and Bobojaco use Zedy variants.
+  const BODYMODELADOR_SIZE_CHECKOUTS: Record<string, string> = {
+    P: "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393726345959&store=33937",
+    M: "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393735548255&store=33937",
+    G: "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393768988791&store=33937",
+    GG: "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393756117366&store=33937",
+    XG: "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393758231487&store=33937",
+    EXG: "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393758231487&store=33937",
+  };
+
   const EXTERNAL_MAIN_PIXEL_CHECKOUTS: Record<string, string> = {
     "mercadopromo-jaqueta-termica-masc":
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767842421&store=33937",
     "mercadopromo-robo-aspirador":
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393759721155&store=33937",
   };
-  const externalMainPixelCheckoutUrl = EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
+  const externalMainPixelCheckoutUrl =
+    PRODUCT.id === "mercadopromo-body-modelador" && size
+      ? BODYMODELADOR_SIZE_CHECKOUTS[size]
+      : EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
+
 
   function goToExternalMainPixelCheckout() {
     if (checkoutLoading) return;
