@@ -95,8 +95,12 @@ import roboAspiradorRb from "@/assets/mercadopromo/robo-aspirador-rb.webp";
 import roboAspirador1 from "@/assets/mercadopromo/robo-aspirador-1.jpg";
 import roboAspirador2 from "@/assets/mercadopromo/robo-aspirador-2.jpg";
 import roboAspirador3 from "@/assets/mercadopromo/robo-aspirador-3.jpg";
-import bodyModelador1 from "@/assets/mercadopromo/bodymodelador-1.png";
-import bodyModelador2 from "@/assets/mercadopromo/bodymodelador-2.png";
+import bodyModeladorPose1 from "@/assets/mercadopromo/bodymodelador-pose1.png";
+import bodyModeladorPose2 from "@/assets/mercadopromo/bodymodelador-pose2.png";
+import bodyModeladorPose3 from "@/assets/mercadopromo/bodymodelador-pose3.png";
+import bodyModeladorPose4 from "@/assets/mercadopromo/bodymodelador-pose4.png";
+import bodyModeladorPose5 from "@/assets/mercadopromo/bodymodelador-pose5.png";
+import bodyModeladorPose6 from "@/assets/mercadopromo/bodymodelador-pose6.png";
 import bodyModelador3 from "@/assets/mercadopromo/bodymodelador-3.jpg";
 import bodyModelador4 from "@/assets/mercadopromo/bodymodelador-4.jpg";
 import bodyModeladorRev1 from "@/assets/mercadopromo/bodymodelador-review-1.png";
@@ -1027,10 +1031,14 @@ const BODYMODELADOR_PRODUCT: Product = {
     {
       key: "kit-preto-branco",
       label: "Kit 2x (Preto e Branco)",
-      thumb: bodyModelador1,
+      thumb: bodyModeladorPose1,
       gallery: [
-        { src: bodyModelador1, kind: "image" },
-        { src: bodyModelador2, kind: "image" },
+        { src: bodyModeladorPose1, kind: "image" },
+        { src: bodyModeladorPose2, kind: "image" },
+        { src: bodyModeladorPose3, kind: "image" },
+        { src: bodyModeladorPose4, kind: "image" },
+        { src: bodyModeladorPose5, kind: "image" },
+        { src: bodyModeladorPose6, kind: "image" },
         { src: bodyModelador3, kind: "image" },
         { src: bodyModelador4, kind: "image" },
       ],
@@ -1896,7 +1904,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                   <img
                     src={activeImg}
                     alt={PRODUCT.title}
-                    className="mx-auto aspect-[3/4] w-full max-w-[520px] object-cover"
+                    className="mx-auto aspect-[3/4] w-full max-w-[520px] object-contain bg-[#f8f8f8] p-1"
                   />
                 )}
                 <button className="absolute right-3 top-3 rounded-full bg-white/90 p-2 shadow hover:bg-white">
