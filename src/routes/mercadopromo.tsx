@@ -730,7 +730,12 @@ function trackProductEvent(
     return;
   }
   if (product.id === "mercadopromo-robo-aspirador") {
-    fbqTrackSingle(ROBOASPIRADOR_PIXEL_ID, event, params);
+    const isAspirador = typeof window !== 'undefined' && window.location.pathname.startsWith('/aspirador');
+    if (isAspirador) {
+      fbqTrackSingle("1601719418324869", event, params);
+    } else {
+      fbqTrackSingle(ROBOASPIRADOR_PIXEL_ID, event, params);
+    }
     return;
   }
   if (product.id === "mercadopromo-kit-sandalias") {
@@ -1012,6 +1017,7 @@ const PRODUCT_SLUGS: Record<string, number> = {
   kitsandalias: 8,
   roboaspirador: 9,
   "robo-aspirador": 9,
+  aspirador: 9,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
