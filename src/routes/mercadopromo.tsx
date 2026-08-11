@@ -97,6 +97,10 @@ import roboAspirador2 from "@/assets/mercadopromo/robo-aspirador-2.jpg";
 import roboAspirador3 from "@/assets/mercadopromo/robo-aspirador-3.jpg";
 import bodyModelador1 from "@/assets/mercadopromo/bodymodelador-1.png";
 import bodyModelador2 from "@/assets/mercadopromo/bodymodelador-2.png";
+import bodyModelador3 from "@/assets/mercadopromo/bodymodelador-3.jpg";
+import bodyModelador4 from "@/assets/mercadopromo/bodymodelador-4.jpg";
+import bodyModeladorRev1 from "@/assets/mercadopromo/bodymodelador-review-1.png";
+import bodyModeladorRev2 from "@/assets/mercadopromo/bodymodelador-review-2.png";
 
 const pagarMeLogoUrl = "/logo.webp";
 
@@ -1027,6 +1031,8 @@ const BODYMODELADOR_PRODUCT: Product = {
       gallery: [
         { src: bodyModelador1, kind: "image" },
         { src: bodyModelador2, kind: "image" },
+        { src: bodyModelador3, kind: "image" },
+        { src: bodyModelador4, kind: "image" },
       ],
     },
   ],
@@ -1397,27 +1403,30 @@ const ROBOASPIRADOR_REVIEWS: Review[] = [
 
 const BODYMODELADOR_REVIEWS: Review[] = [
   {
-    name: "camila.siqueira",
+    name: "vanessa.mendonca",
     verified: true,
     rating: 5,
-    text: "Comprei o tamanho M e serviu perfeitamente! Modela muito bem a cintura e disfarça o abdômen sem apertar demais. O tecido é macio e os fechos inferiores facilitam demais no dia a dia. Chegou super rápido!",
+    text: "GENTE!! Olhem a diferença no espelho!! 😱😍 Eu fiquei em CHOQUE quando vesti! Modela a cintura na HORA, alinha o abdômen e não marca NADA por baixo da roupa. Vem 2 bodys perfeitos na promoção! Melhor compra da minha vida, autoestima lá no topo!! 🔥❤️",
     when: "há 1 semana",
+    photo: bodyModeladorRev1,
   },
   {
-    name: "renata.almeida",
+    name: "jessica.alves",
     verified: true,
     rating: 5,
-    text: "Incrível a promoção de levar 2 unidades! Veio o preto e o branco, ambos de altíssima qualidade. Uso por baixo de vestidos de festa e fica impecável, não marca nada. Recomendo de olhos fechados.",
+    text: "Passando pra mostrar esse resultado inacreditável! Mantenho o sorriso no rosto porque o caimento é impecável! Dá uma super sustentada no busto e deixa a cintura desenhadinha. Chegou super rápido no Mercado Livre e a qualidade é surreal pelo preço do Pague 1 Leve 2!! 🥰✨",
     when: "há 2 semanas",
+    photo: bodyModeladorRev2,
   },
   {
-    name: "patricia.oliveira",
+    name: "carolina.dias",
     verified: true,
     rating: 5,
-    text: "Chegou super bem embalado no Mercado Livre. O Pague 1 Leve 2 vale muito a pena por R$ 59,90. As alças largas sustentam super bem os ombros. Ótima compra!",
+    text: "Estou simplesmente APAIXONADA! Tecido super macio e confortável para usar o dia todo no trabalho, sem dobrar e sem enrolar. A promoção de levar 2 unidades pelo valor de 1 é imbatível! Podem comprar sem medo!! 👏🏼💖",
     when: "há 3 semanas",
   },
 ];
+
 
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
