@@ -113,6 +113,9 @@ import widelegClara1 from "@/assets/mercadopromo/wideleg-clara-1.png";
 import widelegClara2 from "@/assets/mercadopromo/wideleg-clara-2.png";
 import widelegEscura1 from "@/assets/mercadopromo/wideleg-escura-1.jpg";
 import widelegEscura2 from "@/assets/mercadopromo/wideleg-escura-2.jpg";
+import widelegReview1 from "@/assets/mercadopromo/wideleg-review-1.png";
+import widelegReview2 from "@/assets/mercadopromo/wideleg-review-2.png";
+import widelegReview3 from "@/assets/mercadopromo/wideleg-review-3.png";
 
 const pagarMeLogoUrl = "/logo.webp";
 
@@ -752,6 +755,7 @@ function trackProductEvent(
     return;
   }
   if (product.id === "mercadopromo-jeans-wide-leg") {
+    fbqTrackSingle("1856457431991636", event, params);
     return;
   }
   if (product.id === "mercadopromo-robo-aspirador") {
@@ -1629,6 +1633,7 @@ const WIDELEG_REVIEWS: Review[] = [
     rating: 5,
     text: "Calça maravilhosa! O caimento Wide Leg fica lindo demais no corpo e o jeans é de excelente qualidade. Comprei o 38 e ficou certinho na cintura.",
     when: "há 1 semana",
+    photo: widelegReview1,
   },
   {
     name: "bianca.mendes",
@@ -1636,6 +1641,7 @@ const WIDELEG_REVIEWS: Review[] = [
     rating: 5,
     text: "Visto 36 e ficou perfeita. A lavagem clara é exatamente como na foto, tecido grosso que não fica transparente. Recomendo muito!",
     when: "há 2 semanas",
+    photo: widelegReview2,
   },
   {
     name: "amanda.ferreira",
@@ -1643,13 +1649,7 @@ const WIDELEG_REVIEWS: Review[] = [
     rating: 5,
     text: "Entrega super rápida e o acabamento das costuras me surpreendeu positivamente. Comprei a escura e já quero pedir a clara agora!",
     when: "há 3 semanas",
-  },
-  {
-    name: "gabriela.lima",
-    verified: true,
-    rating: 5,
-    text: "Adorei a modelagem cintura alta, valorizou muito meu corpo. Dá pra usar tanto com tênis no dia a dia quanto com salto pra sair à noite.",
-    when: "há 1 mês",
+    photo: widelegReview3,
   },
 ];
 

@@ -25,6 +25,7 @@ const nb9060PixelId = "1040492725582996";
 const roboaspiradorPixelId = "2202849697230187";
 const aspiradorPixelId = "1601719418324869";
 const kitjeansPixelId = "2044710949498678";
+const widelegPixelId = "1856457431991636";
 
 function NotFoundComponent() {
   return (
@@ -123,7 +124,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
         <script
           dangerouslySetInnerHTML={{
-            __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');var path=window.location.pathname;var p=path.indexOf('/jeanswideleg')===0?'none':path.indexOf('/kitjeans')===0?'${kitjeansPixelId}':path.indexOf('/bodymodelador')===0?'${jaquetaFemPixelId}':path.indexOf('/aspirador')===0?'${aspiradorPixelId}':path.indexOf('/roboaspirador')===0?'${roboaspiradorPixelId}':path.indexOf('/nb-9060')===0?'${nb9060PixelId}':path.indexOf('/checkout-schutz')===0||path.indexOf('/kitsandalias')===0||path.indexOf('/kit-sandalias')===0?'${kitSandaliasPixelId}':path.indexOf('/kitpanos')===0?'${kitPanosPixelId}':path.indexOf('/jaquetafem')===0?'${jaquetaFemPixelId}':path.indexOf('/bobojaco')===0?'${bobojacoPixelId}':'${mainPixelId}';window.__pazeInitializedPixels=window.__pazeInitializedPixels||{};window.__pazePageViewPixels=window.__pazePageViewPixels||{};if(p!=='none'&&!window.__pazeInitializedPixels[p]){fbq('init',p);window.__pazeInitializedPixels[p]=true}if(p!=='none'&&!window.__pazePageViewPixels[p]){fbq('trackSingle',p,'PageView');window.__pazePageViewPixels[p]=true}`,
+            __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');var path=window.location.pathname;var p=path.indexOf('/jeanswideleg')===0?'${widelegPixelId}':path.indexOf('/kitjeans')===0?'${kitjeansPixelId}':path.indexOf('/bodymodelador')===0?'${jaquetaFemPixelId}':path.indexOf('/aspirador')===0?'${aspiradorPixelId}':path.indexOf('/roboaspirador')===0?'${roboaspiradorPixelId}':path.indexOf('/nb-9060')===0?'${nb9060PixelId}':path.indexOf('/checkout-schutz')===0||path.indexOf('/kitsandalias')===0||path.indexOf('/kit-sandalias')===0?'${kitSandaliasPixelId}':path.indexOf('/kitpanos')===0?'${kitPanosPixelId}':path.indexOf('/jaquetafem')===0?'${jaquetaFemPixelId}':path.indexOf('/bobojaco')===0?'${bobojacoPixelId}':'${mainPixelId}';window.__pazeInitializedPixels=window.__pazeInitializedPixels||{};window.__pazePageViewPixels=window.__pazePageViewPixels||{};if(p!=='none'&&!window.__pazeInitializedPixels[p]){fbq('init',p);window.__pazeInitializedPixels[p]=true}if(p!=='none'&&!window.__pazePageViewPixels[p]){fbq('trackSingle',p,'PageView');window.__pazePageViewPixels[p]=true}`,
           }}
         />
         <script
