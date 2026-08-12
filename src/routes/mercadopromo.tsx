@@ -1179,9 +1179,9 @@ const JEANS_WIDELEG_PRODUCT: Product = {
   sold: "+1.5 mil vendidos",
   rating: 4.9,
   reviewsCount: 142,
-  price: 7990,
-  compareAt: 16990,
-  installments: { count: 6, valueCents: 1332 },
+  price: 6990,
+  compareAt: 14990,
+  installments: { count: 6, valueCents: 1165 },
   categoryTrail: ["Calçados, Roupas e Bolsas", "Roupas Femininas", "Calças", "Jeans"],
   colors: [
     {
@@ -2305,14 +2305,14 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
               FRETE GRÁTIS ACIMA DE R$ 19
             </div>
             <p className="text-[14px]">
-              <span className="text-[#00a650]">Chegará grátis amanhã</span> por ser sua primeira compra
+              <span className="text-[#00a650]">Chegará grátis amanhã</span>
             </p>
             <a href="#" className="mt-1 inline-block text-[13px] text-[var(--promo-accent)] hover:underline">
               Mais detalhes e formas de entrega
             </a>
 
             <p className="mt-4 text-[14px]">
-              <span className="text-[#00a650]">Retire grátis</span> a partir de segunda-feira em uma agência Mercado Livre
+              <span className="text-[#00a650]">Retire grátis</span> a partir de amanhã em uma agência Mercado Livre
             </p>
             <a href="#" className="text-[13px] text-[var(--promo-accent)] hover:underline">
               Ver no mapa
