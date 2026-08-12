@@ -105,6 +105,10 @@ import bodyModelador3 from "@/assets/mercadopromo/bodymodelador-3.jpg";
 import bodyModelador4 from "@/assets/mercadopromo/bodymodelador-4.jpg";
 import bodyModeladorRev1 from "@/assets/mercadopromo/bodymodelador-review-1.png";
 import bodyModeladorRev2 from "@/assets/mercadopromo/bodymodelador-review-2.png";
+import kitjeans1 from "@/assets/mercadopromo/kitjeans-1.png";
+import kitjeans2 from "@/assets/mercadopromo/kitjeans-2.jpg";
+import kitjeans3 from "@/assets/mercadopromo/kitjeans-3.jpg";
+import kitjeansReview1 from "@/assets/mercadopromo/kitjeans-review-1.jpg";
 
 const pagarMeLogoUrl = "/logo.webp";
 
@@ -739,6 +743,10 @@ function trackProductEvent(
     fbqTrackSingle(JAQUETAFEM_PIXEL_ID, event, params);
     return;
   }
+  if (product.id === "mercadopromo-kit-jeans") {
+    fbqTrackSingle("1601719418324869", event, params);
+    return;
+  }
   if (product.id === "mercadopromo-robo-aspirador") {
     const isAspirador = typeof window !== 'undefined' && window.location.pathname.startsWith('/aspirador');
     if (isAspirador) {
@@ -1089,6 +1097,69 @@ const BODYMODELADOR_PRODUCT: Product = {
   },
 };
 
+const KITJEANS_PRODUCT: Product = {
+  id: "mercadopromo-kit-jeans",
+  title: "Kit 2 Calças Jeans Masculinas — Azul + Jeans Escura",
+  brand: "SKATHI",
+  seller: "Skhati Wear",
+  sold: "+2 mil vendidos",
+  rating: 4.9,
+  reviewsCount: 153,
+  price: 7990,
+  compareAt: 19990,
+  installments: { count: 6, valueCents: 1332 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Roupas", "Calças"],
+  colors: [
+    {
+      key: "kit-azul-escura",
+      label: "Kit (Azul + Escura)",
+      thumb: kitjeans1,
+      gallery: [
+        { src: kitjeans1, kind: "image" },
+        { src: kitjeans2, kind: "image" },
+        { src: kitjeans3, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["38", "39", "40", "41", "42", "43", "44", "45", "46", "48"],
+  description: {
+    heading: "Kit 2 Calças Jeans Masculinas — Azul + Jeans Escura",
+    intro: [
+      "Renove seus looks com praticidade e economia. O Kit Calça Jeans Masculina acompanha 2 peças, sendo 1 jeans azul tradicional + 1 jeans azul escura, ideais para usar no trabalho, no dia a dia, em passeios ou ocasiões casuais.",
+      "Com modelagem masculina confortável e visual versátil, são peças fáceis de combinar com camisetas, polos, camisas, tênis ou sapatos.",
+    ],
+    steps: [
+      "Escolha o seu tamanho de acordo com a numeração que costuma usar.",
+      "Receba em casa um kit contendo 2 calças jeans de lavagens diferentes.",
+      "Aproveite a versatilidade e o conforto de peças premium para usar no trabalho, passeios ou no dia a dia.",
+    ],
+    benefits: [
+      { title: "Modelagem confortável", result: "Corte tradicional que veste super bem", feeling: "Conforto para usar o dia todo." },
+      { title: "Jeans resistente", result: "Material de alta durabilidade para a rotina", feeling: "Roupas que duram muito mais tempo." },
+      { title: "Duas cores essenciais", result: "Azul tradicional e Jeans escuro no mesmo kit", feeling: "Mais versatilidade para variar seus looks." },
+    ],
+    quotes: [
+      "“Ótima qualidade, visto 42 e serviu perfeitamente. Comprarei novamente com certeza.”",
+      "“Vale muito a pena pelo preço, o jeans é macio e as cores são exatamente como na foto.”",
+      "“Chegaram rápido e vieram as duas cores. Caimento super bom, recomendo!”",
+    ],
+    specs: [
+      "O que vem no kit: 1 Calça Jeans Azul e 1 Calça Jeans Escura (Total de 2 calças)",
+      "Modelagem: Masculina confortável e tradicional",
+      "Material: Jeans resistente para o dia a dia",
+      "Bolsos: Frontais e traseiros",
+      "Fechamento: Botão e zíper",
+      "Detalhes: Costuras reforçadas",
+    ],
+    tip: "A numeração é padrão, peça o tamanho que você já usa normalmente ou use o guia de medidas para comparar com uma peça que já sirva bem.",
+    closing: [
+      "Oferta: KIT COM 2 CALÇAS POR R$ 79,90.",
+      "Você leva duas opções de jeans para variar o visual pagando um único valor.",
+    ],
+    warranty: "30 dias"
+  }
+};
+
 
 const PRODUCT_SLUGS: Record<string, number> = {
   jaquetafem: 0,
@@ -1105,11 +1176,12 @@ const PRODUCT_SLUGS: Record<string, number> = {
   aspirador: 9,
   bodymodelador: 10,
   "body-modelador": 10,
+  kitjeans: 11,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT, BODYMODELADOR_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT, BODYMODELADOR_PRODUCT, KITJEANS_PRODUCT];
 
 
 const FEMALE_JACKET_VARIANT_IDS: Record<string, Record<string, number>> = {
@@ -1436,6 +1508,39 @@ const BODYMODELADOR_REVIEWS: Review[] = [
 ];
 
 
+const KITJEANS_REVIEWS: Review[] = [
+  {
+    name: "rodrigo.alves",
+    verified: true,
+    rating: 5,
+    text: "O kit é sensacional! Chegou rápido, vestiu super bem e o jeans tem uma qualidade excelente pelo preço promocional. Já estou indicando para amigos.",
+    when: "há 1 semana",
+    photo: kitjeansReview1,
+  },
+  {
+    name: "carlos.m",
+    verified: true,
+    rating: 5,
+    text: "Ótima qualidade, visto 42 e serviu perfeitamente. Comprarei novamente com certeza. Muito bom ter duas cores coringas no armário.",
+    when: "há 2 semanas",
+  },
+  {
+    name: "marcelo.s",
+    verified: true,
+    rating: 5,
+    text: "Vale muito a pena pelo preço, o jeans é macio e as cores são exatamente como na foto. Costura super bem feita, e os bolsos têm bom tamanho.",
+    when: "há 3 semanas",
+  },
+  {
+    name: "felipe.o",
+    verified: true,
+    rating: 5,
+    text: "Chegaram rápido e vieram as duas cores corretas. O caimento é super bom, clássico. Pelo valor pago pelas duas calças, foi a minha melhor compra do mês. Recomendo demais!",
+    when: "há 1 mês",
+  },
+];
+
+
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
   [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
@@ -1448,6 +1553,7 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [KIT_SANDALIAS_PRODUCT.id]: KIT_SANDALIAS_REVIEWS,
   [ROBOASPIRADOR_PRODUCT.id]: ROBOASPIRADOR_REVIEWS,
   [BODYMODELADOR_PRODUCT.id]: BODYMODELADOR_REVIEWS,
+  [KITJEANS_PRODUCT.id]: KITJEANS_REVIEWS,
 };
 
 
@@ -1715,6 +1821,19 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     EXG: "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393758231487&store=33937",
   };
 
+  const KITJEANS_SIZE_CHECKOUTS: Record<string, string> = {
+    "38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393777758131&store=33937",
+    "39": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393714274397&store=33937",
+    "40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393742467931&store=33937",
+    "41": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393758493839&store=33937",
+    "42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393722341746&store=33937",
+    "43": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393718887195&store=33937",
+    "44": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393725931575&store=33937",
+    "45": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393773537199&store=33937",
+    "46": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393724432255&store=33937",
+    "48": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393781566131&store=33937",
+  };
+
   const EXTERNAL_MAIN_PIXEL_CHECKOUTS: Record<string, string> = {
     "mercadopromo-jaqueta-termica-masc":
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767842421&store=33937",
@@ -1724,6 +1843,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const externalMainPixelCheckoutUrl =
     PRODUCT.id === "mercadopromo-body-modelador" && size
       ? BODYMODELADOR_SIZE_CHECKOUTS[size]
+      : PRODUCT.id === "mercadopromo-kit-jeans" && size
+      ? KITJEANS_SIZE_CHECKOUTS[size]
       : EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
 
 
