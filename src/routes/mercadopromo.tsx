@@ -744,7 +744,7 @@ function trackProductEvent(
     return;
   }
   if (product.id === "mercadopromo-kit-jeans") {
-    fbqTrackSingle("1601719418324869", event, params);
+    fbqTrackSingle("2044710949498678", event, params);
     return;
   }
   if (product.id === "mercadopromo-robo-aspirador") {

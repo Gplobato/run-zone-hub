@@ -24,7 +24,7 @@ const kitSandaliasUtmifyPixelId = "6a6c18c4670d0745911fe5ab";
 const nb9060PixelId = "1040492725582996";
 const roboaspiradorPixelId = "2202849697230187";
 const aspiradorPixelId = "1601719418324869";
-const kitjeansPixelId = "1601719418324869";
+const kitjeansPixelId = "2044710949498678";
 
 function NotFoundComponent() {
   return (
