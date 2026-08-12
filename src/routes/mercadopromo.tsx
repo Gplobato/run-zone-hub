@@ -1205,22 +1205,24 @@ const JEANS_WIDELEG_PRODUCT: Product = {
   ],
   sizes: ["34", "36", "38", "40", "42", "44"],
   description: {
-    heading: "CALÇA JEANS WIDE LEG FEMININA – CINTURA ALTA",
+    heading: "CALÇA JEANS WIDE LEG FEMININA – CINTURA ALTA PREMIUM",
     intro: [
-      "Renove seus looks com uma das modelagens mais versáteis e atuais do guarda-roupa feminino.",
-      "A Calça Jeans Wide Leg Feminina possui cintura alta e pernas amplas, proporcionando um visual moderno, estiloso e confortável para diferentes ocasiões. É uma peça fácil de combinar e que funciona tanto em produções casuais quanto em looks mais arrumados.",
-      "Disponível em lavagem clara e lavagem escura, conforme as opções do anúncio.",
+      "Renove seus looks com uma das modelagens mais versáteis, modernas e desejadas do guarda-roupa feminino.",
+      "A Calça Jeans Wide Leg Feminina combina a elegância da cintura alta com o caimento fluido das pernas amplas, criando um efeito visual de silhueta alongada e cintura bem definida.",
+      "Confeccionada em jeans 100% algodão de estrutura firme e toque macio, é a peça chave que une máximo conforto ao estilo urbano. Funciona perfeitamente tanto em produções descontraídas com tênis e cropped quanto em composições sofisticadas com salto alto e blazer.",
+      "Disponível nas lavagens mais amadas e atemporais: Lavagem Clara e Lavagem Escura.",
     ],
     steps: [
-      "Escolha a lavagem desejada (Lavagem Clara ou Lavagem Escura).",
-      "Escolha o seu tamanho entre as opções do 34 ao 44.",
-      "Receba em casa a peça perfeita para compor looks incríveis com cropped, body, camisetas e muito mais.",
+      "Escolha a sua lavagem favorita (Lavagem Clara ou Lavagem Escura).",
+      "Selecione o seu tamanho habitual do 34 ao 44.",
+      "Aproveite o frete grátis e receba em casa com garantia total de satisfação!",
     ],
     benefits: [
-      { title: "Modelagem Wide Leg", result: "Pernas amplas e caimento moderno", feeling: "Estilo e conforto em qualquer produção." },
-      { title: "Cintura Alta", result: "Valoriza a silhueta", feeling: "Ajuste perfeito que desenha o corpo." },
-      { title: "Bolsos funcionais", result: "Bolsos frontais e traseiros", feeling: "Praticidade para o dia a dia." },
-      { title: "Cores essenciais", result: "Opções de Lavagem Clara e Escura", feeling: "Fácil de combinar com todo o seu guarda-roupa." },
+      { title: "Modelagem Wide Leg Fluida", result: "Pernas amplas com caimento reto e moderno", feeling: "Liberdade de movimento e estilo marcante em qualquer produção." },
+      { title: "Cintura Alta Modeladora", result: "Ajuste anatômico que valoriza as curvas", feeling: "Desenha a cintura e alonga visualmente a silhueta." },
+      { title: "Jeans 100% Algodão Premium", result: "Tecido encorpado, pré-encolhido e altamente durável", feeling: "Não desbota e não perde a forma original mesmo após várias lavagens." },
+      { title: "Bolsos Funcionais Frontais e Traseiros", result: "Bolsos fundos e utilitários de verdade", feeling: "Praticidade diária para carregar celular e pequenos pertences." },
+      { title: "Cores Especiais Day-to-Night", result: "Opções de Lavagem Clara e Lavagem Escura", feeling: "Peça coringa ultra fácil de combinar em qualquer estação do ano." },
     ],
     quotes: [
       "“Calça maravilhosa! O caimento Wide Leg fica lindo demais no corpo e o jeans é de excelente qualidade.”",
@@ -1228,18 +1230,20 @@ const JEANS_WIDELEG_PRODUCT: Product = {
       "“Entrega super rápida e o acabamento das costuras me surpreendeu positivamente. Comprei a escura e já quero a clara!”",
     ],
     specs: [
-      "Produto: 01 Calça Jeans Wide Leg Feminina",
-      "Modelagem: Wide Leg (Cintura alta e pernas amplas)",
-      "Fechamento: Botão e zíper frontal com passantes para cinto",
-      "Bolsos: Frontais e traseiros",
-      "Lavagens disponíveis: Clara e Escura",
-      "Cuidados: Lavar preferencialmente do lado avesso, separar peças claras e escuras",
+      "Produto: 01 Calça Jeans Wide Leg Feminina Cintura Alta",
+      "Modelagem: Wide Leg (Corte reto amplo da cintura até a barra)",
+      "Cós: Cintura alta com passantes para cinto",
+      "Fechamento: Zíper metálico de alta resistência + Botão frontal reforçado",
+      "Bolsos: 2 bolsos frontais funcionais + 2 bolsos traseiros aplicados",
+      "Composição: 100% Algodão Premium de alta gramatura",
+      "Lavagens disponíveis: Lavagem Clara e Lavagem Escura",
+      "Cuidados na lavagem: Lavar do lado avesso para preservar o tom, secar à sombra",
     ],
-    tip: "Confira a tabela de medidas abaixo. Uma boa dica é comparar as medidas da tabela com uma calça que já veste bem em você.",
+    tip: "Devolução grátis em até 30 dias: Se por qualquer motivo você se arrepender da compra ou o tamanho não servir perfeitamente, você pode realizar a devolução sem nenhum custo adicional.",
     closing: [
-      "Escolha sua cor e tamanho e garanta a sua com frete grátis!",
+      "Garanta já a sua Calça Jeans Wide Leg com Preço Promocional e Frete Grátis!",
     ],
-    warranty: "30 dias de garantia com devolução grátis",
+    warranty: "30 dias de garantia com devolução grátis por arrependimento",
   },
 };
 
@@ -2274,7 +2278,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                     </button>
                   ))}
                 </div>
-                {PRODUCT.id !== "mercadopromo-kit-sandalias" && (
+                {PRODUCT.id !== "mercadopromo-kit-sandalias" && PRODUCT.id !== "mercadopromo-jeans-wide-leg" && (
                   <>
                     <button
                       type="button"
@@ -2669,8 +2673,8 @@ function ProductDescription({
           </ul>
         </div>
 
-        <p className="rounded-md bg-[#fff8e1] px-4 py-3 text-[14px] text-[#7a5a00]">
-          <b>Dica:</b> {d.tip}
+        <p className="rounded-md bg-[#e6f7ed] border border-[#b2e5c5] px-4 py-3 text-[14px] text-[#006633]">
+          <b>Devolução sem custo:</b> {d.tip}
         </p>
 
         <p className="pt-2 text-[13px] text-[#666]">
