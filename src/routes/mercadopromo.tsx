@@ -109,6 +109,10 @@ import kitjeans1 from "@/assets/mercadopromo/kitjeans-1.png";
 import kitjeans2 from "@/assets/mercadopromo/kitjeans-2.jpg";
 import kitjeans3 from "@/assets/mercadopromo/kitjeans-3.jpg";
 import kitjeansReview1 from "@/assets/mercadopromo/kitjeans-review-1.jpg";
+import widelegClara1 from "@/assets/mercadopromo/wideleg-clara-1.png";
+import widelegClara2 from "@/assets/mercadopromo/wideleg-clara-2.png";
+import widelegEscura1 from "@/assets/mercadopromo/wideleg-escura-1.jpg";
+import widelegEscura2 from "@/assets/mercadopromo/wideleg-escura-2.jpg";
 
 const pagarMeLogoUrl = "/logo.webp";
 
@@ -747,6 +751,9 @@ function trackProductEvent(
     fbqTrackSingle("2044710949498678", event, params);
     return;
   }
+  if (product.id === "mercadopromo-jeans-wide-leg") {
+    return;
+  }
   if (product.id === "mercadopromo-robo-aspirador") {
     const isAspirador = typeof window !== 'undefined' && window.location.pathname.startsWith('/aspirador');
     if (isAspirador) {
@@ -1160,6 +1167,78 @@ const KITJEANS_PRODUCT: Product = {
   }
 };
 
+const JEANS_WIDELEG_PRODUCT: Product = {
+  id: "mercadopromo-jeans-wide-leg",
+  title: "Calça Jeans Wide Leg Feminina – Cintura Alta",
+  brand: "SKATHI",
+  seller: "Skhati Wear",
+  sold: "+1.5 mil vendidos",
+  rating: 4.9,
+  reviewsCount: 142,
+  price: 7990,
+  compareAt: 16990,
+  installments: { count: 6, valueCents: 1332 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Roupas Femininas", "Calças", "Jeans"],
+  colors: [
+    {
+      key: "clara",
+      label: "Lavagem Clara",
+      thumb: widelegClara1,
+      gallery: [
+        { src: widelegClara1, kind: "image" },
+        { src: widelegClara2, kind: "image" },
+      ],
+    },
+    {
+      key: "escura",
+      label: "Lavagem Escura",
+      thumb: widelegEscura1,
+      gallery: [
+        { src: widelegEscura1, kind: "image" },
+        { src: widelegEscura2, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["34", "36", "38", "40", "42", "44"],
+  description: {
+    heading: "CALÇA JEANS WIDE LEG FEMININA – CINTURA ALTA",
+    intro: [
+      "Renove seus looks com uma das modelagens mais versáteis e atuais do guarda-roupa feminino.",
+      "A Calça Jeans Wide Leg Feminina possui cintura alta e pernas amplas, proporcionando um visual moderno, estiloso e confortável para diferentes ocasiões. É uma peça fácil de combinar e que funciona tanto em produções casuais quanto em looks mais arrumados.",
+      "Disponível em lavagem clara e lavagem escura, conforme as opções do anúncio.",
+    ],
+    steps: [
+      "Escolha a lavagem desejada (Lavagem Clara ou Lavagem Escura).",
+      "Escolha o seu tamanho entre as opções do 34 ao 44.",
+      "Receba em casa a peça perfeita para compor looks incríveis com cropped, body, camisetas e muito mais.",
+    ],
+    benefits: [
+      { title: "Modelagem Wide Leg", result: "Pernas amplas e caimento moderno", feeling: "Estilo e conforto em qualquer produção." },
+      { title: "Cintura Alta", result: "Valoriza a silhueta", feeling: "Ajuste perfeito que desenha o corpo." },
+      { title: "Bolsos funcionais", result: "Bolsos frontais e traseiros", feeling: "Praticidade para o dia a dia." },
+      { title: "Cores essenciais", result: "Opções de Lavagem Clara e Escura", feeling: "Fácil de combinar com todo o seu guarda-roupa." },
+    ],
+    quotes: [
+      "“Calça maravilhosa! O caimento Wide Leg fica lindo demais no corpo e o jeans é de excelente qualidade.”",
+      "“Visto 38 e ficou perfeita. A lavagem clara é exatamente como na foto, recomendo muito.”",
+      "“Entrega super rápida e o acabamento das costuras me surpreendeu positivamente. Comprei a escura e já quero a clara!”",
+    ],
+    specs: [
+      "Produto: 01 Calça Jeans Wide Leg Feminina",
+      "Modelagem: Wide Leg (Cintura alta e pernas amplas)",
+      "Fechamento: Botão e zíper frontal com passantes para cinto",
+      "Bolsos: Frontais e traseiros",
+      "Lavagens disponíveis: Clara e Escura",
+      "Cuidados: Lavar preferencialmente do lado avesso, separar peças claras e escuras",
+    ],
+    tip: "Confira a tabela de medidas abaixo. Uma boa dica é comparar as medidas da tabela com uma calça que já veste bem em você.",
+    closing: [
+      "Escolha sua cor e tamanho e garanta a sua com frete grátis!",
+    ],
+    warranty: "30 dias de garantia com devolução grátis",
+  },
+};
+
 
 const PRODUCT_SLUGS: Record<string, number> = {
   jaquetafem: 0,
@@ -1177,11 +1256,13 @@ const PRODUCT_SLUGS: Record<string, number> = {
   bodymodelador: 10,
   "body-modelador": 10,
   kitjeans: 11,
+  jeanswideleg: 12,
+  "jeans-wide-leg": 12,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT, BODYMODELADOR_PRODUCT, KITJEANS_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT, BODYMODELADOR_PRODUCT, KITJEANS_PRODUCT, JEANS_WIDELEG_PRODUCT];
 
 
 const FEMALE_JACKET_VARIANT_IDS: Record<string, Record<string, number>> = {
@@ -1541,6 +1622,38 @@ const KITJEANS_REVIEWS: Review[] = [
 ];
 
 
+const WIDELEG_REVIEWS: Review[] = [
+  {
+    name: "camila.souza",
+    verified: true,
+    rating: 5,
+    text: "Calça maravilhosa! O caimento Wide Leg fica lindo demais no corpo e o jeans é de excelente qualidade. Comprei o 38 e ficou certinho na cintura.",
+    when: "há 1 semana",
+  },
+  {
+    name: "bianca.mendes",
+    verified: true,
+    rating: 5,
+    text: "Visto 36 e ficou perfeita. A lavagem clara é exatamente como na foto, tecido grosso que não fica transparente. Recomendo muito!",
+    when: "há 2 semanas",
+  },
+  {
+    name: "amanda.ferreira",
+    verified: true,
+    rating: 5,
+    text: "Entrega super rápida e o acabamento das costuras me surpreendeu positivamente. Comprei a escura e já quero pedir a clara agora!",
+    when: "há 3 semanas",
+  },
+  {
+    name: "gabriela.lima",
+    verified: true,
+    rating: 5,
+    text: "Adorei a modelagem cintura alta, valorizou muito meu corpo. Dá pra usar tanto com tênis no dia a dia quanto com salto pra sair à noite.",
+    when: "há 1 mês",
+  },
+];
+
+
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
   [BOOT_PRODUCT.id]: JAQUETA_REVIEWS,
@@ -1554,6 +1667,7 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [ROBOASPIRADOR_PRODUCT.id]: ROBOASPIRADOR_REVIEWS,
   [BODYMODELADOR_PRODUCT.id]: BODYMODELADOR_REVIEWS,
   [KITJEANS_PRODUCT.id]: KITJEANS_REVIEWS,
+  [JEANS_WIDELEG_PRODUCT.id]: WIDELEG_REVIEWS,
 };
 
 
@@ -1660,7 +1774,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     PRODUCT.id === "mercadopromo-robo-aspirador" ||
     PRODUCT.id === "mercadopromo-jaqueta-courino" ||
     PRODUCT.id === "mercadopromo-body-modelador" ||
-    PRODUCT.id === "mercadopromo-kit-jeans";
+    PRODUCT.id === "mercadopromo-kit-jeans" ||
+    PRODUCT.id === "mercadopromo-jeans-wide-leg";
 
   const promoTheme = {
     "--promo-accent": isMercadoLivreTheme ? "#3483fa" : "#79C142",
@@ -1835,6 +1950,25 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     "48": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393781566131&store=33937",
   };
 
+  const WIDELEG_CHECKOUTS: Record<string, Record<string, string>> = {
+    clara: {
+      "34": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393744313237&store=33937",
+      "36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393786589566&store=33937",
+      "38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393729962713&store=33937",
+      "40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393722914253&store=33937",
+      "42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393796726951&store=33937",
+      "44": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393782123834&store=33937",
+    },
+    escura: {
+      "34": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393714942977&store=33937",
+      "36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393721125499&store=33937",
+      "38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393751785291&store=33937",
+      "40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393756994839&store=33937",
+      "42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393737512142&store=33937",
+      "44": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393797475661&store=33937",
+    },
+  };
+
   const EXTERNAL_MAIN_PIXEL_CHECKOUTS: Record<string, string> = {
     "mercadopromo-jaqueta-termica-masc":
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767842421&store=33937",
@@ -1846,6 +1980,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       ? BODYMODELADOR_SIZE_CHECKOUTS[size]
       : PRODUCT.id === "mercadopromo-kit-jeans" && size
       ? KITJEANS_SIZE_CHECKOUTS[size]
+      : PRODUCT.id === "mercadopromo-jeans-wide-leg" && size && colorKey
+      ? WIDELEG_CHECKOUTS[colorKey]?.[size]
       : EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
 
 
