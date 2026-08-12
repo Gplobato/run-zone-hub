@@ -1659,7 +1659,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     PRODUCT.id === "mercadopromo-kit-sandalias" ||
     PRODUCT.id === "mercadopromo-robo-aspirador" ||
     PRODUCT.id === "mercadopromo-jaqueta-courino" ||
-    PRODUCT.id === "mercadopromo-body-modelador";
+    PRODUCT.id === "mercadopromo-body-modelador" ||
+    PRODUCT.id === "mercadopromo-kit-jeans";
 
   const promoTheme = {
     "--promo-accent": isMercadoLivreTheme ? "#3483fa" : "#79C142",
