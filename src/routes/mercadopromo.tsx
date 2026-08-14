@@ -116,6 +116,11 @@ import widelegEscura2 from "@/assets/mercadopromo/wideleg-escura-2.jpg";
 import widelegReview1 from "@/assets/mercadopromo/wideleg-review-1.png";
 import widelegReview2 from "@/assets/mercadopromo/wideleg-review-2.png";
 import widelegReview3 from "@/assets/mercadopromo/wideleg-review-3.png";
+import ortopedicaPreto from "@/assets/mercadopromo/ortopedica-preto.webp";
+import ortopedicaBranco from "@/assets/mercadopromo/ortopedica-branco.webp";
+import ortopedicaVerde from "@/assets/mercadopromo/ortopedica-verde.webp";
+import ortopedicaRosa from "@/assets/mercadopromo/ortopedica-rosa.webp";
+import ortopedicaCreme from "@/assets/mercadopromo/ortopedica-creme.webp";
 
 const pagarMeLogoUrl = "/logo.webp";
 
@@ -758,6 +763,10 @@ function trackProductEvent(
     fbqTrackSingle("1856457431991636", event, params);
     return;
   }
+  if (product.id === "mercadopromo-tenis-ortopedico") {
+    fbqTrackSingle("1462234062331090", event, params);
+    return;
+  }
   if (product.id === "mercadopromo-robo-aspirador") {
     const isAspirador = typeof window !== 'undefined' && window.location.pathname.startsWith('/aspirador');
     if (isAspirador) {
@@ -1247,6 +1256,93 @@ const JEANS_WIDELEG_PRODUCT: Product = {
   },
 };
 
+const ORTOPEDICA_PRODUCT: Product = {
+  id: "mercadopromo-tenis-ortopedico",
+  title: "Tênis Feminino Ortopédico Respirável",
+  brand: "PAZE",
+  seller: "Paze Oficial",
+  sold: "+3.2 mil vendidos",
+  rating: 4.9,
+  reviewsCount: 218,
+  price: 6990,
+  compareAt: 15990,
+  installments: { count: 6, valueCents: 1165 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Calçados Femininos", "Tênis", "Ortopédicos"],
+  colors: [
+    {
+      key: "creme",
+      label: "Creme",
+      thumb: ortopedicaCreme,
+      gallery: [{ src: ortopedicaCreme, kind: "image" }],
+    },
+    {
+      key: "branco",
+      label: "Branco",
+      thumb: ortopedicaBranco,
+      gallery: [{ src: ortopedicaBranco, kind: "image" }],
+    },
+    {
+      key: "verde",
+      label: "Verde Oliva",
+      thumb: ortopedicaVerde,
+      gallery: [{ src: ortopedicaVerde, kind: "image" }],
+    },
+    {
+      key: "preto",
+      label: "Preto",
+      thumb: ortopedicaPreto,
+      gallery: [{ src: ortopedicaPreto, kind: "image" }],
+    },
+    {
+      key: "rosa",
+      label: "Rosa",
+      thumb: ortopedicaRosa,
+      gallery: [{ src: ortopedicaRosa, kind: "image" }],
+    },
+  ],
+  sizes: ["35", "36", "37", "38", "39", "40", "41", "42", "43"],
+  description: {
+    heading: "TÊNIS FEMININO ORTOPÉDICO RESPIRÁVEL – SLIP ON",
+    intro: [
+      "CONFORTO QUE VOCÊ SENTE DESDE O PRIMEIRO PASSO! 👟✨",
+      "Sabe aquele calçado que você coloca no pé e não quer mais tirar? Esse modelo foi pensado para quem busca leveza, praticidade e muito conforto para a rotina, sem abrir mão de um visual moderno e feminino.",
+      "Seu tecido em malha respirável e flexível se adapta ao formato dos pés, proporcionando uma sensação agradável ao caminhar. O modelo Slip On dispensa cadarços: é só calçar e sair!",
+    ],
+    steps: [
+      "Escolha a sua cor favorita (Creme, Branco, Verde Oliva, Preto ou Rosa).",
+      "Selecione o seu tamanho habitual do 35 ao 43.",
+      "Garanta o seu tênis ideal para caminhadas, trabalho, viagens e rotina com frete grátis!",
+    ],
+    benefits: [
+      { title: "Super Leve", result: "Sensação de andar nas nuvens", feeling: "Ideal para passar horas usando sem cansar as pernas." },
+      { title: "Tecido Flexível e Respirável", result: "Malha knit de alta ventilação", feeling: "Acompanha cada movimento e mantém os pés frescos." },
+      { title: "Calce Fácil Slip On", result: "Sem cadarços para amarrar", feeling: "Muito mais praticidade ao vestir no dia a dia." },
+      { title: "Palmilha Ortopédica Macia", result: "Absorção de impacto e sustentação anatômica", feeling: "Alívio imediato para quem passa muito tempo em pé." },
+      { title: "Solado Confortável e Estável", result: "Base antiderrapante de alta aderência", feeling: "Segurança total a cada passo." },
+      { title: "Design Moderno e Versátil", result: "Combina facilmente com jeans, leggings e vestidos", feeling: "Estilo e conforto em um único calçado." },
+    ],
+    quotes: [
+      "“Excelente tênis! Visto 37, serviu perfeitamente. Uso o dia todo no trabalho e não sinto nenhuma dor nos pés.”",
+      "“Super levinho e fácil de colocar. A cor creme é linda demais e combina com tudo!”",
+      "“Comprei um rosa e um preto. Recomendo muito, entrega rápida e qualidade surpreendente.”",
+    ],
+    specs: [
+      "Produto: 01 Tênis Feminino Ortopédico Respirável",
+      "Modelo: Slip On (Sem cadarço, calce rápido)",
+      "Material do Cabedal: Malha Knit respirável e flexível",
+      "Palmilha: Ortopédica macia de alta densidade",
+      "Solado: Borracha ultra flexível e antiderrapante",
+      "Cores disponíveis: Creme, Branco, Verde Oliva, Preto e Rosa",
+      "Indicação de Uso: Caminhadas, trabalho, passeios, viagens, rotina diária",
+    ],
+    tip: "Devolução grátis em até 30 dias: Se por qualquer motivo o tamanho não servir ou você quiser trocar a cor, a devolução é fácil e sem nenhum custo adicional.",
+    closing: [
+      "Escolha sua cor e tamanho e garanta o seu com Frete Grátis!",
+    ],
+    warranty: "30 dias de garantia com devolução grátis",
+  },
+};
+
 
 const PRODUCT_SLUGS: Record<string, number> = {
   jaquetafem: 0,
@@ -1266,11 +1362,13 @@ const PRODUCT_SLUGS: Record<string, number> = {
   kitjeans: 11,
   jeanswideleg: 12,
   "jeans-wide-leg": 12,
+  ortopedica: 13,
+  "tenis-ortopedico": 13,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT, BODYMODELADOR_PRODUCT, KITJEANS_PRODUCT, JEANS_WIDELEG_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT, BODYMODELADOR_PRODUCT, KITJEANS_PRODUCT, JEANS_WIDELEG_PRODUCT, ORTOPEDICA_PRODUCT];
 
 
 const FEMALE_JACKET_VARIANT_IDS: Record<string, Record<string, number>> = {
@@ -1657,6 +1755,30 @@ const WIDELEG_REVIEWS: Review[] = [
   },
 ];
 
+const ORTOPEDICA_REVIEWS: Review[] = [
+  {
+    name: "maria.lucia.s",
+    verified: true,
+    rating: 5,
+    text: "Gente, que tênis MARAVILHOSO! Trabalho 8 horas em pé como enfermeira e meus pés viviam doendo. Depois que comecei a usar esse tênis ortopédico, as dores sumiram! É super leve, não aperta nada e a malha respira super bem. Comprei o creme e já quero pedir o preto!",
+    when: "há 1 semana",
+  },
+  {
+    name: "patricia.lima",
+    verified: true,
+    rating: 5,
+    text: "Simplesmente perfeito! O calce é muito prático por não ter cadarço, é só meter o pé e andar. Uso pra caminhada diária e passeios. O tamanho 37 ficou exato. Vale cada centavo, recomendo demais!",
+    when: "há 2 semanas",
+  },
+  {
+    name: "teresa.ferreira",
+    verified: true,
+    rating: 5,
+    text: "Chegou super rápido aqui no Mercado Livre. O tênis é extremamente macio e confortável, parece que estou pisando num algodão. A cor verde oliva é linda pessoalmente. Aprovadíssimo!",
+    when: "há 3 semanas",
+  },
+];
+
 
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
@@ -1672,6 +1794,7 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [BODYMODELADOR_PRODUCT.id]: BODYMODELADOR_REVIEWS,
   [KITJEANS_PRODUCT.id]: KITJEANS_REVIEWS,
   [JEANS_WIDELEG_PRODUCT.id]: WIDELEG_REVIEWS,
+  [ORTOPEDICA_PRODUCT.id]: ORTOPEDICA_REVIEWS,
 };
 
 
@@ -1779,7 +1902,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     PRODUCT.id === "mercadopromo-jaqueta-courino" ||
     PRODUCT.id === "mercadopromo-body-modelador" ||
     PRODUCT.id === "mercadopromo-kit-jeans" ||
-    PRODUCT.id === "mercadopromo-jeans-wide-leg";
+    PRODUCT.id === "mercadopromo-jeans-wide-leg" ||
+    PRODUCT.id === "mercadopromo-tenis-ortopedico";
 
   const promoTheme = {
     "--promo-accent": isMercadoLivreTheme ? "#3483fa" : "#79C142",
@@ -1973,6 +2097,64 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     },
   };
 
+  const ORTOPEDICA_CHECKOUTS: Record<string, Record<string, string>> = {
+    creme: {
+      "35": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393772477342&store=33937",
+      "36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393711377211&store=33937",
+      "37": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393719135733&store=33937",
+      "38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393762997449&store=33937",
+      "39": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393784284211&store=33937",
+      "40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393782427861&store=33937",
+      "41": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393784652117&store=33937",
+      "42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393744783461&store=33937",
+      "43": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393773618955&store=33937",
+    },
+    branco: {
+      "35": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393749216512&store=33937",
+      "36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393723958415&store=33937",
+      "37": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393731419512&store=33937",
+      "38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393774295996&store=33937",
+      "39": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393769782892&store=33937",
+      "40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393746674867&store=33937",
+      "41": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393792517761&store=33937",
+      "42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393752443883&store=33937",
+      "43": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393748155839&store=33937",
+    },
+    verde: {
+      "35": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393781454733&store=33937",
+      "36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393775485446&store=33937",
+      "37": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393783721978&store=33937",
+      "38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393787297773&store=33937",
+      "39": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393739622372&store=33937",
+      "40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393742892182&store=33937",
+      "41": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393747279353&store=33937",
+      "42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393778966964&store=33937",
+      "43": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393714668257&store=33937",
+    },
+    preto: {
+      "35": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393794411785&store=33937",
+      "36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393741328977&store=33937",
+      "37": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393798191289&store=33937",
+      "38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393793163623&store=33937",
+      "39": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393791235548&store=33937",
+      "40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393761361957&store=33937",
+      "41": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393778863374&store=33937",
+      "42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393714258645&store=33937",
+      "43": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393712394945&store=33937",
+    },
+    rosa: {
+      "35": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393727793296&store=33937",
+      "36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393722445592&store=33937",
+      "37": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393762479553&store=33937",
+      "38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393724328752&store=33937",
+      "39": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393715128532&store=33937",
+      "40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393768848297&store=33937",
+      "41": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393769896778&store=33937",
+      "42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393736891982&store=33937",
+      "43": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393753284197&store=33937",
+    },
+  };
+
   const EXTERNAL_MAIN_PIXEL_CHECKOUTS: Record<string, string> = {
     "mercadopromo-jaqueta-termica-masc":
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767842421&store=33937",
@@ -1986,6 +2168,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       ? KITJEANS_SIZE_CHECKOUTS[size]
       : PRODUCT.id === "mercadopromo-jeans-wide-leg" && size && colorKey
       ? WIDELEG_CHECKOUTS[colorKey]?.[size]
+      : PRODUCT.id === "mercadopromo-tenis-ortopedico" && size && colorKey
+      ? ORTOPEDICA_CHECKOUTS[colorKey]?.[size]
       : EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
 
 
