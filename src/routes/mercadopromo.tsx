@@ -1264,9 +1264,9 @@ const ORTOPEDICA_PRODUCT: Product = {
   sold: "+3.2 mil vendidos",
   rating: 4.9,
   reviewsCount: 218,
-  price: 6990,
-  compareAt: 15990,
-  installments: { count: 6, valueCents: 1165 },
+  price: 4990,
+  compareAt: 12990,
+  installments: { count: 6, valueCents: 831 },
   categoryTrail: ["Calçados, Roupas e Bolsas", "Calçados Femininos", "Tênis", "Ortopédicos"],
   colors: [
     {
