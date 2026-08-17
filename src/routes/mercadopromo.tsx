@@ -742,45 +742,14 @@ const BOBOJACO_PRODUCT: Product = {
   },
 };
 
-const KIT_SANDALIAS_PIXEL_ID = "1577403850715282";
-const ROBOASPIRADOR_PIXEL_ID = "2202849697230187";
-const JAQUETAFEM_PIXEL_ID = "1108161594900025";
+const PIXEL_ID = "1108161594900025";
 
 function trackProductEvent(
   product: Product,
   event: string,
   params?: Record<string, unknown>,
 ) {
-  if (product.id === "mercadopromo-jaqueta-courino" || product.id === "mercadopromo-body-modelador") {
-    fbqTrackSingle(JAQUETAFEM_PIXEL_ID, event, params);
-    return;
-  }
-  if (product.id === "mercadopromo-kit-jeans") {
-    fbqTrackSingle("2044710949498678", event, params);
-    return;
-  }
-  if (product.id === "mercadopromo-jeans-wide-leg") {
-    fbqTrackSingle("1856457431991636", event, params);
-    return;
-  }
-  if (product.id === "mercadopromo-tenis-ortopedico") {
-    fbqTrackSingle("1462234062331090", event, params);
-    return;
-  }
-  if (product.id === "mercadopromo-robo-aspirador") {
-    const isAspirador = typeof window !== 'undefined' && window.location.pathname.startsWith('/aspirador');
-    if (isAspirador) {
-      fbqTrackSingle("1601719418324869", event, params);
-    } else {
-      fbqTrackSingle(ROBOASPIRADOR_PIXEL_ID, event, params);
-    }
-    return;
-  }
-  if (product.id === "mercadopromo-kit-sandalias") {
-    fbqTrackSingle(KIT_SANDALIAS_PIXEL_ID, event, params);
-    return;
-  }
-  fbqTrack(event, params);
+  fbqTrackSingle(PIXEL_ID, event, params);
 }
 
 const KIT_PANOS_PRODUCT: Product = {

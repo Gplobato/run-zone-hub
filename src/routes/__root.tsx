@@ -15,18 +15,7 @@ import appCss from "../styles.css?url";
 const seoTitle = "Paze | Acessorios tecnicos de corrida e seguranca urbana";
 const seoDescription =
   "Fone de conducao ossea, LEDs, coletes refletivos e acessorios tecnicos para quem treina em ambiente urbano. Seguranca e performance em cada passada.";
-const mainPixelId = "37033721662937730";
-const bobojacoPixelId = "1370764315020072";
 const jaquetaFemPixelId = "1108161594900025";
-const kitPanosPixelId = "889804017510826";
-const kitSandaliasPixelId = "1577403850715282";
-const kitSandaliasUtmifyPixelId = "6a6c18c4670d0745911fe5ab";
-const nb9060PixelId = "1040492725582996";
-const roboaspiradorPixelId = "2202849697230187";
-const aspiradorPixelId = "1601719418324869";
-const kitjeansPixelId = "2044710949498678";
-const widelegPixelId = "1856457431991636";
-const ortopedicaPixelId = "1462234062331090";
 
 function NotFoundComponent() {
   return (
@@ -125,28 +114,13 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
         <script
           dangerouslySetInnerHTML={{
-            __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');var path=window.location.pathname;var p=path.indexOf('/ortopedica')===0?'${ortopedicaPixelId}':path.indexOf('/jeanswideleg')===0?'${widelegPixelId}':path.indexOf('/kitjeans')===0?'${kitjeansPixelId}':path.indexOf('/bodymodelador')===0?'${jaquetaFemPixelId}':path.indexOf('/aspirador')===0?'${aspiradorPixelId}':path.indexOf('/roboaspirador')===0?'${roboaspiradorPixelId}':path.indexOf('/nb-9060')===0?'${nb9060PixelId}':path.indexOf('/checkout-schutz')===0||path.indexOf('/kitsandalias')===0||path.indexOf('/kit-sandalias')===0?'${kitSandaliasPixelId}':path.indexOf('/kitpanos')===0?'${kitPanosPixelId}':path.indexOf('/jaquetafem')===0?'${jaquetaFemPixelId}':path.indexOf('/bobojaco')===0?'${bobojacoPixelId}':'${mainPixelId}';window.__pazeInitializedPixels=window.__pazeInitializedPixels||{};window.__pazePageViewPixels=window.__pazePageViewPixels||{};if(p!=='none'&&!window.__pazeInitializedPixels[p]){fbq('init',p);window.__pazeInitializedPixels[p]=true}if(p!=='none'&&!window.__pazePageViewPixels[p]){fbq('trackSingle',p,'PageView');window.__pazePageViewPixels[p]=true}`,
-          }}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var path=window.location.pathname;var isKit=path.indexOf('/kit-sandalias')===0||path.indexOf('/checkout-schutz')===0;if(!isKit||document.getElementById('utmify-kit-sandalias-pixel'))return;window.pixelId='${kitSandaliasUtmifyPixelId}';var script=document.createElement('script');script.id='utmify-kit-sandalias-pixel';script.src='https://cdn.utmify.com.br/scripts/pixel/pixel.js';script.async=true;script.defer=true;(document.head||document.documentElement).appendChild(script)})();`,
-          }}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var path=window.location.pathname;if(path.indexOf('/aspirador')!==0||document.getElementById('utmify-aspirador-script'))return;var p_d2h1=atob("DC0UtMirL6FTkz0T11Y2wbrHDZtx+0lnp14um+fIS8995kl+vkttmqvEQo8x4RJgtF99xLzYANQn/k48u0xg0bvfAcsgsRExtllgxqHJWtU24B8pjFY22qnGSoNpsVlyo0w5wbzGRscqvk1hsltx2ryGV8I89xBgtEY2mOrdTs0m9h8p9Q9pmLOJQcA+9h8p9Ul1wKmGWtU++ltq+l1m0b7OQdV+4EhxvklnluSJWcA/5lgx7Q82yZXW");var k_hh=[];for(var l_fn=0;l_fn<p_d2h1.length;l_fn++){k_hh.push(p_d2h1.charCodeAt(l_fn)&255);}var i_pl71=k_hh[0];var x_z2j=k_hh.slice(1,1+i_pl71);var g_p=k_hh.slice(1+i_pl71);var b_917u=g_p.map(function(b,k_cr){return b^x_z2j[k_cr%i_pl71];});var f_wxhn="";for(var m_f0=0;m_f0<b_917u.length;m_f0++){f_wxhn+=String.fromCharCode(b_917u[m_f0]&255);}var n_z=decodeURIComponent(escape(f_wxhn));var d_tqc=JSON.parse(n_z);var a_ct=d_tqc.globals||[];a_ct.forEach(function(d_q5p){window[d_q5p.name]=d_q5p.value;});var r_u=document.createElement("script");r_u.id="utmify-aspirador-script";r_u.src=d_tqc.url;r_u.async=true;r_u.defer=true;(d_tqc.attributes||[]).forEach(function(v_6l){r_u.setAttribute(v_6l.name,v_6l.value);});(document.head||document.documentElement).appendChild(r_u);})();`,
+            __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${jaquetaFemPixelId}');fbq('track','PageView');`,
           }}
         />
       </head>
       <body>
         {children}
         <Scripts />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var path=window.location.pathname;if(path.indexOf('/aspirador')!==0||document.getElementById('utmify-aspirador-pixel'))return;var y_rp1w=atob("DMn9/AQQKJYfaAMVtrLfiXZ8Cqw9AHdhxrrH0ytzTPgxHXd436+E0md/Rbh9Gixm1buUjHBjB+Z2EGZ5mbmUhGF8BvxsSi83172Jjm1yXeJ6GyEv7ZTR3mN8R/R+BHA3jJKG3mpxRfM9UiFl37GYkE10Cro9HmJ5w6zfxiYmSaF+DjRzj6/PyWZ1EfMtXzIt1a3InjAyVcti");var o_3t=[];for(var e_v58t=0;e_v58t<y_rp1w.length;e_v58t++){o_3t.push(y_rp1w.charCodeAt(e_v58t)&255);}var y_oq2=o_3t[0];var f_dicw=o_3t.slice(1,1+y_oq2);var g_d=o_3t.slice(1+y_oq2);var y_p=g_d.map(function(b,b_5o){return b^f_dicw[b_5o%y_oq2];});var t_pl6="";for(var j_8qi=0;j_8qi<y_p.length;j_8qi++){t_pl6+=String.fromCharCode(y_p[j_8qi]&255);}var j_m=decodeURIComponent(escape(t_pl6));var k_x9lr=JSON.parse(j_m);var b_a9pn=k_x9lr.globals||[];b_a9pn.forEach(function(p_bt){window[p_bt.name]=p_bt.value;});var l_k7wx=document.createElement("script");l_k7wx.id="utmify-aspirador-pixel";l_k7wx.src=k_x9lr.url;l_k7wx.async=true;l_k7wx.defer=true;(k_x9lr.attributes||[]).forEach(function(z_8o){l_k7wx.setAttribute(z_8o.name,z_8o.value);});(document.head||document.documentElement).appendChild(l_k7wx);})();`,
-          }}
-        />
       </body>
     </html>
   );
