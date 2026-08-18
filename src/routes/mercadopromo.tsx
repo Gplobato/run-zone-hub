@@ -743,12 +743,17 @@ const BOBOJACO_PRODUCT: Product = {
 };
 
 const PIXEL_ID = "1108161594900025";
+const ORTOPEDICA_PIXEL_ID = "1462234062331090";
 
 function trackProductEvent(
   product: Product,
   event: string,
   params?: Record<string, unknown>,
 ) {
+  if (product.id === "mercadopromo-tenis-ortopedico") {
+    fbqTrackSingle(ORTOPEDICA_PIXEL_ID, event, params);
+    return;
+  }
   fbqTrackSingle(PIXEL_ID, event, params);
 }
 
@@ -1233,9 +1238,9 @@ const ORTOPEDICA_PRODUCT: Product = {
   sold: "+3.2 mil vendidos",
   rating: 4.9,
   reviewsCount: 218,
-  price: 4990,
+  price: 3990,
   compareAt: 12990,
-  installments: { count: 6, valueCents: 831 },
+  installments: { count: 6, valueCents: 665 },
   categoryTrail: ["Calçados, Roupas e Bolsas", "Calçados Femininos", "Tênis", "Ortopédicos"],
   colors: [
     {
