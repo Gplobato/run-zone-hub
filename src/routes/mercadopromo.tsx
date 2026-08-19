@@ -121,6 +121,11 @@ import ortopedicaBranco from "@/assets/mercadopromo/ortopedica-branco.webp";
 import ortopedicaVerde from "@/assets/mercadopromo/ortopedica-verde.webp";
 import ortopedicaRosa from "@/assets/mercadopromo/ortopedica-rosa.webp";
 import ortopedicaCreme from "@/assets/mercadopromo/ortopedica-creme.webp";
+import translucidaBranca1 from "@/assets/mercadopromo/translucida-branca-1.jpg";
+import translucidaBranca2 from "@/assets/mercadopromo/translucida-branca-2.jpg";
+import translucidaBranca3 from "@/assets/mercadopromo/translucida-branca-3.jpg";
+import translucidaMarrom1 from "@/assets/mercadopromo/translucida-marrom-1.png";
+import translucidaMarrom2 from "@/assets/mercadopromo/translucida-marrom-2.png";
 
 const pagarMeLogoUrl = "/logo.webp";
 
@@ -1317,6 +1322,80 @@ const ORTOPEDICA_PRODUCT: Product = {
   },
 };
 
+const TRANSLUCIDA_PRODUCT: Product = {
+  id: "mercadopromo-jelly-mule",
+  title: "Jelly Mule Feminina",
+  brand: "Mercado Livre",
+  seller: "Jelly Store Oficial",
+  sold: "+1.8 mil vendidos",
+  rating: 4.8,
+  reviewsCount: 154,
+  price: 4990,
+  compareAt: 11990,
+  installments: { count: 6, valueCents: 831 },
+  categoryTrail: ["Calçados, Roupas e Bolsas", "Calçados Femininos", "Sandálias", "Jelly Mule"],
+  colors: [
+    {
+      key: "branca",
+      label: "Branca",
+      thumb: translucidaBranca1,
+      gallery: [
+        { src: translucidaBranca1, kind: "image" },
+        { src: translucidaBranca2, kind: "image" },
+        { src: translucidaBranca3, kind: "image" },
+      ],
+    },
+    {
+      key: "marrom",
+      label: "Marrom",
+      thumb: translucidaMarrom1,
+      gallery: [
+        { src: translucidaMarrom1, kind: "image" },
+        { src: translucidaMarrom2, kind: "image" },
+      ],
+    },
+  ],
+  sizes: ["33/34", "35/36", "37/38", "39/40", "41/42"],
+  description: {
+    heading: "JELLY MULE FEMININA – A TENDÊNCIA QUE VAI DOMINAR O VERÃO",
+    intro: [
+      "Se você gosta de estar um passo à frente nas tendências, a Jelly Mule foi feita para você.",
+      "Com visual moderno, acabamento translúcido e um design que transforma até o look mais básico, ela combina conforto, estilo e personalidade em um único calçado.",
+    ],
+    steps: [
+      "Escolha a sua cor favorita (Branca, Marrom, Rosa ou Preta).",
+      "Selecione o tamanho desejado.",
+      "Garanta a sua Jelly Mule com frete grátis antes que as cores mais procuradas acabem!",
+    ],
+    benefits: [
+      { title: "Visual Moderno e Estiloso", result: "Acabamento translúcido que eleva qualquer look", feeling: "Tendência internacional que está chegando com força ao Brasil." },
+      { title: "Material Flexível e Confortável", result: "Acompanha os movimentos dos pés", feeling: "Uso agradável durante o dia todo sem desconforto." },
+      { title: "Leve Para Usar Por Horas", result: "Estrutura ultraleve", feeling: "Perfeita para levar em viagens ou deixar sempre por perto." },
+      { title: "Fácil de Combinar", result: "Combina com vestidos, saias, shorts, jeans e looks de verão", feeling: "Aquele tipo de peça que muda completamente o visual." },
+      { title: "Versátil Para Todas as Ocasiões", result: "Praia, passeio, shopping, viagens e dia a dia", feeling: "Um calçado para todos os momentos." },
+      { title: "Material Jelly de Alta Qualidade", result: "Resistente e durável", feeling: "Mantém a beleza e a forma mesmo com uso frequente." },
+    ],
+    quotes: [
+      "\u201cAmei! O acabamento translúcido é lindo demais pessoalmente. Usei com vestido branco e ficou perfeito.\u201d",
+      "\u201cSuper confortável e leve. Comprei a marrom e já quero a branca também!\u201d",
+      "\u201cTendência total! Recebi vários elogios no shopping. Entrega rápida pelo Mercado Livre.\u201d",
+    ],
+    specs: [
+      "Produto: 01 Jelly Mule Feminina",
+      "Material: Jelly (PVC flexível de alta qualidade)",
+      "Acabamento: Translúcido trançado",
+      "Solado: Emborrachado antiderrapante",
+      "Cores disponíveis: Branca e Marrom (Rosa e Preta em breve)",
+      "Tamanhos: 33/34 ao 41/42",
+      "Indicação de Uso: Praia, passeio, shopping, viagens, dia a dia",
+    ],
+    tip: "Devolução grátis em até 30 dias: Se o tamanho não servir ou você quiser trocar a cor, a devolução é fácil e sem nenhum custo adicional.",
+    closing: [
+      "A Jelly Mule já é uma das grandes apostas para a próxima temporada. Garanta a sua antes que as cores e tamanhos mais procurados acabem!",
+    ],
+    warranty: "30 dias de garantia com devolução grátis",
+  },
+};
 
 const PRODUCT_SLUGS: Record<string, number> = {
   jaquetafem: 0,
@@ -1338,11 +1417,13 @@ const PRODUCT_SLUGS: Record<string, number> = {
   "jeans-wide-leg": 12,
   ortopedica: 13,
   "tenis-ortopedico": 13,
+  translucida: 14,
+  "jelly-mule": 14,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
 
-const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT, BODYMODELADOR_PRODUCT, KITJEANS_PRODUCT, JEANS_WIDELEG_PRODUCT, ORTOPEDICA_PRODUCT];
+const PRODUCTS: Product[] = [MAIN_PRODUCT, BOOT_PRODUCT, PANTS_PRODUCT, GARMIN_PRODUCT, JAQMASC_PRODUCT, SOFT_PRODUCT, BOBOJACO_PRODUCT, KIT_PANOS_PRODUCT, KIT_SANDALIAS_PRODUCT, ROBOASPIRADOR_PRODUCT, BODYMODELADOR_PRODUCT, KITJEANS_PRODUCT, JEANS_WIDELEG_PRODUCT, ORTOPEDICA_PRODUCT, TRANSLUCIDA_PRODUCT];
 
 
 const FEMALE_JACKET_VARIANT_IDS: Record<string, Record<string, number>> = {
@@ -1753,6 +1834,29 @@ const ORTOPEDICA_REVIEWS: Review[] = [
   },
 ];
 
+const TRANSLUCIDA_REVIEWS: Review[] = [
+  {
+    name: "isabela.costa",
+    verified: true,
+    rating: 5,
+    text: "Gente, que sandália LINDA! O acabamento translúcido é muito mais bonito pessoalmente do que na foto. Super leve, confortável e moderna. Usei com vestido e com jeans e ficou perfeito nos dois looks. Já quero comprar em outra cor!",
+    when: "há 1 semana",
+  },
+  {
+    name: "renata.oliveira",
+    verified: true,
+    rating: 5,
+    text: "Chegou super rápido pelo Mercado Livre! A Jelly Mule é flexível, não aperta e o solado é firme. Comprei 37/38 e serviu certinho. Levei pra praia e recebi muitos elogios. Tendência total!",
+    when: "há 2 semanas",
+  },
+  {
+    name: "ana.beatriz.m",
+    verified: true,
+    rating: 5,
+    text: "Amei demais! Material de qualidade, bem trançadinha e delicada. Combina com tudo e é perfeita pro verão. Pelo preço paguei muito barato comparado com lojas de shopping. Recomendo muito!",
+    when: "há 3 semanas",
+  },
+];
 
 const REVIEWS_BY_ID: Record<string, Review[]> = {
   [MAIN_PRODUCT.id]: JAQUETA_REVIEWS,
@@ -1769,6 +1873,7 @@ const REVIEWS_BY_ID: Record<string, Review[]> = {
   [KITJEANS_PRODUCT.id]: KITJEANS_REVIEWS,
   [JEANS_WIDELEG_PRODUCT.id]: WIDELEG_REVIEWS,
   [ORTOPEDICA_PRODUCT.id]: ORTOPEDICA_REVIEWS,
+  [TRANSLUCIDA_PRODUCT.id]: TRANSLUCIDA_REVIEWS,
 };
 
 
@@ -1877,7 +1982,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     PRODUCT.id === "mercadopromo-body-modelador" ||
     PRODUCT.id === "mercadopromo-kit-jeans" ||
     PRODUCT.id === "mercadopromo-jeans-wide-leg" ||
-    PRODUCT.id === "mercadopromo-tenis-ortopedico";
+    PRODUCT.id === "mercadopromo-tenis-ortopedico" ||
+    PRODUCT.id === "mercadopromo-jelly-mule";
 
   const promoTheme = {
     "--promo-accent": isMercadoLivreTheme ? "#3483fa" : "#79C142",
@@ -2129,6 +2235,23 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
     },
   };
 
+  const TRANSLUCIDA_CHECKOUTS: Record<string, Record<string, string>> = {
+    branca: {
+      "33/34": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393773595536&store=33937",
+      "35/36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393728319751&store=33937",
+      "37/38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393762187822&store=33937",
+      "39/40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393746533756&store=33937",
+      "41/42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393727692623&store=33937",
+    },
+    marrom: {
+      "33/34": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393765113681&store=33937",
+      "35/36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393739356563&store=33937",
+      "37/38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393718454823&store=33937",
+      "39/40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767241845&store=33937",
+      "41/42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393728132984&store=33937",
+    },
+  };
+
   const EXTERNAL_MAIN_PIXEL_CHECKOUTS: Record<string, string> = {
     "mercadopromo-jaqueta-termica-masc":
       "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767842421&store=33937",
@@ -2144,6 +2267,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       ? WIDELEG_CHECKOUTS[colorKey]?.[size]
       : PRODUCT.id === "mercadopromo-tenis-ortopedico" && size && colorKey
       ? ORTOPEDICA_CHECKOUTS[colorKey]?.[size]
+      : PRODUCT.id === "mercadopromo-jelly-mule" && size && colorKey
+      ? TRANSLUCIDA_CHECKOUTS[colorKey]?.[size]
       : EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
 
 
