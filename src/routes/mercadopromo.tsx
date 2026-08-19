@@ -126,6 +126,15 @@ import translucidaBranca2 from "@/assets/mercadopromo/translucida-branca-2.jpg";
 import translucidaBranca3 from "@/assets/mercadopromo/translucida-branca-3.jpg";
 import translucidaMarrom1 from "@/assets/mercadopromo/translucida-marrom-1.png";
 import translucidaMarrom2 from "@/assets/mercadopromo/translucida-marrom-2.png";
+import translucidaRosa1 from "@/assets/mercadopromo/translucida-rosa-1.jpg";
+import translucidaRosa2 from "@/assets/mercadopromo/translucida-rosa-2.jpg";
+import translucidaRosa3 from "@/assets/mercadopromo/translucida-rosa-3.jpg";
+import translucidaPreta1 from "@/assets/mercadopromo/translucida-preta-1.jpg";
+import translucidaPreta2 from "@/assets/mercadopromo/translucida-preta-2.jpg";
+import translucidaPreta3 from "@/assets/mercadopromo/translucida-preta-3.png";
+import translucidaReview1 from "@/assets/mercadopromo/translucida-review-1.png";
+import translucidaReview2 from "@/assets/mercadopromo/translucida-review-2.png";
+import translucidaReview3 from "@/assets/mercadopromo/translucida-review-3.png";
 
 const pagarMeLogoUrl = "/logo.webp";
 
@@ -1325,8 +1334,8 @@ const ORTOPEDICA_PRODUCT: Product = {
 const TRANSLUCIDA_PRODUCT: Product = {
   id: "mercadopromo-jelly-mule",
   title: "Jelly Mule Feminina",
-  brand: "Mercado Livre",
-  seller: "Jelly Store Oficial",
+  brand: "Paze Calçados",
+  seller: "Paze Calçados",
   sold: "+1.8 mil vendidos",
   rating: 4.8,
   reviewsCount: 154,
@@ -1354,6 +1363,26 @@ const TRANSLUCIDA_PRODUCT: Product = {
         { src: translucidaMarrom2, kind: "image" },
       ],
     },
+    {
+      key: "rosa",
+      label: "Rosa",
+      thumb: translucidaRosa1,
+      gallery: [
+        { src: translucidaRosa1, kind: "image" },
+        { src: translucidaRosa2, kind: "image" },
+        { src: translucidaRosa3, kind: "image" },
+      ],
+    },
+    {
+      key: "preta",
+      label: "Preta",
+      thumb: translucidaPreta1,
+      gallery: [
+        { src: translucidaPreta1, kind: "image" },
+        { src: translucidaPreta2, kind: "image" },
+        { src: translucidaPreta3, kind: "image" },
+      ],
+    },
   ],
   sizes: ["33/34", "35/36", "37/38", "39/40", "41/42"],
   description: {
@@ -1364,7 +1393,7 @@ const TRANSLUCIDA_PRODUCT: Product = {
     ],
     steps: [
       "Escolha a sua cor favorita (Branca, Marrom, Rosa ou Preta).",
-      "Selecione o tamanho desejado.",
+      "Selecione o tamanho desejado (33/34 ao 41/42).",
       "Garanta a sua Jelly Mule com frete grátis antes que as cores mais procuradas acabem!",
     ],
     benefits: [
@@ -1376,16 +1405,16 @@ const TRANSLUCIDA_PRODUCT: Product = {
       { title: "Material Jelly de Alta Qualidade", result: "Resistente e durável", feeling: "Mantém a beleza e a forma mesmo com uso frequente." },
     ],
     quotes: [
-      "\u201cAmei! O acabamento translúcido é lindo demais pessoalmente. Usei com vestido branco e ficou perfeito.\u201d",
-      "\u201cSuper confortável e leve. Comprei a marrom e já quero a branca também!\u201d",
-      "\u201cTendência total! Recebi vários elogios no shopping. Entrega rápida pelo Mercado Livre.\u201d",
+      "“Amei! O acabamento translúcido é lindo demais pessoalmente. Usei com vestido branco e ficou perfeito.”",
+      "“Super confortável e leve. Comprei a marrom e já quero a branca também!”",
+      "“Tendência total! Recebi vários elogios no shopping. Entrega rápida pelo Mercado Livre.”",
     ],
     specs: [
       "Produto: 01 Jelly Mule Feminina",
       "Material: Jelly (PVC flexível de alta qualidade)",
       "Acabamento: Translúcido trançado",
       "Solado: Emborrachado antiderrapante",
-      "Cores disponíveis: Branca e Marrom (Rosa e Preta em breve)",
+      "Cores disponíveis: Branca, Marrom, Rosa e Preta",
       "Tamanhos: 33/34 ao 41/42",
       "Indicação de Uso: Praia, passeio, shopping, viagens, dia a dia",
     ],
@@ -1485,7 +1514,7 @@ const PAYMENT_METHODS = {
 };
 
 const SELLER = {
-  name: "Skhati Wear",
+  name: "Paze Calçados",
   image: "https://http2.mlstatic.com/D_NQ_NP_624580-MLA91707854636_092025-F.jpg",
   medal: "https://http2.mlstatic.com/frontend-assets/vpp-frontend/medal.svg",
 };
@@ -1841,6 +1870,7 @@ const TRANSLUCIDA_REVIEWS: Review[] = [
     rating: 5,
     text: "Gente, que sandália LINDA! O acabamento translúcido é muito mais bonito pessoalmente do que na foto. Super leve, confortável e moderna. Usei com vestido e com jeans e ficou perfeito nos dois looks. Já quero comprar em outra cor!",
     when: "há 1 semana",
+    photo: translucidaReview1,
   },
   {
     name: "renata.oliveira",
@@ -1848,6 +1878,7 @@ const TRANSLUCIDA_REVIEWS: Review[] = [
     rating: 5,
     text: "Chegou super rápido pelo Mercado Livre! A Jelly Mule é flexível, não aperta e o solado é firme. Comprei 37/38 e serviu certinho. Levei pra praia e recebi muitos elogios. Tendência total!",
     when: "há 2 semanas",
+    photo: translucidaReview2,
   },
   {
     name: "ana.beatriz.m",
@@ -1855,6 +1886,7 @@ const TRANSLUCIDA_REVIEWS: Review[] = [
     rating: 5,
     text: "Amei demais! Material de qualidade, bem trançadinha e delicada. Combina com tudo e é perfeita pro verão. Pelo preço paguei muito barato comparado com lojas de shopping. Recomendo muito!",
     when: "há 3 semanas",
+    photo: translucidaReview3,
   },
 ];
 
@@ -2249,6 +2281,20 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       "37/38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393718454823&store=33937",
       "39/40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393767241845&store=33937",
       "41/42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393728132984&store=33937",
+    },
+    rosa: {
+      "33/34": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393764935876&store=33937",
+      "35/36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393769464439&store=33937",
+      "37/38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393731882516&store=33937",
+      "39/40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393717384518&store=33937",
+      "41/42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393735294766&store=33937",
+    },
+    preta: {
+      "33/34": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393794146762&store=33937",
+      "35/36": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393764565576&store=33937",
+      "37/38": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393756963493&store=33937",
+      "39/40": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393772493946&store=33937",
+      "41/42": "https://seguro.mercadolpromo.veltro.digital/api/public/shopify?product=3393759597244&store=33937",
     },
   };
 
@@ -2647,15 +2693,17 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
                 "Comprar agora"
               )}
             </button>
-            <button
-              onClick={onAddToCart}
-              disabled={checkoutLoading}
-              className="mt-2 w-full rounded-md bg-[var(--promo-accent-soft)] py-3 text-[16px] font-semibold text-[var(--promo-accent)] hover:bg-[var(--promo-accent-soft-hover)] disabled:opacity-70"
-            >
-              <span className="inline-flex items-center gap-2">
-                <ShoppingCart className="h-4 w-4" /> Adicionar ao carrinho
-              </span>
-            </button>
+            {!isMercadoLivreTheme && (
+              <button
+                onClick={onAddToCart}
+                disabled={checkoutLoading}
+                className="mt-2 w-full rounded-md bg-[var(--promo-accent-soft)] py-3 text-[16px] font-semibold text-[var(--promo-accent)] hover:bg-[var(--promo-accent-soft-hover)] disabled:opacity-70"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <ShoppingCart className="h-4 w-4" /> Adicionar ao carrinho
+                </span>
+              </button>
+            )}
             {checkoutError && (
               <div className="mt-2 flex items-start gap-2 rounded-sm bg-red-50 px-3 py-2 text-[12px] text-red-700">
                 <CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" />
@@ -3077,21 +3125,16 @@ function ZoomModal({ src, onClose }: { src: string; onClose: () => void }) {
 }
 
 function SellerCard({ seller }: { seller: string }) {
-  const isPazeSeller = seller === "Paze Oficial";
+  const sellerName = seller === "Skhati Wear" || seller === "Jelly Store Oficial" || !seller ? "Paze Calçados" : seller;
 
   return (
     <aside className="rounded-md border border-[#e6e6e6] p-4">
       <div className="flex items-center gap-3">
-        <div className="h-12 w-12 overflow-hidden rounded-full bg-[#eee]">
-          <img
-            src={isPazeSeller ? pazeLogo : SELLER.image}
-            alt={seller}
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
+        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-[var(--promo-accent)] text-[22px] font-bold text-white shadow-sm">
+          P
         </div>
         <div className="flex-1">
-          <div className="text-[15px] font-semibold text-[#333]">{seller}</div>
+          <div className="text-[15px] font-semibold text-[#333]">{sellerName}</div>
           <div className="text-[12px] text-[#666]">+1000 Seguidores &nbsp; +500 Produtos</div>
         </div>
         <button className="rounded border border-[var(--promo-accent)] px-3 py-1 text-[12px] text-[var(--promo-accent)] hover:bg-[var(--promo-accent-soft)]">
