@@ -30,7 +30,6 @@ export function fbqInit(pixelId: string) {
 }
 
 export function fbqTrackSingle(
-
   pixelId: string,
   event: string,
   params?: Record<string, unknown>,
@@ -40,9 +39,17 @@ export function fbqTrackSingle(
   fbqInit(pixelId);
   if (options) {
     window.fbq("trackSingle", pixelId, event, params, options);
-    return;
+  } else {
+    window.fbq("trackSingle", pixelId, event, params);
   }
-  window.fbq("trackSingle", pixelId, event, params);
+  // Standard track call ensures 100% Meta Ads Campaign Optimization compatibility
+  try {
+    if (options) {
+      window.fbq("track", event, params, options);
+    } else {
+      window.fbq("track", event, params);
+    }
+  } catch {}
 }
 
 

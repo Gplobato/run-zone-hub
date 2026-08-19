@@ -2370,12 +2370,13 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const onBuy = () => {
     if (!validateSelection()) return;
     const params = {
-      content_ids: [selectedZedyVariantId ?? PRODUCT.id],
+      content_ids: [String(selectedZedyVariantId ?? PRODUCT.id)],
       content_name: PRODUCT.title,
+      content_type: "product",
       value: PRODUCT.price / 100,
       currency: "BRL",
       num_items: qty,
-      contents: [{ id: selectedZedyVariantId ?? colorKey, size: size ?? "-", quantity: qty }],
+      contents: [{ id: String(selectedZedyVariantId ?? colorKey), size: size ?? "-", quantity: qty }],
     };
     if (isSoftProduct) {
       trackProductEvent(PRODUCT, "InitiateCheckout", params);
@@ -2394,15 +2395,16 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const onAddToCart = () => {
     if (!validateSelection()) return;
     const atcParams = {
-      content_ids: [selectedZedyVariantId ?? PRODUCT.id],
+      content_ids: [String(selectedZedyVariantId ?? PRODUCT.id)],
       content_name: PRODUCT.title,
+      content_type: "product",
       value: PRODUCT.price / 100,
       currency: "BRL",
     };
     const icParams = {
       ...atcParams,
       num_items: qty,
-      contents: [{ id: selectedZedyVariantId ?? colorKey, size: size ?? "-", quantity: qty }],
+      contents: [{ id: String(selectedZedyVariantId ?? colorKey), size: size ?? "-", quantity: qty }],
     };
     if (isSoftProduct) {
       trackProductEvent(PRODUCT, "AddToCart", atcParams);
