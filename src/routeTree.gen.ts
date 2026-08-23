@@ -11,18 +11,24 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AspiradorRouteImport } from './routes/aspirador'
 import { Route as BobojacoRouteImport } from './routes/bobojaco'
+import { Route as BodymodeladorRouteImport } from './routes/bodymodelador'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CheckoutSchutzRouteImport } from './routes/checkout-schutz'
 import { Route as JaquetaRouteImport } from './routes/jaqueta'
 import { Route as JaquetafemRouteImport } from './routes/jaquetafem'
+import { Route as JeanswidelegRouteImport } from './routes/jeanswideleg'
 import { Route as KitSandaliasRouteImport } from './routes/kit-sandalias'
+import { Route as KitjeansRouteImport } from './routes/kitjeans'
 import { Route as KitpanosRouteImport } from './routes/kitpanos'
 import { Route as KitsandaliasRouteImport } from './routes/kitsandalias'
 import { Route as MercadopromoRouteImport } from './routes/mercadopromo'
 import { Route as Nb9060RouteImport } from './routes/nb-9060'
+import { Route as OrtopedicaRouteImport } from './routes/ortopedica'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as RoboaspiradorRouteImport } from './routes/roboaspirador'
+import { Route as TranslucidaRouteImport } from './routes/translucida'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
 import { Route as ApiPublicWebhooksHypercashRouteImport } from './routes/api/public/webhooks/hypercash'
@@ -37,9 +43,19 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AspiradorRoute = AspiradorRouteImport.update({
+  id: '/aspirador',
+  path: '/aspirador',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BobojacoRoute = BobojacoRouteImport.update({
   id: '/bobojaco',
   path: '/bobojaco',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BodymodeladorRoute = BodymodeladorRouteImport.update({
+  id: '/bodymodelador',
+  path: '/bodymodelador',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -62,9 +78,19 @@ const JaquetafemRoute = JaquetafemRouteImport.update({
   path: '/jaquetafem',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JeanswidelegRoute = JeanswidelegRouteImport.update({
+  id: '/jeanswideleg',
+  path: '/jeanswideleg',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const KitSandaliasRoute = KitSandaliasRouteImport.update({
   id: '/kit-sandalias',
   path: '/kit-sandalias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KitjeansRoute = KitjeansRouteImport.update({
+  id: '/kitjeans',
+  path: '/kitjeans',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KitpanosRoute = KitpanosRouteImport.update({
@@ -87,6 +113,11 @@ const Nb9060Route = Nb9060RouteImport.update({
   path: '/nb-9060',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrtopedicaRoute = OrtopedicaRouteImport.update({
+  id: '/ortopedica',
+  path: '/ortopedica',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProdutosRoute = ProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
@@ -95,6 +126,11 @@ const ProdutosRoute = ProdutosRouteImport.update({
 const RoboaspiradorRoute = RoboaspiradorRouteImport.update({
   id: '/roboaspirador',
   path: '/roboaspirador',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TranslucidaRoute = TranslucidaRouteImport.update({
+  id: '/translucida',
+  path: '/translucida',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
@@ -117,18 +153,24 @@ const ApiPublicWebhooksHypercashRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/aspirador': typeof AspiradorRoute
   '/bobojaco': typeof BobojacoRoute
+  '/bodymodelador': typeof BodymodeladorRoute
   '/checkout': typeof CheckoutRoute
   '/checkout-schutz': typeof CheckoutSchutzRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
+  '/jeanswideleg': typeof JeanswidelegRoute
   '/kit-sandalias': typeof KitSandaliasRoute
+  '/kitjeans': typeof KitjeansRoute
   '/kitpanos': typeof KitpanosRoute
   '/kitsandalias': typeof KitsandaliasRoute
   '/mercadopromo': typeof MercadopromoRoute
   '/nb-9060': typeof Nb9060Route
+  '/ortopedica': typeof OrtopedicaRoute
   '/produtos': typeof ProdutosRoute
   '/roboaspirador': typeof RoboaspiradorRoute
+  '/translucida': typeof TranslucidaRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/api/public/webhooks/hypercash': typeof ApiPublicWebhooksHypercashRoute
@@ -136,18 +178,24 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/aspirador': typeof AspiradorRoute
   '/bobojaco': typeof BobojacoRoute
+  '/bodymodelador': typeof BodymodeladorRoute
   '/checkout': typeof CheckoutRoute
   '/checkout-schutz': typeof CheckoutSchutzRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
+  '/jeanswideleg': typeof JeanswidelegRoute
   '/kit-sandalias': typeof KitSandaliasRoute
+  '/kitjeans': typeof KitjeansRoute
   '/kitpanos': typeof KitpanosRoute
   '/kitsandalias': typeof KitsandaliasRoute
   '/mercadopromo': typeof MercadopromoRoute
   '/nb-9060': typeof Nb9060Route
+  '/ortopedica': typeof OrtopedicaRoute
   '/produtos': typeof ProdutosRoute
   '/roboaspirador': typeof RoboaspiradorRoute
+  '/translucida': typeof TranslucidaRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/api/public/webhooks/hypercash': typeof ApiPublicWebhooksHypercashRoute
@@ -156,18 +204,24 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/aspirador': typeof AspiradorRoute
   '/bobojaco': typeof BobojacoRoute
+  '/bodymodelador': typeof BodymodeladorRoute
   '/checkout': typeof CheckoutRoute
   '/checkout-schutz': typeof CheckoutSchutzRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
+  '/jeanswideleg': typeof JeanswidelegRoute
   '/kit-sandalias': typeof KitSandaliasRoute
+  '/kitjeans': typeof KitjeansRoute
   '/kitpanos': typeof KitpanosRoute
   '/kitsandalias': typeof KitsandaliasRoute
   '/mercadopromo': typeof MercadopromoRoute
   '/nb-9060': typeof Nb9060Route
+  '/ortopedica': typeof OrtopedicaRoute
   '/produtos': typeof ProdutosRoute
   '/roboaspirador': typeof RoboaspiradorRoute
+  '/translucida': typeof TranslucidaRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/api/public/webhooks/hypercash': typeof ApiPublicWebhooksHypercashRoute
@@ -177,18 +231,24 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/aspirador'
     | '/bobojaco'
+    | '/bodymodelador'
     | '/checkout'
     | '/checkout-schutz'
     | '/jaqueta'
     | '/jaquetafem'
+    | '/jeanswideleg'
     | '/kit-sandalias'
+    | '/kitjeans'
     | '/kitpanos'
     | '/kitsandalias'
     | '/mercadopromo'
     | '/nb-9060'
+    | '/ortopedica'
     | '/produtos'
     | '/roboaspirador'
+    | '/translucida'
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/api/public/webhooks/hypercash'
@@ -196,18 +256,24 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/aspirador'
     | '/bobojaco'
+    | '/bodymodelador'
     | '/checkout'
     | '/checkout-schutz'
     | '/jaqueta'
     | '/jaquetafem'
+    | '/jeanswideleg'
     | '/kit-sandalias'
+    | '/kitjeans'
     | '/kitpanos'
     | '/kitsandalias'
     | '/mercadopromo'
     | '/nb-9060'
+    | '/ortopedica'
     | '/produtos'
     | '/roboaspirador'
+    | '/translucida'
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/api/public/webhooks/hypercash'
@@ -215,18 +281,24 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/aspirador'
     | '/bobojaco'
+    | '/bodymodelador'
     | '/checkout'
     | '/checkout-schutz'
     | '/jaqueta'
     | '/jaquetafem'
+    | '/jeanswideleg'
     | '/kit-sandalias'
+    | '/kitjeans'
     | '/kitpanos'
     | '/kitsandalias'
     | '/mercadopromo'
     | '/nb-9060'
+    | '/ortopedica'
     | '/produtos'
     | '/roboaspirador'
+    | '/translucida'
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/api/public/webhooks/hypercash'
@@ -235,18 +307,24 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AspiradorRoute: typeof AspiradorRoute
   BobojacoRoute: typeof BobojacoRoute
+  BodymodeladorRoute: typeof BodymodeladorRoute
   CheckoutRoute: typeof CheckoutRoute
   CheckoutSchutzRoute: typeof CheckoutSchutzRoute
   JaquetaRoute: typeof JaquetaRoute
   JaquetafemRoute: typeof JaquetafemRoute
+  JeanswidelegRoute: typeof JeanswidelegRoute
   KitSandaliasRoute: typeof KitSandaliasRoute
+  KitjeansRoute: typeof KitjeansRoute
   KitpanosRoute: typeof KitpanosRoute
   KitsandaliasRoute: typeof KitsandaliasRoute
   MercadopromoRoute: typeof MercadopromoRoute
   Nb9060Route: typeof Nb9060Route
+  OrtopedicaRoute: typeof OrtopedicaRoute
   ProdutosRoute: typeof ProdutosRoute
   RoboaspiradorRoute: typeof RoboaspiradorRoute
+  TranslucidaRoute: typeof TranslucidaRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   ProdutoSlugRoute: typeof ProdutoSlugRoute
   ApiPublicWebhooksHypercashRoute: typeof ApiPublicWebhooksHypercashRoute
@@ -268,11 +346,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/aspirador': {
+      id: '/aspirador'
+      path: '/aspirador'
+      fullPath: '/aspirador'
+      preLoaderRoute: typeof AspiradorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bobojaco': {
       id: '/bobojaco'
       path: '/bobojaco'
       fullPath: '/bobojaco'
       preLoaderRoute: typeof BobojacoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bodymodelador': {
+      id: '/bodymodelador'
+      path: '/bodymodelador'
+      fullPath: '/bodymodelador'
+      preLoaderRoute: typeof BodymodeladorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -303,11 +395,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JaquetafemRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/jeanswideleg': {
+      id: '/jeanswideleg'
+      path: '/jeanswideleg'
+      fullPath: '/jeanswideleg'
+      preLoaderRoute: typeof JeanswidelegRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/kit-sandalias': {
       id: '/kit-sandalias'
       path: '/kit-sandalias'
       fullPath: '/kit-sandalias'
       preLoaderRoute: typeof KitSandaliasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kitjeans': {
+      id: '/kitjeans'
+      path: '/kitjeans'
+      fullPath: '/kitjeans'
+      preLoaderRoute: typeof KitjeansRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kitpanos': {
@@ -338,6 +444,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Nb9060RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ortopedica': {
+      id: '/ortopedica'
+      path: '/ortopedica'
+      fullPath: '/ortopedica'
+      preLoaderRoute: typeof OrtopedicaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/produtos': {
       id: '/produtos'
       path: '/produtos'
@@ -350,6 +463,13 @@ declare module '@tanstack/react-router' {
       path: '/roboaspirador'
       fullPath: '/roboaspirador'
       preLoaderRoute: typeof RoboaspiradorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/translucida': {
+      id: '/translucida'
+      path: '/translucida'
+      fullPath: '/translucida'
+      preLoaderRoute: typeof TranslucidaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categoria/$slug': {
@@ -379,18 +499,24 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AspiradorRoute: AspiradorRoute,
   BobojacoRoute: BobojacoRoute,
+  BodymodeladorRoute: BodymodeladorRoute,
   CheckoutRoute: CheckoutRoute,
   CheckoutSchutzRoute: CheckoutSchutzRoute,
   JaquetaRoute: JaquetaRoute,
   JaquetafemRoute: JaquetafemRoute,
+  JeanswidelegRoute: JeanswidelegRoute,
   KitSandaliasRoute: KitSandaliasRoute,
+  KitjeansRoute: KitjeansRoute,
   KitpanosRoute: KitpanosRoute,
   KitsandaliasRoute: KitsandaliasRoute,
   MercadopromoRoute: MercadopromoRoute,
   Nb9060Route: Nb9060Route,
+  OrtopedicaRoute: OrtopedicaRoute,
   ProdutosRoute: ProdutosRoute,
   RoboaspiradorRoute: RoboaspiradorRoute,
+  TranslucidaRoute: TranslucidaRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
   ProdutoSlugRoute: ProdutoSlugRoute,
   ApiPublicWebhooksHypercashRoute: ApiPublicWebhooksHypercashRoute,
