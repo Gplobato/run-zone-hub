@@ -329,12 +329,35 @@ export function TranslucidaPage() {
       };
     }
 
+    // Track AddPaymentInfo when user submits checkout
+    fbqTrackSingle(PIXEL_ID, "AddPaymentInfo", {
+      content_name: "Jelly Mule Feminina",
+      content_ids: ["sandalia-translucida-jelly-mule"],
+      content_type: "product",
+      value: pricePerUnit * quantity,
+      currency: "BRL",
+      payment_type: paymentMethod,
+    });
+
     try {
       const res = await createTx({ data: payload });
 
       if (res && res.id) {
         setTxData(res);
         if (paymentMethod === "PIX") {
+          // Track Pix Generation for funnel optimization
+          fbqTrackSingle(PIXEL_ID, "Lead", {
+            content_name: "Jelly Mule Feminina - Pix Gerado",
+            value: PIX_PRICE * quantity,
+            currency: "BRL",
+          });
+          if (typeof window !== "undefined" && typeof window.fbq === "function") {
+            window.fbq("trackCustom", "PixGenerated", {
+              order_id: res.id,
+              value: PIX_PRICE * quantity,
+              currency: "BRL",
+            });
+          }
           setCheckoutStep(2);
           startPixPolling(res.id);
         } else {
@@ -348,6 +371,7 @@ export function TranslucidaPage() {
               value: CARD_PRICE * quantity,
               currency: "BRL",
               order_id: res.id,
+              num_items: quantity,
             });
           } else if (res.status === "WAITING_PAYMENT") {
             setCheckoutStep(3);
