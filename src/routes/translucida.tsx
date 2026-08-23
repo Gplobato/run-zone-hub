@@ -100,9 +100,10 @@ export function TranslucidaPage() {
   const createTx = useServerFn(createHypercashTransaction);
   const getTx = useServerFn(getHypercashTransaction);
 
-  // Selection state
+  // Selection state (starts with no pre-selected size)
   const [selectedColor, setSelectedColor] = useState<ColorType>(COLORS[0]);
-  const [selectedSize, setSelectedSize] = useState<(typeof SIZES)[number]>("37");
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [sizeError, setSizeError] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -233,6 +234,15 @@ export function TranslucidaPage() {
 
   // Add to Cart
   const handleAddToCart = () => {
+    if (!selectedSize) {
+      setSizeError(true);
+      showToast("⚠️ Por favor, selecione seu tamanho antes de adicionar à sacola.");
+      const el = document.getElementById("tamanhos");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    setSizeError(false);
+
     const itemKey = `${selectedColor.key}-${selectedSize}`;
     setCartItems((prev) => {
       const idx = prev.findIndex((i) => i.key === itemKey);
@@ -255,7 +265,7 @@ export function TranslucidaPage() {
       ];
     });
     setCartOpen(true);
-    showToast(`"Jelly Mule ${selectedColor.label}" adicionada à sacola!`);
+    showToast(`"Jelly Mule ${selectedColor.label} (Tam ${selectedSize})" adicionada à sacola!`);
     fbqTrackSingle(PIXEL_ID, "AddToCart", {
       content_name: "Jelly Mule Feminina",
       content_ids: ["sandalia-translucida-jelly-mule"],
@@ -267,6 +277,15 @@ export function TranslucidaPage() {
 
   // Open Checkout
   const handleOpenCheckout = () => {
+    if (!selectedSize) {
+      setSizeError(true);
+      showToast("⚠️ Por favor, selecione seu tamanho para comprar.");
+      const el = document.getElementById("tamanhos");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    setSizeError(false);
+
     setCartOpen(false);
     setCheckoutStep(1);
     setCheckoutError(null);
@@ -716,10 +735,10 @@ export function TranslucidaPage() {
             </div>
 
             {/* Size Grid (33 ao 42) */}
-            <div id="tamanhos">
+            <div id="tamanhos" className={`p-2.5 rounded-lg transition-all ${sizeError && !selectedSize ? "bg-amber-50 border-2 border-amber-400" : ""}`}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-gray-900 uppercase">
-                  Tamanho BR: <span className="text-gray-700">{selectedSize}</span>
+                  Tamanho BR: <span className={selectedSize ? "text-gray-900 font-black" : "text-amber-700 font-bold"}>{selectedSize ? `${selectedSize}` : "Selecione"}</span>
                 </span>
                 <button
                   onClick={() => setSizeGuideOpen(true)}
@@ -732,10 +751,15 @@ export function TranslucidaPage() {
                 {SIZES.map((s) => (
                   <button
                     key={s}
-                    onClick={() => setSelectedSize(s)}
+                    onClick={() => {
+                      setSelectedSize(s);
+                      setSizeError(false);
+                    }}
                     className={`h-11 rounded font-bold text-sm transition-all border ${
                       selectedSize === s
-                        ? "bg-[#141215] text-white border-[#141215]"
+                        ? "bg-[#141215] text-white border-[#141215] scale-105 shadow-xs"
+                        : sizeError && !selectedSize
+                        ? "bg-white text-gray-900 border-amber-400 hover:border-black"
                         : "bg-white text-gray-800 border-[#e3e4e6] hover:border-black"
                     }`}
                   >
@@ -743,6 +767,11 @@ export function TranslucidaPage() {
                   </button>
                 ))}
               </div>
+              {sizeError && !selectedSize && (
+                <div className="text-[11px] text-amber-700 font-bold mt-1.5 flex items-center gap-1">
+                  👉 Por favor, escolha seu número acima para continuar.
+                </div>
+              )}
             </div>
 
             {/* Quantity and Actions */}
@@ -1010,7 +1039,9 @@ export function TranslucidaPage() {
         <div className="flex items-center gap-2.5">
           <img src={selectedColor.images[0]} alt="Jelly Mule" className="w-10 h-10 object-cover rounded border border-gray-200" />
           <div>
-            <div className="text-xs font-bold text-gray-900">Jelly Mule ({selectedSize})</div>
+            <div className="text-xs font-bold text-gray-900">
+              Jelly Mule {selectedSize ? `(Tam ${selectedSize})` : ""}
+            </div>
             <div className="text-sm font-black text-[#00873e]">R$ {PIX_PRICE.toFixed(2).replace(".", ",")} no Pix</div>
           </div>
         </div>
