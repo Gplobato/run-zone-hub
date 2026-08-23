@@ -135,9 +135,9 @@ export function TranslucidaPage() {
   const [shippingLoading, setShippingLoading] = useState(false);
   const [shippingCalculated, setShippingCalculated] = useState(false);
 
-  // Checkout modal state
+  // Checkout modal state: 1 (Dados), 2 (Entrega & Pagamento), 3 (Pix QR), 4 (Sucesso)
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [checkoutStep, setCheckoutStep] = useState<1 | 2 | 3>(1);
+  const [checkoutStep, setCheckoutStep] = useState<1 | 2 | 3 | 4>(1);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("PIX");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -281,10 +281,66 @@ export function TranslucidaPage() {
     });
   };
 
-  // Submit Checkout Transaction
+  // Step 1 Validation & Proceed to Step 2
+  const handleContinueToStep2 = (e: FormEvent) => {
+    e.preventDefault();
+    setCheckoutError(null);
+    if (!customerForm.name.trim()) {
+      setCheckoutError("Por favor, preencha seu nome completo.");
+      return;
+    }
+    const cleanCpf = customerForm.cpf.replace(/\D/g, "");
+    if (cleanCpf.length !== 11) {
+      setCheckoutError("Por favor, digite um CPF válido com 11 dígitos.");
+      return;
+    }
+    const cleanPhone = customerForm.phone.replace(/\D/g, "");
+    if (cleanPhone.length < 10) {
+      setCheckoutError("Por favor, digite um número de WhatsApp válido.");
+      return;
+    }
+    if (!customerForm.email.includes("@") || !customerForm.email.includes(".")) {
+      setCheckoutError("Por favor, digite um e-mail válido.");
+      return;
+    }
+    setCheckoutStep(2);
+  };
+
+  // Submit Checkout Transaction (Step 2)
   const handleSubmitCheckout = async (e: FormEvent) => {
     e.preventDefault();
     setCheckoutError(null);
+
+    const cleanCep = customerForm.zipCode.replace(/\D/g, "");
+    if (cleanCep.length !== 8) {
+      setCheckoutError("Por favor, digite um CEP válido com 8 dígitos.");
+      return;
+    }
+    if (!customerForm.street.trim() || !customerForm.number.trim() || !customerForm.city.trim() || !customerForm.state.trim()) {
+      setCheckoutError("Por favor, preencha todos os campos obrigatórios do endereço.");
+      return;
+    }
+
+    if (paymentMethod === "CREDIT_CARD") {
+      const cleanCard = cardForm.number.replace(/\D/g, "");
+      if (cleanCard.length < 15) {
+        setCheckoutError("Por favor, digite o número do cartão completo.");
+        return;
+      }
+      if (!cardForm.holderName.trim()) {
+        setCheckoutError("Por favor, digite o nome impresso no cartão.");
+        return;
+      }
+      if (!cardForm.expMonth || !cardForm.expYear) {
+        setCheckoutError("Por favor, informe a validade do cartão (mês e ano).");
+        return;
+      }
+      if (cardForm.cvv.replace(/\D/g, "").length < 3) {
+        setCheckoutError("Por favor, informe o código de segurança (CVV).");
+        return;
+      }
+    }
+
     setCheckoutLoading(true);
 
     const pricePerUnit = paymentMethod === "PIX" ? PIX_PRICE : CARD_PRICE;
@@ -358,12 +414,12 @@ export function TranslucidaPage() {
               currency: "BRL",
             });
           }
-          setCheckoutStep(2);
+          setCheckoutStep(3);
           startPixPolling(res.id);
         } else {
           // Credit Card processed
           if (res.status === "PAID" || res.status === "paid" || res.status === "approved") {
-            setCheckoutStep(3);
+            setCheckoutStep(4);
             fbqTrackSingle(PIXEL_ID, "Purchase", {
               content_name: "Jelly Mule Feminina",
               content_ids: ["sandalia-translucida-jelly-mule"],
@@ -374,7 +430,7 @@ export function TranslucidaPage() {
               num_items: quantity,
             });
           } else if (res.status === "WAITING_PAYMENT") {
-            setCheckoutStep(3);
+            setCheckoutStep(4);
           } else {
             throw new Error(`Status da transação: ${res.status}`);
           }
@@ -397,7 +453,7 @@ export function TranslucidaPage() {
         const check = await getTx({ data: { id: txId } });
         if (check && (check.status === "PAID" || check.status === "paid" || check.status === "approved")) {
           if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-          setCheckoutStep(3);
+          setCheckoutStep(4);
           showToast("🎉 Pagamento Aprovado com Sucesso!");
           fbqTrackSingle(PIXEL_ID, "Purchase", {
             content_name: "Jelly Mule Feminina",
@@ -414,7 +470,7 @@ export function TranslucidaPage() {
 
   // Pix Timer
   useEffect(() => {
-    if (checkoutStep === 2 && pixCountdown > 0) {
+    if (checkoutStep === 3 && pixCountdown > 0) {
       const timer = setInterval(() => setPixCountdown((c) => c - 1), 1000);
       return () => clearInterval(timer);
     }
@@ -1060,7 +1116,7 @@ export function TranslucidaPage() {
         </div>
       )}
 
-      {/* 9. ON-SITE HYPERCASH CHECKOUT MODAL (PIX & CREDIT CARD) */}
+      {/* 9. ON-SITE HYPERCASH CHECKOUT MODAL (2-STEP FLOW) */}
       {checkoutOpen && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl my-auto animate-in zoom-in-95 duration-200">
@@ -1091,65 +1147,56 @@ export function TranslucidaPage() {
                 </div>
               </div>
 
-              {/* STEP 1: FORM */}
-              {checkoutStep === 1 && (
-                <form onSubmit={handleSubmitCheckout} className="space-y-4">
-                  
-                  {/* Payment Method Selector Tabs */}
-                  <div>
-                    <label className="font-bold text-gray-900 uppercase text-[11px] block mb-1.5">Escolha a Forma de Pagamento:</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("PIX")}
-                        className={`p-3 rounded-lg border-2 text-left flex items-center justify-between transition-all ${
-                          paymentMethod === "PIX"
-                            ? "border-[#00873e] bg-[#f6fbf2]"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        <div>
-                          <span className="font-black text-black block">PIX (5% OFF)</span>
-                          <span className="text-[11px] text-[#00873e] font-bold">R$ {(PIX_PRICE * quantity).toFixed(2).replace(".", ",")}</span>
-                        </div>
-                        <img src={pixLogoImg} alt="Pix" className="h-6 w-auto" />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("CREDIT_CARD")}
-                        className={`p-3 rounded-lg border-2 text-left flex items-center justify-between transition-all ${
-                          paymentMethod === "CREDIT_CARD"
-                            ? "border-black bg-gray-50"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        <div>
-                          <span className="font-black text-black block">Cartão de Crédito</span>
-                          <span className="text-[11px] text-gray-600 font-bold">Até 6x sem juros</span>
-                        </div>
-                        <CreditCard size={20} className="text-gray-700" />
-                      </button>
+              {/* 2-Step Progress Stepper */}
+              {(checkoutStep === 1 || checkoutStep === 2) && (
+                <div className="flex items-center justify-between px-2 mb-4 bg-[#fafafa] p-2.5 rounded-lg border border-gray-200">
+                  <div className="flex items-center gap-2 flex-1">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-xs ${
+                      checkoutStep === 1 ? "bg-black text-white" : "bg-[#00873e] text-white"
+                    }`}>
+                      {checkoutStep > 1 ? <Check size={14} /> : "1"}
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 text-xs">Seus Dados</div>
+                      <div className="text-[10px] text-gray-400">Identificação</div>
                     </div>
                   </div>
 
-                  {/* 1. Customer Data */}
-                  <div className="space-y-2 pt-1">
-                    <span className="font-bold text-gray-900 uppercase text-[11px] block">1. Dados Pessoais</span>
+                  <div className="w-8 h-0.5 bg-gray-200 mx-2" />
+
+                  <div className="flex items-center gap-2 flex-1 justify-end">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center font-black text-xs ${
+                      checkoutStep === 2 ? "bg-black text-white" : "bg-gray-200 text-gray-500"
+                    }`}>
+                      2
+                    </div>
                     <div>
-                      <label className="text-[11px] text-gray-600 block mb-0.5">Nome Completo *</label>
+                      <div className={`font-bold text-xs ${checkoutStep === 2 ? "text-gray-900" : "text-gray-400"}`}>Entrega &amp; Pagamento</div>
+                      <div className="text-[10px] text-gray-400">Frete Grátis</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 1: DADOS PESSOAIS */}
+              {checkoutStep === 1 && (
+                <form onSubmit={handleContinueToStep2} className="space-y-3.5">
+                  <div className="space-y-2.5">
+                    <div>
+                      <label className="text-[11px] font-bold text-gray-700 block mb-0.5">Nome Completo *</label>
                       <input
                         type="text"
                         required
                         placeholder="Ex: Maria Silva"
                         value={customerForm.name}
                         onChange={(e) => setCustomerForm({ ...customerForm, name: e.target.value })}
-                        className="w-full h-10 border border-gray-300 rounded px-3 text-xs focus:outline-none focus:border-black"
+                        className="w-full h-10 border border-gray-300 rounded-lg px-3 text-xs focus:outline-none focus:border-black"
                       />
                     </div>
+
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="text-[11px] text-gray-600 block mb-0.5">CPF *</label>
+                        <label className="text-[11px] font-bold text-gray-700 block mb-0.5">CPF *</label>
                         <input
                           type="text"
                           required
@@ -1163,11 +1210,11 @@ export function TranslucidaPage() {
                             v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
                             setCustomerForm({ ...customerForm, cpf: v });
                           }}
-                          className="w-full h-10 border border-gray-300 rounded px-3 text-xs focus:outline-none focus:border-black"
+                          className="w-full h-10 border border-gray-300 rounded-lg px-3 text-xs focus:outline-none focus:border-black"
                         />
                       </div>
                       <div>
-                        <label className="text-[11px] text-gray-600 block mb-0.5">WhatsApp *</label>
+                        <label className="text-[11px] font-bold text-gray-700 block mb-0.5">WhatsApp / Celular *</label>
                         <input
                           type="text"
                           required
@@ -1181,26 +1228,65 @@ export function TranslucidaPage() {
                             else if (v.length > 2) v = v.replace(/^(\d{2})(\d{0,5})/, "($1) $2");
                             setCustomerForm({ ...customerForm, phone: v });
                           }}
-                          className="w-full h-10 border border-gray-300 rounded px-3 text-xs focus:outline-none focus:border-black"
+                          className="w-full h-10 border border-gray-300 rounded-lg px-3 text-xs focus:outline-none focus:border-black"
                         />
                       </div>
                     </div>
+
                     <div>
-                      <label className="text-[11px] text-gray-600 block mb-0.5">E-mail para Confirmação *</label>
+                      <label className="text-[11px] font-bold text-gray-700 block mb-0.5">E-mail para Confirmação *</label>
                       <input
                         type="email"
                         required
                         placeholder="seuemail@exemplo.com"
                         value={customerForm.email}
                         onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
-                        className="w-full h-10 border border-gray-300 rounded px-3 text-xs focus:outline-none focus:border-black"
+                        className="w-full h-10 border border-gray-300 rounded-lg px-3 text-xs focus:outline-none focus:border-black"
                       />
+                      <span className="text-[10px] text-gray-400 block mt-0.5">Enviaremos o comprovante e código de rastreamento por e-mail.</span>
                     </div>
                   </div>
 
-                  {/* 2. Delivery Address */}
+                  {checkoutError && (
+                    <div className="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg text-center font-bold">
+                      {checkoutError}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="w-full h-12 bg-[#80c142] hover:bg-[#72b037] text-black font-black uppercase text-xs tracking-wider rounded-full shadow transition-all flex items-center justify-center gap-2 mt-4"
+                  >
+                    CONTINUAR PARA ENTREGA &amp; PAGAMENTO →
+                  </button>
+                </form>
+              )}
+
+              {/* STEP 2: ENTREGA & FORMA DE PAGAMENTO */}
+              {checkoutStep === 2 && (
+                <form onSubmit={handleSubmitCheckout} className="space-y-4">
+                  {/* Top Bar with Back Link */}
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCheckoutError(null);
+                        setCheckoutStep(1);
+                      }}
+                      className="text-xs font-bold text-gray-600 hover:text-black flex items-center gap-1"
+                    >
+                      <ChevronLeft size={16} /> Voltar aos dados
+                    </button>
+                    <div className="text-[11px] text-gray-500 font-medium truncate max-w-[200px]">
+                      👤 {customerForm.name.split(" ")[0]} ({customerForm.phone})
+                    </div>
+                  </div>
+
+                  {/* 1. Endereço de Entrega */}
                   <div className="space-y-2 pt-1">
-                    <span className="font-bold text-gray-900 uppercase text-[11px] block">2. Endereço de Entrega (Frete Grátis)</span>
+                    <span className="font-bold text-gray-900 uppercase text-[11px] block flex items-center gap-1.5">
+                      <Truck size={14} className="text-[#00873e]" /> 1. Endereço de Entrega (Frete Grátis)
+                    </span>
                     <div className="grid grid-cols-3 gap-2">
                       <div>
                         <label className="text-[11px] text-gray-600 block mb-0.5">CEP *</label>
@@ -1289,96 +1375,135 @@ export function TranslucidaPage() {
                     </div>
                   </div>
 
-                  {/* 3. Credit Card Fields (if selected) */}
-                  {paymentMethod === "CREDIT_CARD" && (
-                    <div className="space-y-2 pt-2 border-t border-gray-200">
-                      <span className="font-bold text-gray-900 uppercase text-[11px] block">3. Dados do Cartão de Crédito</span>
-                      <div>
-                        <label className="text-[11px] text-gray-600 block mb-0.5">Número do Cartão *</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="0000 0000 0000 0000"
-                          maxLength={19}
-                          value={cardForm.number}
-                          onChange={(e) => {
-                            let v = e.target.value.replace(/\D/g, "").slice(0, 16);
-                            v = v.replace(/(\d{4})(?=\d)/g, "$1 ");
-                            setCardForm({ ...cardForm, number: v });
-                          }}
-                          className="w-full h-10 border border-gray-300 rounded px-3 text-xs focus:outline-none focus:border-black"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] text-gray-600 block mb-0.5">Nome no Cartão *</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="COMO IMPRESSO NO CARTÃO"
-                          value={cardForm.holderName}
-                          onChange={(e) => setCardForm({ ...cardForm, holderName: e.target.value.toUpperCase() })}
-                          className="w-full h-10 border border-gray-300 rounded px-3 text-xs uppercase focus:outline-none focus:border-black"
-                        />
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
+                  {/* 2. Forma de Pagamento */}
+                  <div className="space-y-3 pt-2 border-t border-gray-200">
+                    <span className="font-bold text-gray-900 uppercase text-[11px] block flex items-center gap-1.5">
+                      <CreditCard size={14} className="text-[#00873e]" /> 2. Escolha a Forma de Pagamento
+                    </span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("PIX")}
+                        className={`p-3 rounded-lg border-2 text-left flex items-center justify-between transition-all ${
+                          paymentMethod === "PIX"
+                            ? "border-[#00873e] bg-[#f6fbf2]"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
                         <div>
-                          <label className="text-[11px] text-gray-600 block mb-0.5">Mês (MM) *</label>
-                          <input
-                            type="text"
-                            required
-                            placeholder="12"
-                            maxLength={2}
-                            value={cardForm.expMonth}
-                            onChange={(e) => setCardForm({ ...cardForm, expMonth: e.target.value.replace(/\D/g, "").slice(0, 2) })}
-                            className="w-full h-10 border border-gray-300 rounded px-3 text-xs text-center focus:outline-none focus:border-black"
-                          />
+                          <span className="font-black text-black block">PIX (5% OFF)</span>
+                          <span className="text-[11px] text-[#00873e] font-bold">R$ {(PIX_PRICE * quantity).toFixed(2).replace(".", ",")}</span>
                         </div>
-                        <div>
-                          <label className="text-[11px] text-gray-600 block mb-0.5">Ano (AAAA) *</label>
-                          <input
-                            type="text"
-                            required
-                            placeholder="2028"
-                            maxLength={4}
-                            value={cardForm.expYear}
-                            onChange={(e) => setCardForm({ ...cardForm, expYear: e.target.value.replace(/\D/g, "").slice(0, 4) })}
-                            className="w-full h-10 border border-gray-300 rounded px-3 text-xs text-center focus:outline-none focus:border-black"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[11px] text-gray-600 block mb-0.5">CVV *</label>
-                          <input
-                            type="text"
-                            required
-                            placeholder="123"
-                            maxLength={4}
-                            value={cardForm.cvv}
-                            onChange={(e) => setCardForm({ ...cardForm, cvv: e.target.value.replace(/\D/g, "").slice(0, 4) })}
-                            className="w-full h-10 border border-gray-300 rounded px-3 text-xs text-center focus:outline-none focus:border-black"
-                          />
-                        </div>
-                      </div>
+                        <img src={pixLogoImg} alt="Pix" className="h-6 w-auto" />
+                      </button>
 
-                      <div>
-                        <label className="text-[11px] text-gray-600 block mb-0.5">Parcelamento *</label>
-                        <select
-                          value={cardForm.installments}
-                          onChange={(e) => setCardForm({ ...cardForm, installments: Number(e.target.value) })}
-                          className="w-full h-10 border border-gray-300 rounded px-3 text-xs focus:outline-none focus:border-black"
-                        >
-                          <option value={1}>1x de R$ {(CARD_PRICE * quantity).toFixed(2).replace(".", ",")} sem juros</option>
-                          <option value={2}>2x de R$ {((CARD_PRICE * quantity) / 2).toFixed(2).replace(".", ",")} sem juros</option>
-                          <option value={3}>3x de R$ {((CARD_PRICE * quantity) / 3).toFixed(2).replace(".", ",")} sem juros</option>
-                          <option value={4}>4x de R$ {((CARD_PRICE * quantity) / 4).toFixed(2).replace(".", ",")} sem juros</option>
-                          <option value={5}>5x de R$ {((CARD_PRICE * quantity) / 5).toFixed(2).replace(".", ",")} sem juros</option>
-                          <option value={6}>6x de R$ {((CARD_PRICE * quantity) / 6).toFixed(2).replace(".", ",")} sem juros</option>
-                        </select>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("CREDIT_CARD")}
+                        className={`p-3 rounded-lg border-2 text-left flex items-center justify-between transition-all ${
+                          paymentMethod === "CREDIT_CARD"
+                            ? "border-black bg-gray-50"
+                            : "border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        <div>
+                          <span className="font-black text-black block">Cartão de Crédito</span>
+                          <span className="text-[11px] text-gray-600 font-bold">Até 6x sem juros</span>
+                        </div>
+                        <CreditCard size={20} className="text-gray-700" />
+                      </button>
                     </div>
-                  )}
+
+                    {/* Credit Card Fields */}
+                    {paymentMethod === "CREDIT_CARD" && (
+                      <div className="space-y-2 pt-2 bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <div>
+                          <label className="text-[11px] text-gray-600 block mb-0.5">Número do Cartão *</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="0000 0000 0000 0000"
+                            maxLength={19}
+                            value={cardForm.number}
+                            onChange={(e) => {
+                              let v = e.target.value.replace(/\D/g, "").slice(0, 16);
+                              v = v.replace(/(\d{4})(?=\d)/g, "$1 ");
+                              setCardForm({ ...cardForm, number: v });
+                            }}
+                            className="w-full h-10 border border-gray-300 rounded px-3 text-xs bg-white focus:outline-none focus:border-black"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[11px] text-gray-600 block mb-0.5">Nome no Cartão *</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="COMO IMPRESSO NO CARTÃO"
+                            value={cardForm.holderName}
+                            onChange={(e) => setCardForm({ ...cardForm, holderName: e.target.value.toUpperCase() })}
+                            className="w-full h-10 border border-gray-300 rounded px-3 text-xs uppercase bg-white focus:outline-none focus:border-black"
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <label className="text-[11px] text-gray-600 block mb-0.5">Mês (MM) *</label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="12"
+                              maxLength={2}
+                              value={cardForm.expMonth}
+                              onChange={(e) => setCardForm({ ...cardForm, expMonth: e.target.value.replace(/\D/g, "").slice(0, 2) })}
+                              className="w-full h-10 border border-gray-300 rounded px-3 text-xs text-center bg-white focus:outline-none focus:border-black"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[11px] text-gray-600 block mb-0.5">Ano (AAAA) *</label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="2028"
+                              maxLength={4}
+                              value={cardForm.expYear}
+                              onChange={(e) => setCardForm({ ...cardForm, expYear: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+                              className="w-full h-10 border border-gray-300 rounded px-3 text-xs text-center bg-white focus:outline-none focus:border-black"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[11px] text-gray-600 block mb-0.5">CVV *</label>
+                            <input
+                              type="text"
+                              required
+                              placeholder="123"
+                              maxLength={4}
+                              value={cardForm.cvv}
+                              onChange={(e) => setCardForm({ ...cardForm, cvv: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+                              className="w-full h-10 border border-gray-300 rounded px-3 text-xs text-center bg-white focus:outline-none focus:border-black"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-[11px] text-gray-600 block mb-0.5">Parcelamento *</label>
+                          <select
+                            value={cardForm.installments}
+                            onChange={(e) => setCardForm({ ...cardForm, installments: Number(e.target.value) })}
+                            className="w-full h-10 border border-gray-300 rounded px-3 text-xs bg-white focus:outline-none focus:border-black"
+                          >
+                            <option value={1}>1x de R$ {(CARD_PRICE * quantity).toFixed(2).replace(".", ",")} sem juros</option>
+                            <option value={2}>2x de R$ {((CARD_PRICE * quantity) / 2).toFixed(2).replace(".", ",")} sem juros</option>
+                            <option value={3}>3x de R$ {((CARD_PRICE * quantity) / 3).toFixed(2).replace(".", ",")} sem juros</option>
+                            <option value={4}>4x de R$ {((CARD_PRICE * quantity) / 4).toFixed(2).replace(".", ",")} sem juros</option>
+                            <option value={5}>5x de R$ {((CARD_PRICE * quantity) / 5).toFixed(2).replace(".", ",")} sem juros</option>
+                            <option value={6}>6x de R$ {((CARD_PRICE * quantity) / 6).toFixed(2).replace(".", ",")} sem juros</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   {checkoutError && (
-                    <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded text-center font-bold">
+                    <div className="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-lg text-center font-bold">
                       {checkoutError}
                     </div>
                   )}
@@ -1401,8 +1526,8 @@ export function TranslucidaPage() {
                 </form>
               )}
 
-              {/* STEP 2: PIX RESULT (QR CODE + COPIA E COLA) */}
-              {checkoutStep === 2 && txData?.pix && (
+              {/* STEP 3: PIX RESULT (QR CODE + COPIA E COLA) */}
+              {checkoutStep === 3 && txData?.pix && (
                 <div className="text-center space-y-4 py-2">
                   <div>
                     <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Pedido Gerado com Sucesso!</span>
@@ -1459,8 +1584,8 @@ export function TranslucidaPage() {
                 </div>
               )}
 
-              {/* STEP 3: SUCCESS CELEBRATION */}
-              {checkoutStep === 3 && (
+              {/* STEP 4: SUCCESS CELEBRATION */}
+              {checkoutStep === 4 && (
                 <div className="text-center py-6 space-y-3">
                   <div className="w-16 h-16 bg-[#e5f7e7] text-[#00873e] rounded-full flex items-center justify-center mx-auto">
                     <CheckCircle2 size={36} />
