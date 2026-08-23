@@ -289,7 +289,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                 Painel de Leads &amp; Checkout Seguro
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Monitorando em tempo real" />
               </h1>
-              <p className="text-[11px] text-gray-400">Crocs Jelly Mule Feminina (/translucida)</p>
+              <p className="text-[11px] text-gray-400">Crocs Jelly Mule Feminina (/translucida2)</p>
             </div>
           </div>
 
@@ -304,11 +304,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               <span className="hidden sm:inline">Atualizar</span>
             </button>
             <button
-              onClick={() => navigate({ to: "/translucida" })}
+              onClick={() => navigate({ to: "/translucida2" })}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-bold transition-all border border-gray-700 text-emerald-400"
             >
               <ExternalLink size={13} />
-              <span className="hidden sm:inline">Ver Loja</span>
+              <span className="hidden sm:inline">Ver Loja (/translucida2)</span>
             </button>
             <button
               onClick={() => {
@@ -477,7 +477,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               <ShoppingBag size={40} className="mx-auto text-gray-300" />
               <p className="text-sm font-bold text-gray-600">Nenhum registro encontrado</p>
               <p className="text-xs max-w-sm mx-auto">
-                Assim que um cliente entrar no checkout em <code>/translucida</code> e preencher os dados, ele aparecerá instantaneamente aqui.
+                Assim que um cliente entrar no checkout em <code>/translucida2</code> e preencher os dados, ele aparecerá instantaneamente aqui.
               </p>
             </div>
           ) : (

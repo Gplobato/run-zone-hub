@@ -29,6 +29,7 @@ import { Route as OrtopedicaRouteImport } from './routes/ortopedica'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as RoboaspiradorRouteImport } from './routes/roboaspirador'
 import { Route as TranslucidaRouteImport } from './routes/translucida'
+import { Route as Translucida2RouteImport } from './routes/translucida2'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
 import { Route as ApiPublicWebhooksHypercashRouteImport } from './routes/api/public/webhooks/hypercash'
@@ -133,6 +134,11 @@ const TranslucidaRoute = TranslucidaRouteImport.update({
   path: '/translucida',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Translucida2Route = Translucida2RouteImport.update({
+  id: '/translucida2',
+  path: '/translucida2',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   id: '/categoria/$slug',
   path: '/categoria/$slug',
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/produtos': typeof ProdutosRoute
   '/roboaspirador': typeof RoboaspiradorRoute
   '/translucida': typeof TranslucidaRoute
+  '/translucida2': typeof Translucida2Route
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/api/public/webhooks/hypercash': typeof ApiPublicWebhooksHypercashRoute
@@ -196,6 +203,7 @@ export interface FileRoutesByTo {
   '/produtos': typeof ProdutosRoute
   '/roboaspirador': typeof RoboaspiradorRoute
   '/translucida': typeof TranslucidaRoute
+  '/translucida2': typeof Translucida2Route
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/api/public/webhooks/hypercash': typeof ApiPublicWebhooksHypercashRoute
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   '/produtos': typeof ProdutosRoute
   '/roboaspirador': typeof RoboaspiradorRoute
   '/translucida': typeof TranslucidaRoute
+  '/translucida2': typeof Translucida2Route
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/api/public/webhooks/hypercash': typeof ApiPublicWebhooksHypercashRoute
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/roboaspirador'
     | '/translucida'
+    | '/translucida2'
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/api/public/webhooks/hypercash'
@@ -274,6 +284,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/roboaspirador'
     | '/translucida'
+    | '/translucida2'
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/api/public/webhooks/hypercash'
@@ -299,6 +310,7 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/roboaspirador'
     | '/translucida'
+    | '/translucida2'
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/api/public/webhooks/hypercash'
@@ -325,6 +337,7 @@ export interface RootRouteChildren {
   ProdutosRoute: typeof ProdutosRoute
   RoboaspiradorRoute: typeof RoboaspiradorRoute
   TranslucidaRoute: typeof TranslucidaRoute
+  Translucida2Route: typeof Translucida2Route
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   ProdutoSlugRoute: typeof ProdutoSlugRoute
   ApiPublicWebhooksHypercashRoute: typeof ApiPublicWebhooksHypercashRoute
@@ -472,6 +485,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TranslucidaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/translucida2': {
+      id: '/translucida2'
+      path: '/translucida2'
+      fullPath: '/translucida2'
+      preLoaderRoute: typeof Translucida2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/categoria/$slug': {
       id: '/categoria/$slug'
       path: '/categoria/$slug'
@@ -517,6 +537,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProdutosRoute: ProdutosRoute,
   RoboaspiradorRoute: RoboaspiradorRoute,
   TranslucidaRoute: TranslucidaRoute,
+  Translucida2Route: Translucida2Route,
   CategoriaSlugRoute: CategoriaSlugRoute,
   ProdutoSlugRoute: ProdutoSlugRoute,
   ApiPublicWebhooksHypercashRoute: ApiPublicWebhooksHypercashRoute,
