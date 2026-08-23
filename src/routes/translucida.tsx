@@ -685,7 +685,7 @@ export function TranslucidaPage() {
               <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-1.5 text-[11px] text-gray-600 font-semibold">
                   <Lock size={14} className="text-[#00873e]" />
-                  <span>Pagamento Seguro HyperCash</span>
+                  <span>Pagamento 100% Seguro</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <img src={pixLogoImg} alt="Pix Oficial" className="h-6 w-auto object-contain bg-white p-0.5 rounded border border-gray-200" />
@@ -999,7 +999,7 @@ export function TranslucidaPage() {
               <img src={cartoesLogoImg} alt="Bandeiras de Cartão" className="h-8 w-auto object-contain bg-white p-1 rounded border border-gray-200" />
             </div>
             <div className="text-[11px] text-gray-500 mt-2">
-              🔒 Gateway Seguro HyperCash com Certificado SSL ativo de 256 bits.
+              🔒 Ambiente Seguro com Certificado SSL ativo de 256 bits.
             </div>
           </div>
         </div>
@@ -1116,7 +1116,7 @@ export function TranslucidaPage() {
         </div>
       )}
 
-      {/* 9. ON-SITE HYPERCASH CHECKOUT MODAL (2-STEP FLOW) */}
+      {/* 9. ON-SITE CHECKOUT MODAL (2-STEP FLOW) */}
       {checkoutOpen && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-3 sm:p-4 backdrop-blur-xs overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-lg w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl my-auto animate-in zoom-in-95 duration-200">
@@ -1124,7 +1124,7 @@ export function TranslucidaPage() {
             {/* Header */}
             <div className="bg-[#141215] text-white p-4 flex items-center justify-between shrink-0">
               <div className="font-bold text-sm uppercase flex items-center gap-2">
-                <Lock size={16} className="text-[#80c142]" /> Checkout Seguro HyperCash
+                <Lock size={16} className="text-[#80c142]" /> Checkout Seguro
               </div>
               <button onClick={() => setCheckoutOpen(false)} className="text-gray-300 hover:text-white">
                 <X size={20} />
