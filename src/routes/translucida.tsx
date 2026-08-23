@@ -32,6 +32,7 @@ import {
   Menu,
 } from "lucide-react";
 import { createHypercashTransaction, getHypercashTransaction } from "@/lib/hypercash.functions";
+import { recordLead, updateLeadStatus } from "@/lib/leads.functions";
 import { fbqInit, fbqTrackPageViewOnce, fbqTrackSingle } from "@/lib/pixel";
 
 // Asset Imports
@@ -99,6 +100,8 @@ export const Route = createFileRoute("/translucida")({
 export function TranslucidaPage() {
   const createTx = useServerFn(createHypercashTransaction);
   const getTx = useServerFn(getHypercashTransaction);
+  const recordLeadFn = useServerFn(recordLead);
+  const updateLeadFn = useServerFn(updateLeadStatus);
 
   // Selection state (starts with no pre-selected size)
   const [selectedColor, setSelectedColor] = useState<ColorType>(COLORS[0]);
@@ -106,6 +109,7 @@ export function TranslucidaPage() {
   const [sizeError, setSizeError] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [currentLeadId, setCurrentLeadId] = useState<string | null>(null);
 
   // UI state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -322,6 +326,28 @@ export function TranslucidaPage() {
       setCheckoutError("Por favor, digite um e-mail válido.");
       return;
     }
+
+    // Capture / Record Lead in Step 1 (Status: ABANDONED until they pay)
+    const leadId = currentLeadId || `lead_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    setCurrentLeadId(leadId);
+    recordLeadFn({
+      data: {
+        leadId,
+        productTitle: "Jelly Mule Feminina",
+        productColor: selectedColor.label,
+        productSize: selectedSize || "37",
+        quantity,
+        totalAmount: (paymentMethod === "PIX" ? PIX_PRICE : CARD_PRICE) * quantity,
+        customer: {
+          name: customerForm.name.trim(),
+          cpf: customerForm.cpf.trim(),
+          phone: customerForm.phone.trim(),
+          email: customerForm.email.trim(),
+        },
+        status: "ABANDONED",
+      },
+    }).catch(() => {});
+
     setCheckoutStep(2);
   };
 
@@ -370,7 +396,7 @@ export function TranslucidaPage() {
       items: [
         {
           slug: "sandalia-translucida-jelly-mule",
-          title: `Jelly Mule Feminina - ${selectedColor.label} (Tam ${selectedSize})`,
+          title: `Jelly Mule Feminina - ${selectedColor.label} (Tam ${selectedSize || "37"})`,
           unitPriceCents: unitPriceCents,
           quantity: quantity,
         },
@@ -420,6 +446,28 @@ export function TranslucidaPage() {
       if (res && res.id) {
         setTxData(res);
         if (paymentMethod === "PIX") {
+          // Update Lead to PIX_GENERATED with Pix Code
+          if (currentLeadId) {
+            updateLeadFn({
+              data: {
+                leadId: currentLeadId,
+                status: "PIX_GENERATED",
+                paymentMethod: "PIX",
+                transactionId: res.id,
+                pixCode: res.pix?.qrcode || "",
+                shipping: {
+                  zipCode: customerForm.zipCode,
+                  street: customerForm.street,
+                  number: customerForm.number,
+                  complement: customerForm.complement,
+                  neighborhood: customerForm.neighborhood,
+                  city: customerForm.city,
+                  state: customerForm.state,
+                },
+              },
+            }).catch(() => {});
+          }
+
           // Track Pix Generation for funnel optimization
           fbqTrackSingle(PIXEL_ID, "Lead", {
             content_name: "Jelly Mule Feminina - Pix Gerado",
@@ -438,6 +486,26 @@ export function TranslucidaPage() {
         } else {
           // Credit Card processed
           if (res.status === "PAID" || res.status === "paid" || res.status === "approved") {
+            if (currentLeadId) {
+              updateLeadFn({
+                data: {
+                  leadId: currentLeadId,
+                  status: "PAID",
+                  paymentMethod: "CREDIT_CARD",
+                  transactionId: res.id,
+                  shipping: {
+                    zipCode: customerForm.zipCode,
+                    street: customerForm.street,
+                    number: customerForm.number,
+                    complement: customerForm.complement,
+                    neighborhood: customerForm.neighborhood,
+                    city: customerForm.city,
+                    state: customerForm.state,
+                  },
+                },
+              }).catch(() => {});
+            }
+
             setCheckoutStep(4);
             fbqTrackSingle(PIXEL_ID, "Purchase", {
               content_name: "Jelly Mule Feminina",
@@ -472,6 +540,14 @@ export function TranslucidaPage() {
         const check = await getTx({ data: { id: txId } });
         if (check && (check.status === "PAID" || check.status === "paid" || check.status === "approved")) {
           if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+          if (currentLeadId) {
+            updateLeadFn({
+              data: {
+                leadId: currentLeadId,
+                status: "PAID",
+              },
+            }).catch(() => {});
+          }
           setCheckoutStep(4);
           showToast("🎉 Pagamento Aprovado com Sucesso!");
           fbqTrackSingle(PIXEL_ID, "Purchase", {
