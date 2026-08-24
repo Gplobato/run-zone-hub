@@ -3452,7 +3452,7 @@ function MercadoLivreCashinpayCheckoutModal({
     }
 
     try {
-      await updateLeadStatus({
+      void updateLeadStatus({
         data: {
           leadId: form.document,
           shipping: {
