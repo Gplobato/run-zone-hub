@@ -1957,11 +1957,21 @@ const maskCPF = (value: string) =>
     .replace(/(\d{3})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 const maskPhone = (value: string) => {
-  const digits = onlyDigits(value).slice(0, 11);
-  if (digits.length <= 10) {
-    return digits.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3").trim();
+  let digits = onlyDigits(value);
+  if (digits.startsWith("55") && digits.length > 11) {
+    digits = digits.slice(2);
   }
-  return digits.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").trim();
+  digits = digits.slice(0, 11);
+  if (digits.length <= 2) {
+    return digits;
+  }
+  if (digits.length <= 6) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  }
+  if (digits.length <= 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 };
 const maskCEP = (value: string) =>
   onlyDigits(value).slice(0, 8).replace(/(\d{5})(\d)/, "$1-$2");
@@ -3359,32 +3369,43 @@ function MercadoLivreCashinpayCheckoutModal({
   };
 
   // Step 1 -> Step 2
-  const handleNextStep1 = async (e?: FormEvent) => {
+  const handleNextStep1 = (e?: FormEvent) => {
     if (e) e.preventDefault();
     setErrorMessage(null);
 
-    if (form.name.trim().length < 3) {
-      setErrorMessage("Por favor, informe seu nome completo.");
+    const name = form.name.trim();
+    const email = form.email.trim();
+    const cleanDoc = onlyDigits(form.document);
+    let cleanPhone = onlyDigits(form.phone);
+    if (cleanPhone.startsWith("55") && cleanPhone.length > 11) {
+      cleanPhone = cleanPhone.slice(2);
+    }
+
+    if (name.length < 2) {
+      setErrorMessage("Por favor, digite seu nome completo.");
       return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      setErrorMessage("Por favor, informe um e-mail válido.");
+    if (!email || !email.includes("@")) {
+      setErrorMessage("Por favor, digite um e-mail válido.");
       return;
     }
-    if (onlyDigits(form.document).length !== 11) {
-      setErrorMessage("Por favor, informe um CPF válido com 11 dígitos.");
+    if (cleanDoc.length < 11) {
+      setErrorMessage("Por favor, digite seu CPF completo (11 dígitos).");
       return;
     }
-    if (onlyDigits(form.phone).length < 10) {
-      setErrorMessage("Por favor, informe um número de WhatsApp/celular com DDD.");
+    if (cleanPhone.length < 10) {
+      setErrorMessage("Por favor, digite seu celular com DDD.");
       return;
     }
 
+    setStep(2);
+    setErrorMessage(null);
+
     try {
-      await recordLead({
+      void recordLead({
         data: {
-          name: form.name.trim(),
-          email: form.email.trim().toLowerCase(),
+          name,
+          email: email.toLowerCase(),
           phone: form.phone,
           document: form.document,
           productTitle: product.title,
@@ -3395,23 +3416,21 @@ function MercadoLivreCashinpayCheckoutModal({
           status: "ABANDONED",
         },
       });
-    } catch (err) {
-      console.warn("Lead record error:", err);
-    }
+    } catch {}
 
-    fbqTrackSingle(META_PIXEL_ID, "InitiateCheckout", {
-      content_name: product.title,
-      content_ids: [product.id],
-      value: totalAmount,
-      currency: "BRL",
-      num_items: qty,
-    });
-
-    setStep(2);
+    try {
+      fbqTrackSingle(META_PIXEL_ID, "InitiateCheckout", {
+        content_name: product.title,
+        content_ids: [product.id],
+        value: totalAmount,
+        currency: "BRL",
+        num_items: qty,
+      });
+    } catch {}
   };
 
   // Step 2 -> Step 3
-  const handleNextStep2 = async (e?: FormEvent) => {
+  const handleNextStep2 = (e?: FormEvent) => {
     if (e) e.preventDefault();
     setErrorMessage(null);
 
@@ -3719,7 +3738,6 @@ function MercadoLivreCashinpayCheckoutModal({
                   <label className="block text-xs font-medium text-gray-700 mb-1">Nome completo</label>
                   <input
                     type="text"
-                    required
                     placeholder="Digite seu nome completo"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -3731,7 +3749,6 @@ function MercadoLivreCashinpayCheckoutModal({
                   <label className="block text-xs font-medium text-gray-700 mb-1">E-mail</label>
                   <input
                     type="email"
-                    required
                     placeholder="Digite seu e-mail"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -3746,7 +3763,6 @@ function MercadoLivreCashinpayCheckoutModal({
                   </div>
                   <input
                     type="text"
-                    required
                     placeholder="000.000.000-00"
                     value={form.document}
                     onChange={(e) => setForm({ ...form, document: maskCPF(e.target.value) })}
@@ -3758,7 +3774,6 @@ function MercadoLivreCashinpayCheckoutModal({
                   <label className="block text-xs font-medium text-gray-700 mb-1">Celular/Whatsapp</label>
                   <input
                     type="tel"
-                    required
                     placeholder="+55 (00) 00000-0000"
                     value={form.phone}
                     onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })}
@@ -3766,9 +3781,17 @@ function MercadoLivreCashinpayCheckoutModal({
                   />
                 </div>
 
+                {errorMessage && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-center gap-2">
+                    <CircleAlert size={15} className="shrink-0 text-red-600" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-[#005BFF] hover:bg-[#004cd6] text-white font-bold text-sm rounded-lg transition-all shadow-sm mt-2 cursor-pointer"
+                  onClick={handleNextStep1}
+                  className="w-full py-3.5 bg-[#005BFF] hover:bg-[#004cd6] active:bg-[#0040b0] text-white font-bold text-sm rounded-lg transition-all shadow-sm mt-2 cursor-pointer"
                 >
                   Ir Para Entrega
                 </button>
@@ -3811,7 +3834,6 @@ function MercadoLivreCashinpayCheckoutModal({
                   <div className="relative flex items-center">
                     <input
                       type="text"
-                      required
                       placeholder="00000-000"
                       value={form.zipCode}
                       onChange={(e) => handleCepChange(e.target.value)}
@@ -3831,7 +3853,6 @@ function MercadoLivreCashinpayCheckoutModal({
                   <div className="relative flex items-center">
                     <input
                       type="text"
-                      required
                       placeholder="Rua / Avenida"
                       value={form.street}
                       onChange={(e) => setForm({ ...form, street: e.target.value })}
@@ -3846,7 +3867,6 @@ function MercadoLivreCashinpayCheckoutModal({
                     <label className="block text-xs font-medium text-gray-700 mb-1">Nº</label>
                     <input
                       type="text"
-                      required
                       placeholder="Número"
                       value={form.streetNumber}
                       onChange={(e) => setForm({ ...form, streetNumber: e.target.value })}
@@ -3858,7 +3878,6 @@ function MercadoLivreCashinpayCheckoutModal({
                     <div className="relative flex items-center">
                       <input
                         type="text"
-                        required
                         placeholder="Bairro"
                         value={form.neighborhood}
                         onChange={(e) => setForm({ ...form, neighborhood: e.target.value })}
@@ -3899,9 +3918,17 @@ function MercadoLivreCashinpayCheckoutModal({
                   </div>
                 </div>
 
+                {errorMessage && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 flex items-center gap-2">
+                    <CircleAlert size={15} className="shrink-0 text-red-600" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-[#005BFF] hover:bg-[#004cd6] text-white font-bold text-sm rounded-lg transition-all shadow-sm mt-2 cursor-pointer"
+                  onClick={handleNextStep2}
+                  className="w-full py-3.5 bg-[#005BFF] hover:bg-[#004cd6] active:bg-[#0040b0] text-white font-bold text-sm rounded-lg transition-all shadow-sm mt-2 cursor-pointer"
                 >
                   Ir Para Pagamento
                 </button>
