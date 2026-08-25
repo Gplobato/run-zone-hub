@@ -28,6 +28,7 @@ import { Route as Nb9060RouteImport } from './routes/nb-9060'
 import { Route as OrtopedicaRouteImport } from './routes/ortopedica'
 import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as RoboaspiradorRouteImport } from './routes/roboaspirador'
+import { Route as TransbackupRouteImport } from './routes/transbackup'
 import { Route as TranslucidaRouteImport } from './routes/translucida'
 import { Route as Translucida2RouteImport } from './routes/translucida2'
 import { Route as TranstesteRouteImport } from './routes/transteste'
@@ -130,6 +131,11 @@ const RoboaspiradorRoute = RoboaspiradorRouteImport.update({
   path: '/roboaspirador',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TransbackupRoute = TransbackupRouteImport.update({
+  id: '/transbackup',
+  path: '/transbackup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TranslucidaRoute = TranslucidaRouteImport.update({
   id: '/translucida',
   path: '/translucida',
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/ortopedica': typeof OrtopedicaRoute
   '/produtos': typeof ProdutosRoute
   '/roboaspirador': typeof RoboaspiradorRoute
+  '/transbackup': typeof TransbackupRoute
   '/translucida': typeof TranslucidaRoute
   '/translucida2': typeof Translucida2Route
   '/transteste': typeof TranstesteRoute
@@ -209,6 +216,7 @@ export interface FileRoutesByTo {
   '/ortopedica': typeof OrtopedicaRoute
   '/produtos': typeof ProdutosRoute
   '/roboaspirador': typeof RoboaspiradorRoute
+  '/transbackup': typeof TransbackupRoute
   '/translucida': typeof TranslucidaRoute
   '/translucida2': typeof Translucida2Route
   '/transteste': typeof TranstesteRoute
@@ -237,6 +245,7 @@ export interface FileRoutesById {
   '/ortopedica': typeof OrtopedicaRoute
   '/produtos': typeof ProdutosRoute
   '/roboaspirador': typeof RoboaspiradorRoute
+  '/transbackup': typeof TransbackupRoute
   '/translucida': typeof TranslucidaRoute
   '/translucida2': typeof Translucida2Route
   '/transteste': typeof TranstesteRoute
@@ -266,6 +275,7 @@ export interface FileRouteTypes {
     | '/ortopedica'
     | '/produtos'
     | '/roboaspirador'
+    | '/transbackup'
     | '/translucida'
     | '/translucida2'
     | '/transteste'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/ortopedica'
     | '/produtos'
     | '/roboaspirador'
+    | '/transbackup'
     | '/translucida'
     | '/translucida2'
     | '/transteste'
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/ortopedica'
     | '/produtos'
     | '/roboaspirador'
+    | '/transbackup'
     | '/translucida'
     | '/translucida2'
     | '/transteste'
@@ -348,6 +360,7 @@ export interface RootRouteChildren {
   OrtopedicaRoute: typeof OrtopedicaRoute
   ProdutosRoute: typeof ProdutosRoute
   RoboaspiradorRoute: typeof RoboaspiradorRoute
+  TransbackupRoute: typeof TransbackupRoute
   TranslucidaRoute: typeof TranslucidaRoute
   Translucida2Route: typeof Translucida2Route
   TranstesteRoute: typeof TranstesteRoute
@@ -491,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoboaspiradorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/transbackup': {
+      id: '/transbackup'
+      path: '/transbackup'
+      fullPath: '/transbackup'
+      preLoaderRoute: typeof TransbackupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/translucida': {
       id: '/translucida'
       path: '/translucida'
@@ -556,6 +576,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrtopedicaRoute: OrtopedicaRoute,
   ProdutosRoute: ProdutosRoute,
   RoboaspiradorRoute: RoboaspiradorRoute,
+  TransbackupRoute: TransbackupRoute,
   TranslucidaRoute: TranslucidaRoute,
   Translucida2Route: Translucida2Route,
   TranstesteRoute: TranstesteRoute,

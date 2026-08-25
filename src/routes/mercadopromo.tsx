@@ -1458,6 +1458,7 @@ const PRODUCT_SLUGS: Record<string, number> = {
   translucida: 14,
   "jelly-mule": 14,
   transteste: 14,
+  transbackup: 14,
 };
 const LEGACY_JACKET_SEARCH_SLUGS = new Set(["jaqueta", "jaquetafem"]);
 const DEFAULT_MERCADO_PROMO_SLUG = "bota";
@@ -2080,7 +2081,14 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
   const [zoomPhoto, setZoomPhoto] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
-  const isTransteste = forcedSlug === "transteste" || search.p === "transteste";
+  const isBackupRoute = forcedSlug === "transbackup" || search.p === "transbackup";
+  const isCashinpayRoute =
+    !isBackupRoute &&
+    (forcedSlug === "translucida" ||
+      forcedSlug === "transteste" ||
+      search.p === "translucida" ||
+      search.p === "transteste" ||
+      PRODUCT.id === "mercadopromo-jelly-mule");
   const [cashinpayModalOpen, setCashinpayModalOpen] = useState(false);
   const priceSplit = formatBRLSplit(PRODUCT.price);
   const fiveStarReviews =
@@ -2400,7 +2408,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       num_items: qty,
       contents: [{ id: String(selectedZedyVariantId ?? colorKey), size: size ?? "-", quantity: qty }],
     };
-    if (isTransteste) {
+    if (isCashinpayRoute) {
       trackProductEvent(PRODUCT, "InitiateCheckout", params);
       setCashinpayModalOpen(true);
       return;
@@ -2433,7 +2441,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       num_items: qty,
       contents: [{ id: String(selectedZedyVariantId ?? colorKey), size: size ?? "-", quantity: qty }],
     };
-    if (isTransteste) {
+    if (isCashinpayRoute) {
       trackProductEvent(PRODUCT, "AddToCart", atcParams);
       trackProductEvent(PRODUCT, "InitiateCheckout", icParams);
       setCashinpayModalOpen(true);
@@ -4045,7 +4053,7 @@ function MercadoLivreCashinpayCheckoutModal({
                     <img
                       src={paymentBadgesImg}
                       alt="Bandeiras de cartão"
-                      className="h-6 w-auto object-contain shrink-0 opacity-85"
+                      className="h-4 sm:h-5 w-auto max-w-[130px] sm:max-w-[170px] object-contain shrink-0"
                     />
                   </div>
 
@@ -4350,12 +4358,12 @@ function MercadoLivreCashinpayCheckoutModal({
           <p>Telefone: +55 (11) 3368-5599 / E-mail: suporte@mercadolivre.com.br</p>
         </div>
 
-        <div className="pt-2 flex flex-col items-center">
-          <p className="text-[11px] text-gray-500 mb-2 font-medium">Formas de pagamento:</p>
+        <div className="pt-2 flex flex-col items-center px-4">
+          <p className="text-[11px] text-gray-500 mb-2 font-medium">Formas de pagamento aceitas:</p>
           <img
             src={paymentBadgesImg}
-            alt="Bandeiras aceitas: Visa, Mastercard, Maestro, Elo, Alelo, Amex, Hipercard, Diners Club"
-            className="h-14 sm:h-16 w-auto max-w-[260px] sm:max-w-[300px] object-contain mx-auto"
+            alt="Bandeiras aceitas: Visa, Mastercard, Elo, Amex, Hipercard, Discover, Diners Club, JCB"
+            className="w-full max-w-[360px] sm:max-w-[460px] h-auto object-contain mx-auto"
           />
         </div>
 
