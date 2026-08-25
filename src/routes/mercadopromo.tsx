@@ -4050,11 +4050,6 @@ function MercadoLivreCashinpayCheckoutModal({
                         <span className="block text-[11px] text-gray-500">Até 6x sem juros</span>
                       </div>
                     </div>
-                    <img
-                      src={paymentBadgesImg}
-                      alt="Bandeiras de cartão"
-                      className="h-4 sm:h-5 w-auto max-w-[130px] sm:max-w-[170px] object-contain shrink-0"
-                    />
                   </div>
 
                   {paymentMethod === "CARD" && (
