@@ -6,6 +6,7 @@ import {
   createCashinpayTransaction,
   getCashinpayTransaction,
 } from "@/lib/cashinpay.functions";
+import { createHypercashTransaction } from "@/lib/hypercash.functions";
 import { recordLead, updateLeadStatus } from "@/lib/leads.functions";
 import { fbqTrackSingle, fbqTrackCustomSingle, META_PIXEL_ID } from "@/lib/pixel";
 import {
@@ -19,22 +20,20 @@ import {
   CreditCard,
   QrCode,
   Sparkles,
-  ChevronRight,
   ChevronLeft,
   Check,
   Package,
   ArrowRight,
   User,
   MapPin,
-  HelpCircle,
 } from "lucide-react";
 
 // Assets
 import translucidaBranca1 from "@/assets/mercadopromo/translucida-branca-1.jpg";
 import translucidaBranca2 from "@/assets/mercadopromo/translucida-branca-2.jpg";
 import translucidaBranca3 from "@/assets/mercadopromo/translucida-branca-3.jpg";
-import translucidaMarrom1 from "@/assets/mercadopromo/translucida-marrom-1.png";
-import translucidaMarrom2 from "@/assets/mercadopromo/translucida-marrom-2.png";
+import translucidaMarrom1 from "@/assets/mercadopromo/translucida-marrom-1.jpg";
+import translucidaMarrom2 from "@/assets/mercadopromo/translucida-marrom-2.jpg";
 import translucidaMarrom3 from "@/assets/mercadopromo/translucida-marrom-3.jpg";
 import translucidaRosa1 from "@/assets/mercadopromo/translucida-rosa-1.jpg";
 import translucidaRosa2 from "@/assets/mercadopromo/translucida-rosa-2.jpg";
@@ -45,8 +44,8 @@ import translucidaPreta3 from "@/assets/mercadopromo/translucida-preta-3.png";
 import paymentBadgesImg from "@/assets/mercadopromo/payment-badges.png";
 
 const PRODUCT_NAME = "Sandália Translúcida Jelly Mule Schutz";
-const PIX_PRICE_CENTS = 4990; // R$ 49,90
-const CARD_PRICE_CENTS = 5990; // R$ 59,90
+const PIX_PRICE_CENTS = 4990; // R$ 49,90 (5% OFF já aplicado)
+const CARD_PRICE_CENTS = 5250; // R$ 52,50
 const OLD_PRICE_CENTS = 18990; // R$ 189,90
 
 const COLORS = [
@@ -60,7 +59,7 @@ const COLORS = [
     id: "marrom",
     name: "Âmbar / Marrom Translúcido",
     hex: "#78350f",
-    images: [translucidaMarrom1, translucidaMarrom3, translucidaMarrom2],
+    images: [translucidaMarrom1, translucidaMarrom2, translucidaMarrom3],
   },
   {
     id: "rosa",
@@ -137,8 +136,9 @@ function SchutzCheckoutThreeSteps() {
   // Server functions
   const saveLead = useServerFn(recordLead);
   const updateLead = useServerFn(updateLeadStatus);
-  const createTx = useServerFn(createCashinpayTransaction);
-  const getTx = useServerFn(getCashinpayTransaction);
+  const createTxCashinpay = useServerFn(createCashinpayTransaction);
+  const getTxCashinpay = useServerFn(getCashinpayTransaction);
+  const createTxHypercash = useServerFn(createHypercashTransaction);
 
   // Selections
   const [selectedColorId, setSelectedColorId] = useState<string>(
@@ -337,7 +337,7 @@ function SchutzCheckoutThreeSteps() {
     } catch {}
   };
 
-  // STEP 3 -> FINISH PAYMENT (PIX / CARD)
+  // STEP 3 -> FINISH PAYMENT (PIX via Cashinpay / CARTÃO via Hypercash)
   const handleFinishPayment = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -345,7 +345,8 @@ function SchutzCheckoutThreeSteps() {
 
     try {
       if (method === "pix") {
-        const res = await createTx({
+        // PIX CASHINPAY
+        const res = await createTxCashinpay({
           data: {
             amount: totalAmount,
             description: `${PRODUCT_NAME} - ${currentColor.name} (Tam ${selectedSize})`,
@@ -395,26 +396,71 @@ function SchutzCheckoutThreeSteps() {
           });
         } catch {}
       } else {
-        // Card validation
-        if (onlyDigits(card.number).length < 16) {
-          throw new Error("Número de cartão inválido (mínimo 16 dígitos).");
+        // CARTÃO DE CRÉDITO VIA HYPERCASH
+        const cleanCardNumber = onlyDigits(card.number);
+        if (cleanCardNumber.length < 15) {
+          throw new Error("Número de cartão inválido (mínimo 15 dígitos).");
         }
         if (card.holderName.trim().length < 3) {
           throw new Error("Informe o nome do titular como impresso no cartão.");
         }
-        if (onlyDigits(card.expiry).length < 4) {
+        const expiryDigits = onlyDigits(card.expiry);
+        if (expiryDigits.length < 4) {
           throw new Error("Validade do cartão inválida (MM/AA).");
         }
         if (onlyDigits(card.cvv).length < 3) {
           throw new Error("Código de segurança (CVV) inválido.");
         }
 
-        const txId = `CARD_SCHUTZ_${Date.now()}`;
+        const expMonth = parseInt(expiryDigits.slice(0, 2), 10);
+        let expYear = parseInt(expiryDigits.slice(2, 4), 10);
+        if (expYear < 100) expYear += 2000;
+
+        const resHc = await createTxHypercash({
+          data: {
+            paymentMethod: "CREDIT_CARD",
+            items: [
+              {
+                slug: "sandalia-translucida-jelly-mule-schutz",
+                title: `${PRODUCT_NAME} - ${currentColor.name} (Tam ${selectedSize})`,
+                unitPriceCents: CARD_PRICE_CENTS,
+                quantity: 1,
+              },
+            ],
+            shippingFeeCents: 0,
+            customer: {
+              name: form.name.trim(),
+              email: form.email.trim().toLowerCase(),
+              document: form.document,
+              phone: form.phone,
+            },
+            address: {
+              zipCode: form.zipCode,
+              street: form.street,
+              streetNumber: form.streetNumber,
+              complement: form.complement || undefined,
+              neighborhood: form.neighborhood,
+              city: form.city,
+              state: form.state.toUpperCase(),
+            },
+            card: {
+              number: cleanCardNumber,
+              holderName: card.holderName.trim(),
+              expirationMonth: expMonth,
+              expirationYear: expYear,
+              cvv: onlyDigits(card.cvv),
+              installments: card.installments,
+            },
+          },
+        });
+
+        const txId = resHc?.id || `CARD_HC_${Date.now()}`;
+
         await updateLead({
           data: {
             leadId: form.document,
             status: "PAID",
-            transactionId: txId,
+            transactionId: String(txId),
             paymentMethod: "CREDIT_CARD",
           },
         });
@@ -428,14 +474,14 @@ function SchutzCheckoutThreeSteps() {
               value: totalAmount,
               currency: "BRL",
             },
-            { eventID: txId }
+            { eventID: String(txId) }
           );
         } catch {}
 
         setCurrentStep(4);
       }
     } catch (err: any) {
-      setError(err?.message || "Ocorreu um erro ao processar seu pagamento. Tente novamente.");
+      setError(err?.message || "Ocorreu um erro ao processar seu pagamento. Verifique os dados.");
     } finally {
       setLoading(false);
     }
@@ -447,7 +493,7 @@ function SchutzCheckoutThreeSteps() {
 
     const interval = setInterval(async () => {
       try {
-        const check = await getTx({
+        const check = await getTxCashinpay({
           data: { transactionId: pixData.transactionId! },
         });
 
@@ -505,7 +551,7 @@ function SchutzCheckoutThreeSteps() {
       {/* ANNOUNCEMENT TOP BAR */}
       <div className="bg-black text-white text-[10px] sm:text-[11px] font-bold py-2 px-4 text-center tracking-[0.2em] uppercase flex items-center justify-center gap-2">
         <Sparkles size={13} className="text-amber-400 shrink-0" />
-        <span>SCHUTZ SPECIAL DROP • 15% OFF NO PIX + FRETE GRÁTIS</span>
+        <span>5% OFF NO PIX + FRETE GRÁTIS PARA TODO O BRASIL</span>
       </div>
 
       {/* LUXURY SCHUTZ HEADER */}
@@ -1080,7 +1126,7 @@ function SchutzCheckoutThreeSteps() {
                                 <QrCode size={18} className="text-[#00873e]" /> PIX
                               </span>
                               <span className="bg-[#00873e] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">
-                                15% OFF
+                                5% OFF
                               </span>
                             </div>
                             <div className="text-lg font-black text-[#00873e]">
@@ -1111,7 +1157,7 @@ function SchutzCheckoutThreeSteps() {
                           </button>
                         </div>
 
-                        {/* CARTÃO DE CRÉDITO FIELDS */}
+                        {/* CARTÃO DE CRÉDITO FIELDS (HYPERCASH) */}
                         {method === "card" && (
                           <div className="pt-3 border-t border-gray-100 space-y-3.5 animate-in fade-in duration-200">
                             <div>
@@ -1252,7 +1298,7 @@ function SchutzCheckoutThreeSteps() {
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-md text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider">
-                    Edição Schutz
+                    Edição Especial
                   </div>
                 </div>
 
