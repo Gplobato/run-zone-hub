@@ -15,6 +15,7 @@ import { Route as AspiradorRouteImport } from './routes/aspirador'
 import { Route as BobojacoRouteImport } from './routes/bobojaco'
 import { Route as BodymodeladorRouteImport } from './routes/bodymodelador'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CheckoutDafitiRouteImport } from './routes/checkout-dafiti'
 import { Route as CheckoutSchutzRouteImport } from './routes/checkout-schutz'
 import { Route as JaquetaRouteImport } from './routes/jaqueta'
 import { Route as JaquetafemRouteImport } from './routes/jaquetafem'
@@ -30,6 +31,7 @@ import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as RoboaspiradorRouteImport } from './routes/roboaspirador'
 import { Route as TransbackupRouteImport } from './routes/transbackup'
 import { Route as TranslucidaRouteImport } from './routes/translucida'
+import { Route as TranslucidaDafitiRouteImport } from './routes/translucida-dafiti'
 import { Route as TranslucidaSchutzRouteImport } from './routes/translucida-schutz'
 import { Route as Translucida2RouteImport } from './routes/translucida2'
 import { Route as TranstesteRouteImport } from './routes/transteste'
@@ -65,6 +67,11 @@ const BodymodeladorRoute = BodymodeladorRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutDafitiRoute = CheckoutDafitiRouteImport.update({
+  id: '/checkout-dafiti',
+  path: '/checkout-dafiti',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutSchutzRoute = CheckoutSchutzRouteImport.update({
@@ -142,6 +149,11 @@ const TranslucidaRoute = TranslucidaRouteImport.update({
   path: '/translucida',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TranslucidaDafitiRoute = TranslucidaDafitiRouteImport.update({
+  id: '/translucida-dafiti',
+  path: '/translucida-dafiti',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TranslucidaSchutzRoute = TranslucidaSchutzRouteImport.update({
   id: '/translucida-schutz',
   path: '/translucida-schutz',
@@ -181,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/bobojaco': typeof BobojacoRoute
   '/bodymodelador': typeof BodymodeladorRoute
   '/checkout': typeof CheckoutRoute
+  '/checkout-dafiti': typeof CheckoutDafitiRoute
   '/checkout-schutz': typeof CheckoutSchutzRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
@@ -196,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/roboaspirador': typeof RoboaspiradorRoute
   '/transbackup': typeof TransbackupRoute
   '/translucida': typeof TranslucidaRoute
+  '/translucida-dafiti': typeof TranslucidaDafitiRoute
   '/translucida-schutz': typeof TranslucidaSchutzRoute
   '/translucida2': typeof Translucida2Route
   '/transteste': typeof TranstesteRoute
@@ -210,6 +224,7 @@ export interface FileRoutesByTo {
   '/bobojaco': typeof BobojacoRoute
   '/bodymodelador': typeof BodymodeladorRoute
   '/checkout': typeof CheckoutRoute
+  '/checkout-dafiti': typeof CheckoutDafitiRoute
   '/checkout-schutz': typeof CheckoutSchutzRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
@@ -225,6 +240,7 @@ export interface FileRoutesByTo {
   '/roboaspirador': typeof RoboaspiradorRoute
   '/transbackup': typeof TransbackupRoute
   '/translucida': typeof TranslucidaRoute
+  '/translucida-dafiti': typeof TranslucidaDafitiRoute
   '/translucida-schutz': typeof TranslucidaSchutzRoute
   '/translucida2': typeof Translucida2Route
   '/transteste': typeof TranstesteRoute
@@ -240,6 +256,7 @@ export interface FileRoutesById {
   '/bobojaco': typeof BobojacoRoute
   '/bodymodelador': typeof BodymodeladorRoute
   '/checkout': typeof CheckoutRoute
+  '/checkout-dafiti': typeof CheckoutDafitiRoute
   '/checkout-schutz': typeof CheckoutSchutzRoute
   '/jaqueta': typeof JaquetaRoute
   '/jaquetafem': typeof JaquetafemRoute
@@ -255,6 +272,7 @@ export interface FileRoutesById {
   '/roboaspirador': typeof RoboaspiradorRoute
   '/transbackup': typeof TransbackupRoute
   '/translucida': typeof TranslucidaRoute
+  '/translucida-dafiti': typeof TranslucidaDafitiRoute
   '/translucida-schutz': typeof TranslucidaSchutzRoute
   '/translucida2': typeof Translucida2Route
   '/transteste': typeof TranstesteRoute
@@ -271,6 +289,7 @@ export interface FileRouteTypes {
     | '/bobojaco'
     | '/bodymodelador'
     | '/checkout'
+    | '/checkout-dafiti'
     | '/checkout-schutz'
     | '/jaqueta'
     | '/jaquetafem'
@@ -286,6 +305,7 @@ export interface FileRouteTypes {
     | '/roboaspirador'
     | '/transbackup'
     | '/translucida'
+    | '/translucida-dafiti'
     | '/translucida-schutz'
     | '/translucida2'
     | '/transteste'
@@ -300,6 +320,7 @@ export interface FileRouteTypes {
     | '/bobojaco'
     | '/bodymodelador'
     | '/checkout'
+    | '/checkout-dafiti'
     | '/checkout-schutz'
     | '/jaqueta'
     | '/jaquetafem'
@@ -315,6 +336,7 @@ export interface FileRouteTypes {
     | '/roboaspirador'
     | '/transbackup'
     | '/translucida'
+    | '/translucida-dafiti'
     | '/translucida-schutz'
     | '/translucida2'
     | '/transteste'
@@ -329,6 +351,7 @@ export interface FileRouteTypes {
     | '/bobojaco'
     | '/bodymodelador'
     | '/checkout'
+    | '/checkout-dafiti'
     | '/checkout-schutz'
     | '/jaqueta'
     | '/jaquetafem'
@@ -344,6 +367,7 @@ export interface FileRouteTypes {
     | '/roboaspirador'
     | '/transbackup'
     | '/translucida'
+    | '/translucida-dafiti'
     | '/translucida-schutz'
     | '/translucida2'
     | '/transteste'
@@ -359,6 +383,7 @@ export interface RootRouteChildren {
   BobojacoRoute: typeof BobojacoRoute
   BodymodeladorRoute: typeof BodymodeladorRoute
   CheckoutRoute: typeof CheckoutRoute
+  CheckoutDafitiRoute: typeof CheckoutDafitiRoute
   CheckoutSchutzRoute: typeof CheckoutSchutzRoute
   JaquetaRoute: typeof JaquetaRoute
   JaquetafemRoute: typeof JaquetafemRoute
@@ -374,6 +399,7 @@ export interface RootRouteChildren {
   RoboaspiradorRoute: typeof RoboaspiradorRoute
   TransbackupRoute: typeof TransbackupRoute
   TranslucidaRoute: typeof TranslucidaRoute
+  TranslucidaDafitiRoute: typeof TranslucidaDafitiRoute
   TranslucidaSchutzRoute: typeof TranslucidaSchutzRoute
   Translucida2Route: typeof Translucida2Route
   TranstesteRoute: typeof TranstesteRoute
@@ -424,6 +450,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout-dafiti': {
+      id: '/checkout-dafiti'
+      path: '/checkout-dafiti'
+      fullPath: '/checkout-dafiti'
+      preLoaderRoute: typeof CheckoutDafitiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout-schutz': {
@@ -531,6 +564,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TranslucidaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/translucida-dafiti': {
+      id: '/translucida-dafiti'
+      path: '/translucida-dafiti'
+      fullPath: '/translucida-dafiti'
+      preLoaderRoute: typeof TranslucidaDafitiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/translucida-schutz': {
       id: '/translucida-schutz'
       path: '/translucida-schutz'
@@ -583,6 +623,7 @@ const rootRouteChildren: RootRouteChildren = {
   BobojacoRoute: BobojacoRoute,
   BodymodeladorRoute: BodymodeladorRoute,
   CheckoutRoute: CheckoutRoute,
+  CheckoutDafitiRoute: CheckoutDafitiRoute,
   CheckoutSchutzRoute: CheckoutSchutzRoute,
   JaquetaRoute: JaquetaRoute,
   JaquetafemRoute: JaquetafemRoute,
@@ -598,6 +639,7 @@ const rootRouteChildren: RootRouteChildren = {
   RoboaspiradorRoute: RoboaspiradorRoute,
   TransbackupRoute: TransbackupRoute,
   TranslucidaRoute: TranslucidaRoute,
+  TranslucidaDafitiRoute: TranslucidaDafitiRoute,
   TranslucidaSchutzRoute: TranslucidaSchutzRoute,
   Translucida2Route: Translucida2Route,
   TranstesteRoute: TranstesteRoute,
