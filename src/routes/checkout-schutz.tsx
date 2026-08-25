@@ -26,6 +26,7 @@ import {
   ArrowRight,
   User,
   MapPin,
+  Loader2,
 } from "lucide-react";
 
 // Assets
@@ -44,9 +45,10 @@ import translucidaPreta3 from "@/assets/mercadopromo/translucida-preta-3.png";
 import paymentBadgesImg from "@/assets/mercadopromo/payment-badges.png";
 
 const PRODUCT_NAME = "Sandália Translúcida Jelly Mule Schutz";
-const PIX_PRICE_CENTS = 5990; // R$ 59,90 (5% OFF já aplicado)
-const CARD_PRICE_CENTS = 6290; // R$ 62,90
-const OLD_PRICE_CENTS = 19990; // R$ 199,90
+const PRODUCT_PRICE_CENTS = 4990; // R$ 49,90
+const SHIPPING_FEE_CENTS = 1090; // R$ 10,90
+const TOTAL_PRICE_CENTS = 6080; // R$ 60,80 (R$ 49,90 + R$ 10,90)
+const OLD_PRICE_CENTS = 18990; // R$ 189,90
 
 const COLORS = [
   {
@@ -194,7 +196,7 @@ function SchutzCheckoutThreeSteps() {
     transactionId?: string;
   }>({});
 
-  const totalAmount = method === "pix" ? PIX_PRICE_CENTS / 100 : CARD_PRICE_CENTS / 100;
+  const totalAmount = TOTAL_PRICE_CENTS / 100; // R$ 60,80
 
   // Track PageView on mount
   useEffect(() => {
@@ -203,7 +205,7 @@ function SchutzCheckoutThreeSteps() {
     } catch {}
   }, []);
 
-  // ViaCEP Lookup
+  // ViaCEP Lookup with slight delay
   const handleCepChange = async (raw: string) => {
     const masked = maskCEP(raw);
     setForm((prev) => ({ ...prev, zipCode: masked }));
@@ -212,6 +214,7 @@ function SchutzCheckoutThreeSteps() {
     if (digits.length === 8) {
       setCepLoading(true);
       try {
+        await new Promise((resolve) => setTimeout(resolve, 600));
         const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
         const data = await res.json();
         if (!data.erro) {
@@ -349,7 +352,7 @@ function SchutzCheckoutThreeSteps() {
         const res = await createTxCashinpay({
           data: {
             amount: totalAmount,
-            description: `${PRODUCT_NAME} - ${currentColor.name} (Tam ${selectedSize})`,
+            description: `${PRODUCT_NAME} - ${currentColor.name} (Tam ${selectedSize}) + Entrega Express`,
             customer: {
               name: form.name.trim(),
               email: form.email.trim().toLowerCase(),
@@ -423,11 +426,11 @@ function SchutzCheckoutThreeSteps() {
               {
                 slug: "sandalia-translucida-jelly-mule-schutz",
                 title: `${PRODUCT_NAME} - ${currentColor.name} (Tam ${selectedSize})`,
-                unitPriceCents: CARD_PRICE_CENTS,
+                unitPriceCents: PRODUCT_PRICE_CENTS,
                 quantity: 1,
               },
             ],
-            shippingFeeCents: 0,
+            shippingFeeCents: SHIPPING_FEE_CENTS,
             customer: {
               name: form.name.trim(),
               email: form.email.trim().toLowerCase(),
@@ -551,7 +554,7 @@ function SchutzCheckoutThreeSteps() {
       {/* ANNOUNCEMENT TOP BAR */}
       <div className="bg-black text-white text-[10px] sm:text-[11px] font-bold py-2 px-4 text-center tracking-[0.2em] uppercase flex items-center justify-center gap-2">
         <Sparkles size={13} className="text-amber-400 shrink-0" />
-        <span>5% OFF NO PIX + FRETE GRÁTIS PARA TODO O BRASIL</span>
+        <span>5% OFF NO PIX • ENTREGA EXPRESS (CORREIOS)</span>
       </div>
 
       {/* LUXURY SCHUTZ HEADER */}
@@ -663,7 +666,7 @@ function SchutzCheckoutThreeSteps() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Total Pago:</span>
-                <span className="font-bold text-emerald-600 text-sm">{brl(totalAmount * 100)}</span>
+                <span className="font-bold text-emerald-600 text-sm">{brl(TOTAL_PRICE_CENTS)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500">Destinatário:</span>
@@ -891,7 +894,7 @@ function SchutzCheckoutThreeSteps() {
                           />
                           {cepLoading && (
                             <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                              <span className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin block" />
+                              <Loader2 size={16} className="animate-spin text-black" />
                             </div>
                           )}
                         </div>
@@ -982,12 +985,18 @@ function SchutzCheckoutThreeSteps() {
                       </div>
                     </div>
 
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 flex items-center justify-between text-xs text-emerald-800">
-                      <div className="flex items-center gap-2">
-                        <Truck size={16} />
-                        <span className="font-bold">Frete Grátis com Rastreamento Oficial</span>
+                    {/* OPÇÃO DE ENTREGA EXPRESS CORREIOS */}
+                    <div className="bg-amber-50/60 border border-amber-200/80 rounded-xl p-3.5 flex items-center justify-between text-xs text-amber-900">
+                      <div className="flex items-center gap-2.5">
+                        <Truck size={18} className="text-amber-700 shrink-0" />
+                        <div>
+                          <span className="font-bold block">Entrega Express (Correios)</span>
+                          <span className="text-[10px] text-amber-800/80">Prazo estimado de 2 a 5 dias úteis</span>
+                        </div>
                       </div>
-                      <span className="font-black uppercase text-[11px]">R$ 0,00</span>
+                      <span className="font-black text-xs text-amber-950">
+                        {brl(SHIPPING_FEE_CENTS)}
+                      </span>
                     </div>
 
                     {error && (
@@ -1042,9 +1051,9 @@ function SchutzCheckoutThreeSteps() {
                           <QRCodeSVG value={pixData.qrcodeText} size={200} level="M" />
                         </div>
                         <div className="text-center">
-                          <div className="text-2xl font-black text-gray-900">{brl(totalAmount * 100)}</div>
+                          <div className="text-2xl font-black text-gray-900">{brl(TOTAL_PRICE_CENTS)}</div>
                           <div className="text-[11px] text-gray-500 font-medium mt-0.5">
-                            {PRODUCT_NAME} • {currentColor.name} ({selectedSize})
+                            {PRODUCT_NAME} • {currentColor.name} ({selectedSize}) + Frete
                           </div>
                         </div>
                       </div>
@@ -1130,7 +1139,7 @@ function SchutzCheckoutThreeSteps() {
                               </span>
                             </div>
                             <div className="text-lg font-black text-[#00873e]">
-                              {brl(PIX_PRICE_CENTS)}
+                              {brl(TOTAL_PRICE_CENTS)}
                             </div>
                             <div className="text-[11px] text-gray-500">Aprovação imediata</div>
                           </button>
@@ -1151,7 +1160,7 @@ function SchutzCheckoutThreeSteps() {
                               <span className="text-[10px] text-gray-500 font-bold">Até 6x</span>
                             </div>
                             <div className="text-lg font-black text-gray-900">
-                              {brl(CARD_PRICE_CENTS)}
+                              {brl(TOTAL_PRICE_CENTS)}
                             </div>
                             <div className="text-[11px] text-gray-500">Em até 6x sem juros</div>
                           </button>
@@ -1223,12 +1232,12 @@ function SchutzCheckoutThreeSteps() {
                                 onChange={(e) => setCard({ ...card, installments: Number(e.target.value) })}
                                 className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-3 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black font-medium"
                               >
-                                <option value={1}>1x de {brl(CARD_PRICE_CENTS)} sem juros</option>
-                                <option value={2}>2x de {brl(CARD_PRICE_CENTS / 2)} sem juros</option>
-                                <option value={3}>3x de {brl(CARD_PRICE_CENTS / 3)} sem juros</option>
-                                <option value={4}>4x de {brl(CARD_PRICE_CENTS / 4)} sem juros</option>
-                                <option value={5}>5x de {brl(CARD_PRICE_CENTS / 5)} sem juros</option>
-                                <option value={6}>6x de {brl(CARD_PRICE_CENTS / 6)} sem juros</option>
+                                <option value={1}>1x de {brl(TOTAL_PRICE_CENTS)} sem juros</option>
+                                <option value={2}>2x de {brl(TOTAL_PRICE_CENTS / 2)} sem juros</option>
+                                <option value={3}>3x de {brl(TOTAL_PRICE_CENTS / 3)} sem juros</option>
+                                <option value={4}>4x de {brl(TOTAL_PRICE_CENTS / 4)} sem juros</option>
+                                <option value={5}>5x de {brl(TOTAL_PRICE_CENTS / 5)} sem juros</option>
+                                <option value={6}>6x de {brl(TOTAL_PRICE_CENTS / 6)} sem juros</option>
                               </select>
                             </div>
                           </div>
@@ -1265,8 +1274,8 @@ function SchutzCheckoutThreeSteps() {
                                 <Lock size={15} />
                                 <span>
                                   {method === "pix"
-                                    ? `Gerar PIX • ${brl(PIX_PRICE_CENTS)}`
-                                    : `Pagar com Cartão • ${brl(CARD_PRICE_CENTS)}`}
+                                    ? `Gerar PIX • ${brl(TOTAL_PRICE_CENTS)}`
+                                    : `Pagar com Cartão • ${brl(TOTAL_PRICE_CENTS)}`}
                                 </span>
                               </>
                             )}
@@ -1333,18 +1342,31 @@ function SchutzCheckoutThreeSteps() {
                     </p>
                   </div>
 
-                  <div className="border-t border-b border-gray-100 py-3 flex items-baseline justify-between">
-                    <div>
-                      <span className="text-xs text-gray-400 line-through mr-2">
-                        {brl(OLD_PRICE_CENTS)}
+                  {/* PRICE BREAKDOWN */}
+                  <div className="border-t border-b border-gray-100 py-3 space-y-1.5 text-xs">
+                    <div className="flex justify-between text-gray-600">
+                      <span>Subtotal Produto:</span>
+                      <span className="font-bold text-gray-900">{brl(PRODUCT_PRICE_CENTS)}</span>
+                    </div>
+                    <div className="flex justify-between text-gray-600">
+                      <span className="flex items-center gap-1">
+                        <Truck size={13} className="text-amber-600" /> Entrega Express (Correios):
                       </span>
-                      <span className="text-xl font-black text-gray-900">
-                        {method === "pix" ? brl(PIX_PRICE_CENTS) : brl(CARD_PRICE_CENTS)}
+                      <span className="font-bold text-amber-700">{brl(SHIPPING_FEE_CENTS)}</span>
+                    </div>
+                    <div className="border-t border-dashed border-gray-200 pt-2 flex items-baseline justify-between">
+                      <div>
+                        <span className="text-[11px] text-gray-400 line-through mr-2">
+                          {brl(OLD_PRICE_CENTS)}
+                        </span>
+                        <span className="text-lg font-black text-gray-900">
+                          {brl(TOTAL_PRICE_CENTS)}
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
+                        Economia de R$ 140,00
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
-                      Economia de R$ 140,00
-                    </span>
                   </div>
 
                   <ul className="text-xs text-gray-600 space-y-2">
@@ -1358,11 +1380,11 @@ function SchutzCheckoutThreeSteps() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check size={14} className="text-[#00873e]" />
-                      <span>Garantia total de 30 dias com troca grátis</span>
+                      <span>Garantia total de 30 dias com troca descomplicada</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <Check size={14} className="text-[#00873e]" />
-                      <span>Envio com seguro e código de rastreio</span>
+                      <span>Envio Correios com rastreamento oficial</span>
                     </li>
                   </ul>
                 </div>

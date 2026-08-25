@@ -17,7 +17,8 @@ import {
   Droplets,
   Layers,
   Feather,
-  RefreshCw,
+  MapPin,
+  Loader2,
 } from "lucide-react";
 
 // Assets
@@ -36,9 +37,10 @@ import translucidaPreta3 from "@/assets/mercadopromo/translucida-preta-3.png";
 import translucidaPromoBanner from "@/assets/mercadopromo/translucida-promo-banner.jpg";
 
 const PRODUCT_NAME = "Sandália Translúcida Jelly Mule Schutz";
-const PRICE_PIX = 59.9;
-const PRICE_CARD = 62.9;
-const PRICE_OLD = 199.9;
+const PRICE_PIX = 49.9;
+const PRICE_CARD = 49.9;
+const PRICE_OLD = 189.9;
+const SHIPPING_FEE = 10.9;
 
 const COLORS = [
   {
@@ -69,13 +71,19 @@ const COLORS = [
 
 const SIZES = ["34", "35", "36", "37", "38", "39", "40"];
 
+const maskCEP = (v: string) =>
+  (v || "")
+    .replace(/\D/g, "")
+    .slice(0, 8)
+    .replace(/(\d{5})(\d)/, "$1-$2");
+
 const REVIEWS = [
   {
     name: "Fernanda Lima",
     city: "São Paulo, SP",
     rating: 5,
     when: "há 2 dias",
-    text: "Simplesmente deslumbrante! O material translúcido é super macio e flexível, não machuca nada o calcanhar nem aperta os dedos. O salto bloco de 5cm dá uma estabilidade maravilhosa para passar o dia inteiro em pé. Chegou super rápido e muito bem embalada.",
+    text: "Simplesmente deslumbrante! O material translúcido é super macio e flexível, não machuca nada o calcanhar nem aperta os dedos. O salto bloco de 5cm dá uma estabilidade maravilhosa para passar o dia inteiro em pé. Chegou super rápido pelos Correios.",
   },
   {
     name: "Juliana Mendes",
@@ -101,7 +109,7 @@ export const Route = createFileRoute("/translucida-schutz")({
       { title: `${PRODUCT_NAME} | SCHUTZ Oficial` },
       {
         name: "description",
-        content: "Sandália Translúcida Jelly Mule Schutz. Design icônico respirável com palmilha anatômica e 5% de desconto no PIX com Frete Grátis.",
+        content: "Sandália Translúcida Jelly Mule Schutz. Design icônico respirável com palmilha anatômica e 5% de desconto no PIX.",
       },
     ],
   }),
@@ -117,8 +125,19 @@ function SchutzTranslúcidaPDP() {
   const [descOpen, setDescOpen] = useState(true);
   const [specsOpen, setSpecsOpen] = useState(false);
   const [careOpen, setCareOpen] = useState(false);
+
+  // CEP Calculator State
   const [cep, setCep] = useState("");
+  const [cepLoading, setCepLoading] = useState(false);
   const [shippingChecked, setShippingChecked] = useState(false);
+  const [cepAddress, setCepAddress] = useState<{
+    street?: string;
+    neighborhood?: string;
+    city?: string;
+    state?: string;
+  } | null>(null);
+  const [cepError, setCepError] = useState<string | null>(null);
+
   const [error, setError] = useState<string | null>(null);
 
   const currentColor = useMemo(
@@ -136,6 +155,42 @@ function SchutzTranslúcidaPDP() {
       });
     } catch {}
   }, []);
+
+  const handleCalculateCep = async () => {
+    const clean = cep.replace(/\D/g, "");
+    if (clean.length !== 8) {
+      setCepError("Informe um CEP válido com 8 dígitos.");
+      return;
+    }
+    setCepError(null);
+    setCepLoading(true);
+    setShippingChecked(false);
+
+    try {
+      // Simulação com pequeno delay realista
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      const res = await fetch(`https://viacep.com.br/ws/${clean}/json/`);
+      const data = await res.json();
+
+      if (data.erro) {
+        setCepError("CEP não encontrado. Verifique os números digitados.");
+        setCepAddress(null);
+      } else {
+        setCepAddress({
+          street: data.logradouro || "Endereço principal",
+          neighborhood: data.bairro || "Bairro atendido",
+          city: data.localidade || "",
+          state: data.uf || "",
+        });
+        setShippingChecked(true);
+      }
+    } catch {
+      setCepError("Erro ao calcular o frete. Tente novamente.");
+    } finally {
+      setCepLoading(false);
+    }
+  };
 
   const handleBuy = () => {
     if (!selectedSize) {
@@ -188,7 +243,7 @@ function SchutzTranslúcidaPDP() {
               <li className="flex gap-2">
                 <span className="text-[#1a7f37] font-bold">✓</span>
                 <span>
-                  <strong className="text-[#111]">Frete Grátis</strong> para todo o Brasil com código de rastreio oficial.
+                  <strong className="text-[#111]">Entrega Express (Correios)</strong> por apenas R$ 10,90 com código de rastreamento oficial.
                 </span>
               </li>
               <li className="flex gap-2">
@@ -221,7 +276,7 @@ function SchutzTranslúcidaPDP() {
       {/* TOP ANNOUNCEMENT BAR */}
       <div className="bg-black text-white text-[10px] sm:text-[11px] font-bold py-2 px-4 text-center tracking-[0.2em] uppercase flex items-center justify-center gap-2">
         <Sparkles size={13} className="text-amber-400 shrink-0" />
-        <span>5% OFF NO PIX + FRETE GRÁTIS PARA TODO O BRASIL</span>
+        <span>5% OFF NO PIX • ENTREGA EXPRESS (CORREIOS)</span>
       </div>
 
       {/* LUXURY SCHUTZ HEADER */}
@@ -322,7 +377,7 @@ function SchutzTranslúcidaPDP() {
           </div>
 
           <p className="text-[13px] text-black/60 font-medium">
-            ou até 6x de R$ 8,75 sem juros no cartão
+            ou até 6x de R$ 8,31 sem juros no cartão
           </p>
 
           <div className="mt-3 border border-[#1a7f37]/30 bg-[#1a7f37]/10 px-3 py-2 text-[12px] font-bold text-[#1a7f37]">
@@ -411,30 +466,68 @@ function SchutzTranslúcidaPDP() {
             </button>
           </div>
 
-          {/* CEP & FRETE CALCULATOR */}
+          {/* CEP & FRETE CALCULATOR COM DELAY E ENDEREÇO VINCULADO */}
           <div className="mt-8 border-t border-black/10 pt-6">
             <p className="text-[13px] font-bold">Calcular prazo de entrega</p>
             <div className="mt-2 flex">
               <input
                 value={cep}
-                onChange={(e) => setCep(e.target.value)}
+                onChange={(e) => {
+                  const val = maskCEP(e.target.value);
+                  setCep(val);
+                  if (val.replace(/\D/g, "").length === 8) {
+                    setCepError(null);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleCalculateCep();
+                }}
+                maxLength={9}
                 placeholder="00000-000"
                 className="h-[46px] flex-1 border border-black/25 px-3 text-[13px] outline-none font-mono"
               />
               <button
                 type="button"
-                onClick={() => setShippingChecked(true)}
-                className="h-[46px] border border-l-0 border-black/25 px-5 text-[11px] font-bold tracking-wider uppercase hover:bg-black hover:text-white transition-colors"
+                onClick={handleCalculateCep}
+                disabled={cepLoading}
+                className="h-[46px] border border-l-0 border-black/25 px-5 text-[11px] font-bold tracking-wider uppercase hover:bg-black hover:text-white transition-colors flex items-center justify-center min-w-[100px]"
               >
-                Calcular
+                {cepLoading ? (
+                  <Loader2 size={16} className="animate-spin text-black" />
+                ) : (
+                  "Calcular"
+                )}
               </button>
             </div>
-            {shippingChecked && (
-              <div className="mt-3 border border-[#1a7f37]/30 bg-[#1a7f37]/10 p-3 text-[12px] text-[#1a7f37] font-medium animate-in fade-in">
-                <p>
-                  Frete: <strong className="font-black text-black">GRÁTIS (R$ 0,00)</strong>
+
+            {cepError && (
+              <p className="mt-2 text-xs font-bold text-red-600 animate-in fade-in">
+                {cepError}
+              </p>
+            )}
+
+            {shippingChecked && cepAddress && (
+              <div className="mt-3 border border-gray-200 bg-gray-50/80 p-3.5 rounded-lg text-xs space-y-2 animate-in fade-in">
+                <div className="flex items-start gap-2 text-gray-700">
+                  <MapPin size={15} className="text-black shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-black">Entrega para:</span>{" "}
+                    {cepAddress.street}, {cepAddress.neighborhood} — {cepAddress.city}/{cepAddress.state}
+                  </div>
+                </div>
+
+                <div className="border-t border-gray-200 pt-2 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 font-bold text-gray-900">
+                    <Truck size={15} className="text-amber-600" />
+                    <span>Entrega Express (Correios)</span>
+                  </div>
+                  <span className="font-black text-black text-[13px]">
+                    R$ {SHIPPING_FEE.toFixed(2).replace(".", ",")}
+                  </span>
+                </div>
+                <p className="text-[11px] text-gray-500">
+                  Prazo estimado de 2 a 5 dias úteis com código de rastreamento oficial.
                 </p>
-                <p className="mt-0.5 text-black/70">Prazo estimado: 1 a 3 dias úteis para seu endereço.</p>
               </div>
             )}
           </div>
@@ -560,7 +653,7 @@ function SchutzTranslúcidaPDP() {
                   onClick={handleBuy}
                   className="bg-black hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-widest px-8 py-3.5 rounded-xl shadow-lg transition-transform active:scale-95"
                 >
-                  Garantir por R$ 59,90 no PIX
+                  GARANTA JÁ A SUA
                 </button>
               </div>
             </div>
