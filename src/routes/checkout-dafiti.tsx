@@ -49,8 +49,8 @@ import paymentBadgesImg from "@/assets/mercadopromo/payment-badges.png";
 
 const PRODUCT_NAME = "Sandália Translúcida Jelly Mule Feminina";
 const PRODUCT_PRICE_CENTS = 4990; // R$ 49,90
-const SHIPPING_FEE_CENTS = 1090; // R$ 10,90
-const TOTAL_PRICE_CENTS = 6080; // R$ 60,80 (R$ 49,90 + R$ 10,90)
+const SHIPPING_FEE_CENTS = 990; // R$ 9,90
+const TOTAL_PRICE_CENTS = 5980; // R$ 59,80 (R$ 49,90 + R$ 9,90)
 const OLD_PRICE_CENTS = 18990; // R$ 189,90
 
 const COLORS = [
@@ -80,7 +80,7 @@ const COLORS = [
   },
 ];
 
-const SIZES = ["34", "35", "36", "37", "38", "39", "40"];
+const SIZES = ["33", "34", "35", "36", "37", "38", "39", "40", "41", "42"];
 
 const brl = (cents: number) =>
   (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -557,7 +557,7 @@ function DafitiCheckoutThreeSteps() {
       {/* ANNOUNCEMENT TOP BAR */}
       <div className="bg-black text-white text-[10px] sm:text-[11px] font-bold py-2 px-4 text-center tracking-[0.15em] uppercase flex items-center justify-center gap-2">
         <Sparkles size={13} className="text-amber-400 shrink-0" />
-        <span>DAFITI • CHECKOUT SEGURO COM CRIPTOGRAFIA DE 256 BITS</span>
+        <span>5% DE DESCONTO EXCLUSIVO NO PIX</span>
       </div>
 
       {/* DAFITI BLACK HEADER WITH LOGO */}
@@ -993,7 +993,7 @@ function DafitiCheckoutThreeSteps() {
                       <div className="flex items-center gap-2.5">
                         <Truck size={18} className="text-amber-700 shrink-0" />
                         <div>
-                          <span className="font-bold block">Entrega Express (Correios)</span>
+                          <span className="font-bold block">Frete com Rastreamento</span>
                           <span className="text-[10px] text-amber-800/80">Prazo estimado de 2 a 5 dias úteis</span>
                         </div>
                       </div>
@@ -1353,7 +1353,7 @@ function DafitiCheckoutThreeSteps() {
                     </div>
                     <div className="flex justify-between text-gray-600">
                       <span className="flex items-center gap-1">
-                        <Truck size={13} className="text-amber-600" /> Entrega Express (Correios):
+                        <Truck size={13} className="text-amber-600" /> Frete com Rastreamento:
                       </span>
                       <span className="font-bold text-amber-700">{brl(SHIPPING_FEE_CENTS)}</span>
                     </div>

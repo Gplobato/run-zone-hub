@@ -44,7 +44,7 @@ const BRAND_NAME = "DAFITI SHOES";
 const PRICE_PIX = 49.9;
 const PRICE_CARD = 49.9;
 const PRICE_OLD = 189.9;
-const SHIPPING_FEE = 10.9;
+const SHIPPING_FEE = 9.9;
 
 const COLORS = [
   {
@@ -73,7 +73,7 @@ const COLORS = [
   },
 ];
 
-const SIZES = ["34", "35", "36", "37", "38", "39", "40"];
+const SIZES = ["33", "34", "35", "36", "37", "38", "39", "40", "41", "42"];
 
 const maskCEP = (v: string) =>
   (v || "")
@@ -263,7 +263,7 @@ function DafitiTranslúcidaPDP() {
               <li className="flex gap-2">
                 <span className="text-emerald-600 font-bold">✓</span>
                 <span>
-                  <strong className="text-gray-900">Entrega Express (Correios)</strong> por apenas R$ 10,90 com código de rastreamento oficial.
+                  <strong className="text-gray-900">Frete por apenas R$ 9,90</strong> com código de rastreamento oficial.
                 </span>
               </li>
               <li className="flex gap-2">
@@ -297,7 +297,7 @@ function DafitiTranslúcidaPDP() {
       {/* TOP ANNOUNCEMENT BAR */}
       <div className="bg-black text-white text-[10px] sm:text-[11px] font-bold py-2 px-4 text-center tracking-[0.15em] uppercase flex items-center justify-center gap-2">
         <Sparkles size={13} className="text-amber-400 shrink-0" />
-        <span>DAFITI • 5% OFF NO PIX + ENTREGA EXPRESS CORREIOS</span>
+        <span>5% DE DESCONTO EXCLUSIVO NO PIX</span>
       </div>
 
       {/* DAFITI MAIN HEADER */}
