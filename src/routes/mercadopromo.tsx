@@ -2384,7 +2384,7 @@ export function MercadoPromoPage({ forcedSlug }: { forcedSlug?: string } = {}) {
       ? WIDELEG_CHECKOUTS[colorKey]?.[size]
       : PRODUCT.id === "mercadopromo-tenis-ortopedico" && size && colorKey
       ? ORTOPEDICA_CHECKOUTS[colorKey]?.[size]
-      : PRODUCT.id === "mercadopromo-jelly-mule" && size && colorKey
+      : isBackupRoute && PRODUCT.id === "mercadopromo-jelly-mule" && size && colorKey
       ? TRANSLUCIDA_CHECKOUTS[colorKey]?.[size]
       : EXTERNAL_MAIN_PIXEL_CHECKOUTS[PRODUCT.id];
 
