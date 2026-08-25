@@ -35,6 +35,7 @@ import translucidaBranca2 from "@/assets/mercadopromo/translucida-branca-2.jpg";
 import translucidaBranca3 from "@/assets/mercadopromo/translucida-branca-3.jpg";
 import translucidaMarrom1 from "@/assets/mercadopromo/translucida-marrom-1.png";
 import translucidaMarrom2 from "@/assets/mercadopromo/translucida-marrom-2.png";
+import translucidaMarrom3 from "@/assets/mercadopromo/translucida-marrom-3.jpg";
 import translucidaRosa1 from "@/assets/mercadopromo/translucida-rosa-1.jpg";
 import translucidaRosa2 from "@/assets/mercadopromo/translucida-rosa-2.jpg";
 import translucidaRosa3 from "@/assets/mercadopromo/translucida-rosa-3.jpg";
@@ -59,7 +60,7 @@ const COLORS = [
     id: "marrom",
     name: "Âmbar / Marrom Translúcido",
     hex: "#78350f",
-    images: [translucidaMarrom1, translucidaMarrom2],
+    images: [translucidaMarrom1, translucidaMarrom3, translucidaMarrom2],
   },
   {
     id: "rosa",
