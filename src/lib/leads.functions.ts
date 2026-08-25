@@ -33,7 +33,7 @@ export type CheckoutLead = {
   notes?: string;
 };
 
-// Global in-memory storage for Worker/Node instances
+// Global in-memory storage fallback
 declare global {
   // eslint-disable-next-line no-var
   var __LEADS_STORE__: CheckoutLead[] | undefined;
@@ -43,11 +43,41 @@ if (!globalThis.__LEADS_STORE__) {
   globalThis.__LEADS_STORE__ = [];
 }
 
-function getLeadsStore(): CheckoutLead[] {
+function getKV(): any | undefined {
+  const env = (globalThis as any).__env__ || (globalThis as any).env;
+  return env?.LEADS_KV || (globalThis as any).LEADS_KV;
+}
+
+async function getLeadsList(): Promise<CheckoutLead[]> {
+  const kv = getKV();
+  if (kv) {
+    try {
+      const data = await kv.get("leads_all", "json");
+      if (Array.isArray(data)) {
+        return data;
+      }
+    } catch (e) {
+      console.error("[Leads KV] Erro ao ler leads:", e);
+    }
+  }
   if (!globalThis.__LEADS_STORE__) {
     globalThis.__LEADS_STORE__ = [];
   }
   return globalThis.__LEADS_STORE__;
+}
+
+async function saveLeadsList(leads: CheckoutLead[]): Promise<void> {
+  // Always update in-memory
+  globalThis.__LEADS_STORE__ = leads;
+
+  const kv = getKV();
+  if (kv) {
+    try {
+      await kv.put("leads_all", JSON.stringify(leads.slice(0, 1000)));
+    } catch (e) {
+      console.error("[Leads KV] Erro ao salvar leads:", e);
+    }
+  }
 }
 
 // 1. Record / Save Lead (Step 1 completion or checkout start)
@@ -68,18 +98,21 @@ export type RecordLeadInput = {
 };
 
 export const recordLead = createServerFn({ method: "POST" })
-  .inputValidator((data: RecordLeadInput) => data)
+  .validator((data: RecordLeadInput) => data)
   .handler(async ({ data }) => {
-    const store = getLeadsStore();
+    const leads = await getLeadsList();
     const now = new Date().toISOString();
 
-    const existingIndex = data.leadId
-      ? store.findIndex((l) => l.id === data.leadId)
-      : -1;
+    const cleanCpf = (data.customer.cpf || "").replace(/\D/g, "");
+    const leadKey = data.leadId || (cleanCpf ? `cpf_${cleanCpf}` : `lead_${Date.now()}`);
+
+    const existingIndex = leads.findIndex(
+      (l) => l.id === leadKey || (cleanCpf && l.customer.cpf.replace(/\D/g, "") === cleanCpf)
+    );
 
     if (existingIndex > -1) {
-      const existing = store[existingIndex];
-      store[existingIndex] = {
+      const existing = leads[existingIndex];
+      leads[existingIndex] = {
         ...existing,
         productTitle: data.productTitle || existing.productTitle,
         productColor: data.productColor || existing.productColor,
@@ -93,11 +126,12 @@ export const recordLead = createServerFn({ method: "POST" })
         status: data.status || existing.status,
         updatedAt: now,
       };
-      return { ok: true, lead: store[existingIndex] };
+      await saveLeadsList(leads);
+      return { ok: true, lead: leads[existingIndex] };
     }
 
     const newLead: CheckoutLead = {
-      id: data.leadId || `lead_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id: leadKey,
       createdAt: now,
       updatedAt: now,
       productTitle: data.productTitle,
@@ -114,11 +148,8 @@ export const recordLead = createServerFn({ method: "POST" })
       status: data.status || "ABANDONED",
     };
 
-    // Keep store within 1000 items
-    store.unshift(newLead);
-    if (store.length > 1000) {
-      store.pop();
-    }
+    leads.unshift(newLead);
+    await saveLeadsList(leads);
 
     return { ok: true, lead: newLead };
   });
@@ -142,10 +173,18 @@ export type UpdateLeadStatusInput = {
 };
 
 export const updateLeadStatus = createServerFn({ method: "POST" })
-  .inputValidator((data: UpdateLeadStatusInput) => data)
+  .validator((data: UpdateLeadStatusInput) => data)
   .handler(async ({ data }) => {
-    const store = getLeadsStore();
-    const lead = store.find((l) => l.id === data.leadId);
+    const leads = await getLeadsList();
+    const cleanDoc = (data.leadId || "").replace(/\D/g, "");
+
+    const lead = leads.find(
+      (l) =>
+        l.id === data.leadId ||
+        (cleanDoc && l.id === `cpf_${cleanDoc}`) ||
+        (cleanDoc && l.customer.cpf.replace(/\D/g, "") === cleanDoc)
+    );
+
     if (!lead) {
       return { ok: false, error: "Lead não encontrado" };
     }
@@ -157,13 +196,14 @@ export const updateLeadStatus = createServerFn({ method: "POST" })
     if (data.pixCode) lead.pixCode = data.pixCode;
     if (data.shipping) lead.shipping = data.shipping;
 
+    await saveLeadsList(leads);
     return { ok: true, lead };
   });
 
 // 3. Get Admin Metrics and Lead List
 export const getAdminLeadsData = createServerFn({ method: "GET" })
   .handler(async () => {
-    const store = getLeadsStore();
+    const store = await getLeadsList();
 
     const totalLeads = store.length;
     const paidLeads = store.filter(
@@ -196,12 +236,21 @@ export const getAdminLeadsData = createServerFn({ method: "GET" })
 
 // 4. Clear/Delete Lead
 export const deleteAdminLead = createServerFn({ method: "POST" })
-  .inputValidator((data: { leadId: string }) => data)
+  .validator((data: { leadId: string }) => data)
   .handler(async ({ data }) => {
-    const store = getLeadsStore();
-    const idx = store.findIndex((l) => l.id === data.leadId);
+    const leads = await getLeadsList();
+    const cleanDoc = (data.leadId || "").replace(/\D/g, "");
+
+    const idx = leads.findIndex(
+      (l) =>
+        l.id === data.leadId ||
+        (cleanDoc && l.id === `cpf_${cleanDoc}`) ||
+        (cleanDoc && l.customer.cpf.replace(/\D/g, "") === cleanDoc)
+    );
+
     if (idx > -1) {
-      store.splice(idx, 1);
+      leads.splice(idx, 1);
+      await saveLeadsList(leads);
       return { ok: true };
     }
     return { ok: false, error: "Não encontrado" };

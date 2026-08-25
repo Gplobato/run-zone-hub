@@ -3317,6 +3317,11 @@ function MercadoLivreCashinpayCheckoutModal({
   const [couponCode, setCouponCode] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
 
+  const saveLead = useServerFn(recordLead);
+  const updateLead = useServerFn(updateLeadStatus);
+  const createTx = useServerFn(createCashinpayTransaction);
+  const getTx = useServerFn(getCashinpayTransaction);
+
   const [form, setForm] = useState<CheckoutForm>({
     name: "",
     email: "",
@@ -3411,7 +3416,7 @@ function MercadoLivreCashinpayCheckoutModal({
     setErrorMessage(null);
 
     try {
-      void recordLead({
+      void saveLead({
         data: {
           leadId: form.document,
           productTitle: product.title,
@@ -3464,7 +3469,7 @@ function MercadoLivreCashinpayCheckoutModal({
     }
 
     try {
-      void updateLeadStatus({
+      void updateLead({
         data: {
           leadId: form.document,
           status: "INITIATED",
@@ -3508,7 +3513,7 @@ function MercadoLivreCashinpayCheckoutModal({
         console.warn("Pixel tracking error:", err);
       }
 
-      const res = await createCashinpayTransaction({
+      const res = await createTx({
         data: {
           amount: totalAmount,
           description: `Sandália Translúcida Jelly Mule - ${color.label} (Tam ${size})`,
@@ -3541,7 +3546,7 @@ function MercadoLivreCashinpayCheckoutModal({
       });
 
       try {
-        await updateLeadStatus({
+        await updateLead({
           data: {
             leadId: form.document,
             status: "PIX_GENERATED",
@@ -3600,7 +3605,7 @@ function MercadoLivreCashinpayCheckoutModal({
 
       const orderId = `CARD_ML_${Date.now()}`;
       try {
-        await updateLeadStatus({
+        await updateLead({
           data: {
             leadId: form.document,
             status: "PAID",
@@ -3628,7 +3633,7 @@ function MercadoLivreCashinpayCheckoutModal({
 
     const interval = setInterval(async () => {
       try {
-        const check = await getCashinpayTransaction({
+        const check = await getTx({
           data: { transactionId: pixData.transactionId! },
         });
 
@@ -3636,7 +3641,7 @@ function MercadoLivreCashinpayCheckoutModal({
           clearInterval(interval);
           setStep(5);
 
-          await updateLeadStatus({
+          await updateLead({
             data: {
               leadId: form.document,
               status: "PAID",
