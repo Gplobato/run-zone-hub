@@ -289,7 +289,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                 Painel de Leads &amp; Checkout Seguro
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="Monitorando em tempo real" />
               </h1>
-              <p className="text-[11px] text-gray-400">Crocs Jelly Mule Feminina (/translucida2)</p>
+              <p className="text-[11px] text-gray-400">Captura em tempo real (/translucida e /translucida2)</p>
             </div>
           </div>
 

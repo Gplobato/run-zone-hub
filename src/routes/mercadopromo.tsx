@@ -3413,15 +3413,18 @@ function MercadoLivreCashinpayCheckoutModal({
     try {
       void recordLead({
         data: {
-          name,
-          email: email.toLowerCase(),
-          phone: form.phone,
-          document: form.document,
+          leadId: form.document,
           productTitle: product.title,
-          color: color.label,
-          size,
+          productColor: color.label,
+          productSize: size,
           quantity: qty,
           totalAmount,
+          customer: {
+            name,
+            email: email.toLowerCase(),
+            phone: form.phone,
+            cpf: form.document,
+          },
           status: "ABANDONED",
         },
       });
@@ -3464,6 +3467,7 @@ function MercadoLivreCashinpayCheckoutModal({
       void updateLeadStatus({
         data: {
           leadId: form.document,
+          status: "INITIATED",
           shipping: {
             zipCode: form.zipCode,
             street: form.street,
@@ -3540,10 +3544,10 @@ function MercadoLivreCashinpayCheckoutModal({
         await updateLeadStatus({
           data: {
             leadId: form.document,
-            status: "PIX_PENDING",
-            orderId: res.transactionId,
+            status: "PIX_GENERATED",
+            transactionId: res.transactionId,
+            pixCode: res.qrcodeText,
             paymentMethod: "PIX",
-            totalAmount,
           },
         });
       } catch {}
@@ -3600,9 +3604,8 @@ function MercadoLivreCashinpayCheckoutModal({
           data: {
             leadId: form.document,
             status: "PAID",
-            orderId,
+            transactionId: orderId,
             paymentMethod: "CREDIT_CARD",
-            totalAmount,
           },
         });
       } catch {}
@@ -3637,9 +3640,8 @@ function MercadoLivreCashinpayCheckoutModal({
             data: {
               leadId: form.document,
               status: "PAID",
-              orderId: pixData.transactionId,
+              transactionId: pixData.transactionId,
               paymentMethod: "PIX",
-              totalAmount,
             },
           });
 
