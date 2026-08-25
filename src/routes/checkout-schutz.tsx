@@ -44,9 +44,9 @@ import translucidaPreta3 from "@/assets/mercadopromo/translucida-preta-3.png";
 import paymentBadgesImg from "@/assets/mercadopromo/payment-badges.png";
 
 const PRODUCT_NAME = "Sandália Translúcida Jelly Mule Schutz";
-const PIX_PRICE_CENTS = 4990; // R$ 49,90 (5% OFF já aplicado)
-const CARD_PRICE_CENTS = 5250; // R$ 52,50
-const OLD_PRICE_CENTS = 18990; // R$ 189,90
+const PIX_PRICE_CENTS = 5990; // R$ 59,90 (5% OFF já aplicado)
+const CARD_PRICE_CENTS = 6290; // R$ 62,90
+const OLD_PRICE_CENTS = 19990; // R$ 199,90
 
 const COLORS = [
   {

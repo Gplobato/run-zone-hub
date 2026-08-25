@@ -133,8 +133,8 @@ import ortopedicaCreme from "@/assets/mercadopromo/ortopedica-creme.webp";
 import translucidaBranca1 from "@/assets/mercadopromo/translucida-branca-1.jpg";
 import translucidaBranca2 from "@/assets/mercadopromo/translucida-branca-2.jpg";
 import translucidaBranca3 from "@/assets/mercadopromo/translucida-branca-3.jpg";
-import translucidaMarrom1 from "@/assets/mercadopromo/translucida-marrom-1.png";
-import translucidaMarrom2 from "@/assets/mercadopromo/translucida-marrom-2.png";
+import translucidaMarrom1 from "@/assets/mercadopromo/translucida-marrom-1.jpg";
+import translucidaMarrom2 from "@/assets/mercadopromo/translucida-marrom-2.jpg";
 import translucidaMarrom3 from "@/assets/mercadopromo/translucida-marrom-3.jpg";
 import translucidaRosa1 from "@/assets/mercadopromo/translucida-rosa-1.jpg";
 import translucidaRosa2 from "@/assets/mercadopromo/translucida-rosa-2.jpg";
@@ -1349,9 +1349,9 @@ const TRANSLUCIDA_PRODUCT: Product = {
   sold: "+5 mil vendidos",
   rating: 5.0,
   reviewsCount: 528,
-  price: 4990,
-  compareAt: 11990,
-  installments: { count: 6, valueCents: 831 },
+  price: 5990,
+  compareAt: 14990,
+  installments: { count: 6, valueCents: 998 },
   categoryTrail: ["Calçados, Roupas e Bolsas", "Calçados Femininos", "Sandálias", "Jelly Mule"],
   colors: [
     {

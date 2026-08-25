@@ -33,11 +33,12 @@ import translucidaRosa3 from "@/assets/mercadopromo/translucida-rosa-3.jpg";
 import translucidaPreta1 from "@/assets/mercadopromo/translucida-preta-1.jpg";
 import translucidaPreta2 from "@/assets/mercadopromo/translucida-preta-2.jpg";
 import translucidaPreta3 from "@/assets/mercadopromo/translucida-preta-3.png";
+import translucidaPromoBanner from "@/assets/mercadopromo/translucida-promo-banner.jpg";
 
 const PRODUCT_NAME = "Sandália Translúcida Jelly Mule Schutz";
-const PRICE_PIX = 49.9;
-const PRICE_CARD = 52.5;
-const PRICE_OLD = 189.9;
+const PRICE_PIX = 59.9;
+const PRICE_CARD = 62.9;
+const PRICE_OLD = 199.9;
 
 const COLORS = [
   {
@@ -538,6 +539,41 @@ function SchutzTranslúcidaPDP() {
           </div>
         </aside>
       </div>
+
+      {/* PROMOTIONAL MARKETING BANNER */}
+      <section className="max-w-[1320px] mx-auto px-4 sm:px-8 mt-12 mb-4">
+        <div className="bg-gradient-to-br from-neutral-50 via-stone-50 to-stone-100 rounded-3xl p-6 sm:p-10 border border-gray-200 overflow-hidden shadow-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-4">
+              <span className="inline-block bg-black text-white text-[10px] font-black tracking-[0.2em] px-3 py-1 rounded-full uppercase">
+                Design &amp; Conforto
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-gray-900 leading-tight">
+                Leveza, Flexibilidade &amp; Estilo Para Todos os Momentos
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                Desenvolvida com a tecnologia de injeção Soft Touch, a Sandália Jelly Translúcida combina ventilação natural contínua, palmilha anatômica e visual minimalista que combina com qualquer look — do trabalho ao fim de semana.
+              </p>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleBuy}
+                  className="bg-black hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-widest px-8 py-3.5 rounded-xl shadow-lg transition-transform active:scale-95"
+                >
+                  Garantir por R$ 59,90 no PIX
+                </button>
+              </div>
+            </div>
+            <div className="relative rounded-2xl overflow-hidden shadow-md border border-gray-200 aspect-square max-w-md mx-auto">
+              <img
+                src={translucidaPromoBanner}
+                alt="Propaganda Sandália Jelly Feminina"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* REVIEWS SECTION */}
       <section className="mt-16 border-t border-black/10 max-w-[1320px] mx-auto px-6 py-12">
