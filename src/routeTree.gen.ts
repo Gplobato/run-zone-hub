@@ -30,6 +30,7 @@ import { Route as ProdutosRouteImport } from './routes/produtos'
 import { Route as RoboaspiradorRouteImport } from './routes/roboaspirador'
 import { Route as TransbackupRouteImport } from './routes/transbackup'
 import { Route as TranslucidaRouteImport } from './routes/translucida'
+import { Route as TranslucidaSchutzRouteImport } from './routes/translucida-schutz'
 import { Route as Translucida2RouteImport } from './routes/translucida2'
 import { Route as TranstesteRouteImport } from './routes/transteste'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
@@ -141,6 +142,11 @@ const TranslucidaRoute = TranslucidaRouteImport.update({
   path: '/translucida',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TranslucidaSchutzRoute = TranslucidaSchutzRouteImport.update({
+  id: '/translucida-schutz',
+  path: '/translucida-schutz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Translucida2Route = Translucida2RouteImport.update({
   id: '/translucida2',
   path: '/translucida2',
@@ -190,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/roboaspirador': typeof RoboaspiradorRoute
   '/transbackup': typeof TransbackupRoute
   '/translucida': typeof TranslucidaRoute
+  '/translucida-schutz': typeof TranslucidaSchutzRoute
   '/translucida2': typeof Translucida2Route
   '/transteste': typeof TranstesteRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
@@ -218,6 +225,7 @@ export interface FileRoutesByTo {
   '/roboaspirador': typeof RoboaspiradorRoute
   '/transbackup': typeof TransbackupRoute
   '/translucida': typeof TranslucidaRoute
+  '/translucida-schutz': typeof TranslucidaSchutzRoute
   '/translucida2': typeof Translucida2Route
   '/transteste': typeof TranstesteRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
@@ -247,6 +255,7 @@ export interface FileRoutesById {
   '/roboaspirador': typeof RoboaspiradorRoute
   '/transbackup': typeof TransbackupRoute
   '/translucida': typeof TranslucidaRoute
+  '/translucida-schutz': typeof TranslucidaSchutzRoute
   '/translucida2': typeof Translucida2Route
   '/transteste': typeof TranstesteRoute
   '/categoria/$slug': typeof CategoriaSlugRoute
@@ -277,6 +286,7 @@ export interface FileRouteTypes {
     | '/roboaspirador'
     | '/transbackup'
     | '/translucida'
+    | '/translucida-schutz'
     | '/translucida2'
     | '/transteste'
     | '/categoria/$slug'
@@ -305,6 +315,7 @@ export interface FileRouteTypes {
     | '/roboaspirador'
     | '/transbackup'
     | '/translucida'
+    | '/translucida-schutz'
     | '/translucida2'
     | '/transteste'
     | '/categoria/$slug'
@@ -333,6 +344,7 @@ export interface FileRouteTypes {
     | '/roboaspirador'
     | '/transbackup'
     | '/translucida'
+    | '/translucida-schutz'
     | '/translucida2'
     | '/transteste'
     | '/categoria/$slug'
@@ -362,6 +374,7 @@ export interface RootRouteChildren {
   RoboaspiradorRoute: typeof RoboaspiradorRoute
   TransbackupRoute: typeof TransbackupRoute
   TranslucidaRoute: typeof TranslucidaRoute
+  TranslucidaSchutzRoute: typeof TranslucidaSchutzRoute
   Translucida2Route: typeof Translucida2Route
   TranstesteRoute: typeof TranstesteRoute
   CategoriaSlugRoute: typeof CategoriaSlugRoute
@@ -518,6 +531,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TranslucidaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/translucida-schutz': {
+      id: '/translucida-schutz'
+      path: '/translucida-schutz'
+      fullPath: '/translucida-schutz'
+      preLoaderRoute: typeof TranslucidaSchutzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/translucida2': {
       id: '/translucida2'
       path: '/translucida2'
@@ -578,6 +598,7 @@ const rootRouteChildren: RootRouteChildren = {
   RoboaspiradorRoute: RoboaspiradorRoute,
   TransbackupRoute: TransbackupRoute,
   TranslucidaRoute: TranslucidaRoute,
+  TranslucidaSchutzRoute: TranslucidaSchutzRoute,
   Translucida2Route: Translucida2Route,
   TranstesteRoute: TranstesteRoute,
   CategoriaSlugRoute: CategoriaSlugRoute,
