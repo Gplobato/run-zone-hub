@@ -25,7 +25,14 @@ import {
   PhoneCall,
   Mail,
   MapPin,
+  Volume2,
+  VolumeX,
+  Bell,
+  BellRing,
+  Sparkles,
+  Smartphone,
 } from "lucide-react";
+import { soundService } from "@/lib/sound";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -142,6 +149,15 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const deleteLead = useServerFn(deleteAdminLead);
 
   const [loading, setLoading] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [lastEventAlert, setLastEventAlert] = useState<{
+    type: "PAID" | "PIX" | "LEAD";
+    title: string;
+    description: string;
+    amount?: number;
+  } | null>(null);
+
   const [data, setData] = useState<{
     metrics: {
       totalLeads: number;
@@ -170,12 +186,71 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "ABANDONED" | "PIX_GENERATED" | "PAID">("ALL");
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  // Check notification permission on mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setNotificationsEnabled(Notification.permission === "granted");
+    }
+  }, []);
+
+  const toggleNotifications = async () => {
+    const granted = await soundService.requestNotificationPermission();
+    setNotificationsEnabled(granted);
+    if (granted) {
+      soundService.sendNotification("🔔 Notificações Ativadas!", {
+        body: "Você receberá alertas sonoros e na tela a cada nova venda ou lead!",
+      });
+      soundService.playCashRegister();
+    }
+  };
 
   const loadData = async () => {
     try {
       setLoading(true);
       const res = await getLeads();
-      if (res) setData(res);
+      if (res) {
+        // Detect new events if not initial load
+        if (!isInitialLoad && data.leads.length > 0) {
+          const oldIds = new Set(data.leads.map((l) => `${l.id}_${l.status}`));
+          const newLeads = res.leads.filter((l) => !oldIds.has(`${l.id}_${l.status}`));
+
+          for (const newLead of newLeads) {
+            const isPaid = newLead.status === "PAID" || newLead.status === "CARD_APPROVED";
+            const isPix = newLead.status === "PIX_GENERATED";
+
+            if (isPaid) {
+              if (soundEnabled) soundService.playCashRegister();
+              soundService.sendNotification("💰 VENDA APROVADA!", {
+                body: `R$ ${newLead.totalAmount.toFixed(2).replace(".", ",")} • ${newLead.customer.name} (${newLead.productTitle})`,
+              });
+              setLastEventAlert({
+                type: "PAID",
+                title: "Venda Aprovada! 💰🎉",
+                description: `${newLead.customer.name} comprou ${newLead.productTitle} por R$ ${newLead.totalAmount.toFixed(2).replace(".", ",")}`,
+                amount: newLead.totalAmount,
+              });
+              break;
+            } else if (isPix) {
+              if (soundEnabled) soundService.playPixChime();
+              soundService.sendNotification("🟡 PIX GERADO!", {
+                body: `R$ ${newLead.totalAmount.toFixed(2).replace(".", ",")} • ${newLead.customer.name} está pagando...`,
+              });
+              setLastEventAlert({
+                type: "PIX",
+                title: "Pix Gerado! 🟡",
+                description: `${newLead.customer.name} gerou um Pix de R$ ${newLead.totalAmount.toFixed(2).replace(".", ",")}`,
+                amount: newLead.totalAmount,
+              });
+              break;
+            }
+          }
+        }
+
+        setData(res);
+        setIsInitialLoad(false);
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -185,9 +260,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 10000); // Auto-refresh every 10s
+    const interval = setInterval(loadData, 6000); // Fast auto-refresh every 6s
     return () => clearInterval(interval);
-  }, []);
+  }, [isInitialLoad, data.leads, soundEnabled]);
 
   const handleDelete = async (leadId: string) => {
     if (!confirm("Deseja realmente remover este registro?")) return;
@@ -293,7 +368,55 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* SOUND TOGGLE */}
+            <button
+              onClick={() => {
+                const next = !soundEnabled;
+                setSoundEnabled(next);
+                if (next) soundService.playCashRegister();
+              }}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                soundEnabled
+                  ? "bg-emerald-950/60 border-emerald-700 text-emerald-300"
+                  : "bg-gray-800 border-gray-700 text-gray-400"
+              }`}
+              title={soundEnabled ? "Som ativado (clique para mutar)" : "Som desativado (clique para ativar)"}
+            >
+              {soundEnabled ? <Volume2 size={14} className="text-emerald-400" /> : <VolumeX size={14} />}
+              <span className="hidden sm:inline">{soundEnabled ? "Som Caixa: ON" : "Som: OFF"}</span>
+            </button>
+
+            {/* TEST SOUND BUTTON */}
+            <button
+              onClick={() => soundService.playCashRegister()}
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-[11px] font-bold text-amber-300 border border-gray-700 transition-all active:scale-95"
+              title="Testar o som da máquina registradora (Cha-Ching)"
+            >
+              <Sparkles size={13} className="text-amber-400" />
+              <span>Testar Som 💰</span>
+            </button>
+
+            {/* PUSH NOTIFICATION TOGGLE */}
+            <button
+              onClick={toggleNotifications}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                notificationsEnabled
+                  ? "bg-blue-950/60 border-blue-700 text-blue-300"
+                  : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700"
+              }`}
+              title="Ativar notificações push na barra de status e tela de bloqueio do celular"
+            >
+              {notificationsEnabled ? (
+                <BellRing size={13} className="text-blue-400 animate-bounce" />
+              ) : (
+                <Bell size={13} />
+              )}
+              <span className="hidden sm:inline">
+                {notificationsEnabled ? "Notificações ON" : "Ativar Notificações"}
+              </span>
+            </button>
+
             <button
               onClick={loadData}
               disabled={loading}
@@ -304,11 +427,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               <span className="hidden sm:inline">Atualizar</span>
             </button>
             <button
-              onClick={() => navigate({ to: "/translucida2" })}
+              onClick={() => navigate({ to: "/translucida" })}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-bold transition-all border border-gray-700 text-emerald-400"
             >
               <ExternalLink size={13} />
-              <span className="hidden sm:inline">Ver Loja (/translucida2)</span>
+              <span className="hidden sm:inline">Ver Loja</span>
             </button>
             <button
               onClick={() => {
@@ -323,6 +446,35 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           </div>
         </div>
       </header>
+
+      {/* CELEBRATION TOAST / ALERT BANNER */}
+      {lastEventAlert && (
+        <div className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-700 text-white px-4 py-3 shadow-lg flex items-center justify-between animate-in slide-in-from-top duration-300">
+          <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                {lastEventAlert.type === "PAID" ? (
+                  <Sparkles size={20} className="text-yellow-300 animate-spin" />
+                ) : (
+                  <QrCode size={20} className="text-white" />
+                )}
+              </div>
+              <div>
+                <h4 className="text-sm font-black uppercase tracking-wide flex items-center gap-2">
+                  {lastEventAlert.title}
+                </h4>
+                <p className="text-xs text-emerald-100 font-medium">{lastEventAlert.description}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setLastEventAlert(null)}
+              className="px-2.5 py-1 rounded-md bg-black/20 hover:bg-black/40 text-xs font-bold transition-colors ml-4"
+            >
+              Fechar ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* MAIN CONTAINER */}
       <main className="max-w-7xl mx-auto px-4 pt-6 space-y-6">
