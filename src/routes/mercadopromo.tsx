@@ -31,7 +31,7 @@ import {
   QrCode,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
-import { fbqTrack, fbqTrackSingle, fbqTrackCustomSingle } from "@/lib/pixel";
+import { fbqTrack, fbqTrackSingle, fbqTrackCustomSingle, META_PIXEL_ID } from "@/lib/pixel";
 import { createZedyCheckout } from "@/lib/zedy.functions";
 import {
   createCashinpayTransaction,
@@ -3477,19 +3477,23 @@ function MercadoLivreCashinpayCheckoutModal({
     setErrorMessage(null);
 
     try {
-      fbqTrackSingle(META_PIXEL_ID, "AddPaymentInfo", {
-        content_name: product.title,
-        content_ids: [product.id],
-        value: totalAmount,
-        currency: "BRL",
-        payment_method: "PIX",
-      });
+      try {
+        fbqTrackSingle(META_PIXEL_ID, "AddPaymentInfo", {
+          content_name: product.title,
+          content_ids: [product.id],
+          value: totalAmount,
+          currency: "BRL",
+          payment_method: "PIX",
+        });
 
-      fbqTrackCustomSingle(META_PIXEL_ID, "PixGenerated", {
-        content_name: product.title,
-        value: totalAmount,
-        currency: "BRL",
-      });
+        fbqTrackCustomSingle(META_PIXEL_ID, "PixGenerated", {
+          content_name: product.title,
+          value: totalAmount,
+          currency: "BRL",
+        });
+      } catch (err) {
+        console.warn("Pixel tracking error:", err);
+      }
 
       const res = await createCashinpayTransaction({
         data: {
@@ -3523,15 +3527,17 @@ function MercadoLivreCashinpayCheckoutModal({
         transactionId: res.transactionId,
       });
 
-      await updateLeadStatus({
-        data: {
-          leadId: form.document,
-          status: "PIX_PENDING",
-          orderId: res.transactionId,
-          paymentMethod: "PIX",
-          totalAmount,
-        },
-      });
+      try {
+        await updateLeadStatus({
+          data: {
+            leadId: form.document,
+            status: "PIX_PENDING",
+            orderId: res.transactionId,
+            paymentMethod: "PIX",
+            totalAmount,
+          },
+        });
+      } catch {}
 
       setStep(4);
     } catch (err: any) {
@@ -3565,13 +3571,15 @@ function MercadoLivreCashinpayCheckoutModal({
 
     setLoading(true);
 
-    fbqTrackSingle(META_PIXEL_ID, "AddPaymentInfo", {
-      content_name: product.title,
-      content_ids: [product.id],
-      value: totalAmount,
-      currency: "BRL",
-      payment_method: "CREDIT_CARD",
-    });
+    try {
+      fbqTrackSingle(META_PIXEL_ID, "AddPaymentInfo", {
+        content_name: product.title,
+        content_ids: [product.id],
+        value: totalAmount,
+        currency: "BRL",
+        payment_method: "CREDIT_CARD",
+      });
+    } catch {}
 
     setTimeout(async () => {
       setLoading(false);
@@ -3590,13 +3598,15 @@ function MercadoLivreCashinpayCheckoutModal({
         });
       } catch {}
 
-      fbqTrackSingle(META_PIXEL_ID, "Purchase", {
-        content_name: product.title,
-        content_ids: [product.id],
-        value: totalAmount,
-        currency: "BRL",
-        num_items: qty,
-      }, { eventID: orderId });
+      try {
+        fbqTrackSingle(META_PIXEL_ID, "Purchase", {
+          content_name: product.title,
+          content_ids: [product.id],
+          value: totalAmount,
+          currency: "BRL",
+          num_items: qty,
+        }, { eventID: orderId });
+      } catch {}
     }, 2200);
   };
 
