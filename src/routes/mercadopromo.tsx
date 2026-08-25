@@ -46,6 +46,7 @@ import payElo from "@/assets/mercadopromo/pay-elo.png";
 import payVisa from "@/assets/mercadopromo/pay-visa.png";
 import payMastercard from "@/assets/mercadopromo/pay-mastercard.png";
 import payPix from "@/assets/mercadopromo/pay-pix.png";
+import paymentBadgesImg from "@/assets/mercadopromo/payment-badges.png";
 import jacketMarromVideo from "@/assets/mercadopromo/jaqueta-marrom-video.mp4";
 import boots1 from "@/assets/mercadopromo/boots-1.jpg";
 import boots2 from "@/assets/mercadopromo/boots-2.jpg";
@@ -3692,20 +3693,20 @@ function MercadoLivreCashinpayCheckoutModal({
       {/* ============================================================
           HEADER MERCADO LIVRE (AMARELO COM PAGAMENTO 100% SEGURO)
          ============================================================ */}
-      <header className="bg-[#FFF159] border-b border-[#EBEBEB] px-4 py-3 sticky top-0 z-30 shadow-xs">
-        <div className="max-w-[1040px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={mlLogo} alt="Mercado Livre" className="h-7 w-auto object-contain" />
+      <header className="bg-[#FFF159] border-b border-[#EBEBEB] px-3.5 sm:px-4 py-2.5 sm:py-3 sticky top-0 z-30 shadow-xs">
+        <div className="max-w-[1040px] mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 shrink-0">
+            <img src={mlLogo} alt="Mercado Livre" className="h-6 sm:h-7 w-auto object-contain" />
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800 tracking-wider">
-              <Lock size={14} className="text-gray-800" />
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 pl-2">
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs font-bold text-gray-800 tracking-wider whitespace-nowrap">
+              <Lock size={12} className="text-gray-800 shrink-0" />
               <span>PAGAMENTO 100% SEGURO</span>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="p-1 rounded-full text-gray-600 hover:bg-black/5 transition-colors"
+              className="p-1 rounded-full text-gray-600 hover:bg-black/5 transition-colors cursor-pointer"
               title="Fechar"
             >
               <X size={18} />
@@ -4030,15 +4031,22 @@ function MercadoLivreCashinpayCheckoutModal({
                     paymentMethod === "CARD" ? "border-[#005BFF] bg-[#FAFCFF]" : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === "CARD" ? "border-[#005BFF] bg-[#005BFF]" : "border-gray-400"}`}>
-                      {paymentMethod === "CARD" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${paymentMethod === "CARD" ? "border-[#005BFF] bg-[#005BFF]" : "border-gray-400"}`}>
+                        {paymentMethod === "CARD" && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                      </div>
+                      <CreditCard size={18} className="text-[#005BFF]" />
+                      <div>
+                        <span className="text-xs font-bold text-gray-900">Cartão de Crédito</span>
+                        <span className="block text-[11px] text-gray-500">Até 6x sem juros</span>
+                      </div>
                     </div>
-                    <CreditCard size={18} className="text-[#005BFF]" />
-                    <div>
-                      <span className="text-xs font-bold text-gray-900">Cartão de Crédito</span>
-                      <span className="block text-[11px] text-gray-500">Até 6x sem juros</span>
-                    </div>
+                    <img
+                      src={paymentBadgesImg}
+                      alt="Bandeiras de cartão"
+                      className="h-6 w-auto object-contain shrink-0 opacity-85"
+                    />
                   </div>
 
                   {paymentMethod === "CARD" && (
@@ -4144,14 +4152,14 @@ function MercadoLivreCashinpayCheckoutModal({
               </div>
 
               {/* QR CODE */}
-              <div className="flex justify-center p-3 bg-white rounded-xl border border-gray-200 shadow-xs max-w-[200px] mx-auto">
-                {pixData.qrcode ? (
+              <div className="flex justify-center items-center p-3.5 bg-white rounded-xl border border-gray-200 shadow-xs max-w-[200px] mx-auto min-h-[190px]">
+                {pixData.qrcode && (pixData.qrcode.startsWith("http") || pixData.qrcode.startsWith("data:image")) ? (
                   <img src={pixData.qrcode} alt="QR Code Pix" className="w-44 h-44 object-contain" />
-                ) : pixData.qrcodeText ? (
-                  <QRCodeSVG value={pixData.qrcodeText} size={176} />
+                ) : (pixData.qrcodeText || pixData.qrcode) ? (
+                  <QRCodeSVG value={pixData.qrcodeText || pixData.qrcode || ""} size={176} />
                 ) : (
                   <div className="w-44 h-44 flex items-center justify-center text-xs text-gray-400">
-                    Carregando QR Code...
+                    <Loader2 size={24} className="animate-spin text-[#005BFF]" />
                   </div>
                 )}
               </div>
@@ -4176,79 +4184,83 @@ function MercadoLivreCashinpayCheckoutModal({
                     <button
                       type="button"
                       onClick={copyPixCode}
-                      className={`px-4 py-2 rounded-lg font-bold text-xs transition-all flex items-center gap-1 shrink-0 ${
+                      className={`px-4 py-2 rounded-lg font-bold text-xs transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
                         copied ? "bg-[#00a650] text-white" : "bg-[#005BFF] hover:bg-[#004cd6] text-white"
                       }`}
                     >
-                      {copied ? <Check size={14} /> : <Copy size={14} />}
-                      {copied ? "Copiado!" : "Copiar"}
+                      {copied ? (
+                        <>
+                          <CheckCircle2 size={14} /> Copiado!
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={14} /> Copiar Código
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* AUTO POLLING STATUS */}
-              <div className="p-3 bg-blue-50 rounded-xl border border-blue-100 text-xs text-[#005BFF] flex items-center justify-center gap-2">
-                <Loader2 size={14} className="animate-spin text-[#005BFF]" />
-                <span>Aguardando pagamento... <strong>(identificação automática)</strong></span>
+              {/* AVISO DE PROCESSAMENTO AUTOMÁTICO */}
+              <div className="p-3 bg-blue-50 border border-blue-100 rounded-xl text-xs text-blue-800 flex items-center gap-2 text-left">
+                <Loader2 size={16} className="animate-spin text-[#005BFF] shrink-0" />
+                <span>
+                  Aguardando pagamento... Assim que você pagar no seu banco, esta tela atualizará automaticamente.
+                </span>
               </div>
-
-              {/* INSTRUÇÕES */}
-              <div className="bg-gray-50 p-3.5 rounded-xl border border-gray-200 text-left space-y-1.5 text-[11px] text-gray-600">
-                <div className="font-bold text-gray-800 text-xs mb-1">Como pagar:</div>
-                <p>1. Abra o aplicativo do seu banco no celular.</p>
-                <p>2. Escolha a opção <strong>Pix</strong> e depois <strong>Pix Copia e Cola</strong> (ou Ler QR Code).</p>
-                <p>3. Cole o código copiado e confirme o pagamento.</p>
-                <p>4. Esta tela atualizará automaticamente assim que for confirmado!</p>
-              </div>
-            </div>
-          )}
-
-          {/* ============================================================
-              ETAPA 5: SUCESSO / COMPRA CONFIRMADA
-             ============================================================ */}
-          {step === 5 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6 text-center space-y-4 shadow-xs animate-in zoom-in-95 duration-200">
-              <div className="w-16 h-16 bg-[#e6f7ed] text-[#00a650] rounded-full flex items-center justify-center mx-auto shadow-md border-2 border-[#00a650]">
-                <CheckCircle2 size={36} />
-              </div>
-
-              <div>
-                <h3 className="text-lg font-black text-gray-900">🎉 Pagamento Confirmado com Sucesso!</h3>
-                <p className="text-xs text-gray-600 mt-1 max-w-sm mx-auto">
-                  Recebemos seu pedido da <strong>{product.title}</strong>!
-                </p>
-              </div>
-
-              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-left space-y-2 text-xs">
-                <div className="flex justify-between text-gray-600">
-                  <span>Produto:</span>
-                  <strong className="text-gray-900">{product.title}</strong>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Cor / Tamanho:</span>
-                  <strong className="text-gray-900">{color.label} (Tam {size} BR)</strong>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Total Pago:</span>
-                  <strong className="text-[#00a650] text-sm font-bold">R$ {totalAmount.toFixed(2).replace(".", ",")}</strong>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Previsão de Envio:</span>
-                  <strong className="text-gray-900">Mercado Envios Full (Hoje)</strong>
-                </div>
-              </div>
-
-              <p className="text-xs text-gray-500">
-                O comprovante e o código de rastreamento serão enviados para seu WhatsApp e e-mail.
-              </p>
 
               <button
                 type="button"
                 onClick={onClose}
-                className="w-full py-3 bg-[#005BFF] hover:bg-[#004cd6] text-white font-bold text-xs rounded-lg transition-all shadow cursor-pointer"
+                className="text-xs text-gray-500 hover:underline pt-2 inline-block cursor-pointer"
               >
                 Voltar à Página do Produto
+              </button>
+            </div>
+          )}
+
+          {/* ============================================================
+              ETAPA 5: PEDIDO CONFIRMADO / COMPRA FINALIZADA
+             ============================================================ */}
+          {step === 5 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-8 text-center space-y-5 shadow-xs animate-in fade-in duration-200">
+              <div className="w-16 h-16 bg-[#e6f7ed] text-[#00a650] rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle2 size={36} />
+              </div>
+
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Compra Confirmada com Sucesso!</h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  Seu pedido foi registrado e será preparado para envio imediato.
+                </p>
+              </div>
+
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-xs text-gray-600 text-left space-y-2 max-w-sm mx-auto">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Destinatário:</span>
+                  <strong className="text-gray-800">{form.name}</strong>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Entrega:</span>
+                  <span className="text-gray-800">{form.street}, {form.streetNumber} - {form.city}/{form.state}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Valor Pago:</span>
+                  <strong className="text-[#00a650] font-bold">R$ {totalAmount.toFixed(2).replace(".", ",")}</strong>
+                </div>
+                <div className="flex justify-between pt-1 border-t border-gray-200">
+                  <span className="text-gray-500">Frete:</span>
+                  <span className="text-[#00a650] font-bold flex items-center gap-1">⚡ FULL (Grátis)</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full max-w-sm py-3.5 bg-[#005BFF] hover:bg-[#004cd6] text-white font-bold text-sm rounded-lg transition-all shadow-sm mx-auto cursor-pointer"
+              >
+                Voltar à Loja
               </button>
             </div>
           )}
@@ -4338,18 +4350,13 @@ function MercadoLivreCashinpayCheckoutModal({
           <p>Telefone: +55 (11) 3368-5599 / E-mail: suporte@mercadolivre.com.br</p>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-2 flex flex-col items-center">
           <p className="text-[11px] text-gray-500 mb-2 font-medium">Formas de pagamento:</p>
-          <div className="flex flex-wrap items-center justify-center gap-2 max-w-md mx-auto">
-            <PaymentBadge label="Aura" bg="#ffcc00" text="#000" />
-            <PaymentBadge label="DISCOVER" bg="#f26522" text="#fff" />
-            <PaymentBadge label="Mastercard" bg="#eb001b" text="#fff" />
-            <PaymentBadge label="Diners" bg="#004a98" text="#fff" />
-            <PaymentBadge label="VISA" bg="#1a1f71" text="#fff" />
-            <PaymentBadge label="AMEX" bg="#007bc1" text="#fff" />
-            <PaymentBadge label="PIX" bg="#00a650" text="#fff" />
-            <PaymentBadge label="elo" bg="#000" text="#fff" />
-          </div>
+          <img
+            src={paymentBadgesImg}
+            alt="Bandeiras aceitas: Visa, Mastercard, Maestro, Elo, Alelo, Amex, Hipercard, Diners Club"
+            className="h-14 sm:h-16 w-auto max-w-[260px] sm:max-w-[300px] object-contain mx-auto"
+          />
         </div>
 
         <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-gray-600 pt-2">
@@ -4358,17 +4365,6 @@ function MercadoLivreCashinpayCheckoutModal({
         </div>
       </footer>
     </div>
-  );
-}
-
-function PaymentBadge({ label, bg, text }: { label: string; bg: string; text: string }) {
-  return (
-    <span
-      className="inline-flex items-center justify-center px-2 py-1 rounded text-[10px] font-black tracking-wider shadow-xs border border-gray-200"
-      style={{ backgroundColor: bg, color: text }}
-    >
-      {label}
-    </span>
   );
 }
 
