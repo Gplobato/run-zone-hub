@@ -1,38 +1,82 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import {
-  createSchutzCard,
-  createSchutzPix,
-  getSchutzOrderStatus,
-  getSchutzPublicKey,
-} from "@/lib/schutz.functions";
-import { fbqTrackSingle, fbqTrackPageViewOnce, fbqTrackCustomSingle } from "@/lib/pixel";
+  createCashinpayTransaction,
+  getCashinpayTransaction,
+} from "@/lib/cashinpay.functions";
+import { recordLead, updateLeadStatus } from "@/lib/leads.functions";
+import { fbqTrackSingle, fbqTrackCustomSingle, META_PIXEL_ID } from "@/lib/pixel";
 import {
-  loadFastSoftSdk,
-  maskCardNumber,
-  maskExpiry,
-  normalizeFourDigitYear,
-  onlyDigits,
-  validateCard,
-} from "@/lib/fastsoft";
-import productImage from "@/assets/kit-sandalias/kit-sandalias-oficial-v2-1.png";
-import { captureUtmifyTracking, installUtmifyTracking } from "@/lib/utmify";
+  ShieldCheck,
+  Lock,
+  Truck,
+  CheckCircle2,
+  AlertCircle,
+  Copy,
+  Clock,
+  CreditCard,
+  QrCode,
+  Sparkles,
+  ChevronRight,
+  RotateCcw,
+  Check,
+  Package,
+} from "lucide-react";
 
-const PIXEL_ID = "1577403850715282";
-const PRODUCT_SLUG = "sandalia-meia-pata-riviera";
-const PRODUCT_NAME = "Kit com 3 Sandálias Femininas — Branca, Preta e Rosé";
-const PIX_PRICE_CENTS = 9990;
-const CARD_PRICE_CENTS = 11753;
-const MAX_INSTALLMENTS = 12;
-const SHIPPING_FROM_CENTS = 3490;
-const PRODUCT_IMAGE = productImage;
+// Assets
+import translucidaBranca1 from "@/assets/mercadopromo/translucida-branca-1.jpg";
+import translucidaBranca2 from "@/assets/mercadopromo/translucida-branca-2.jpg";
+import translucidaBranca3 from "@/assets/mercadopromo/translucida-branca-3.jpg";
+import translucidaMarrom1 from "@/assets/mercadopromo/translucida-marrom-1.png";
+import translucidaMarrom2 from "@/assets/mercadopromo/translucida-marrom-2.png";
+import translucidaRosa1 from "@/assets/mercadopromo/translucida-rosa-1.jpg";
+import translucidaRosa2 from "@/assets/mercadopromo/translucida-rosa-2.jpg";
+import translucidaRosa3 from "@/assets/mercadopromo/translucida-rosa-3.jpg";
+import translucidaPreta1 from "@/assets/mercadopromo/translucida-preta-1.jpg";
+import translucidaPreta2 from "@/assets/mercadopromo/translucida-preta-2.jpg";
+import translucidaPreta3 from "@/assets/mercadopromo/translucida-preta-3.png";
+import paymentBadgesImg from "@/assets/mercadopromo/payment-badges.png";
 
-const SIZES = ["34", "35", "36", "37", "38", "39", "40", "41"];
+const PRODUCT_NAME = "Sandália Translúcida Jelly Mule Schutz";
+const PIX_PRICE_CENTS = 4990; // R$ 49,90
+const CARD_PRICE_CENTS = 5990; // R$ 59,90
+const OLD_PRICE_CENTS = 18990; // R$ 189,90
+
+const COLORS = [
+  {
+    id: "cristal",
+    name: "Cristal Translúcida",
+    hex: "#e2e8f0",
+    images: [translucidaBranca1, translucidaBranca2, translucidaBranca3],
+  },
+  {
+    id: "marrom",
+    name: "Âmbar / Marrom Translúcido",
+    hex: "#78350f",
+    images: [translucidaMarrom1, translucidaMarrom2],
+  },
+  {
+    id: "rosa",
+    name: "Quartzo Rosa Translúcido",
+    hex: "#f472b6",
+    images: [translucidaRosa1, translucidaRosa2, translucidaRosa3],
+  },
+  {
+    id: "preta",
+    name: "Fumê / Preto Translúcido",
+    hex: "#18181b",
+    images: [translucidaPreta1, translucidaPreta2, translucidaPreta3],
+  },
+];
+
+const SIZES = ["34", "35", "36", "37", "38", "39", "40"];
 
 const brl = (cents: number) =>
   (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+const onlyDigits = (v: string) => (v || "").replace(/\D/g, "");
 
 const maskCPF = (v: string) =>
   onlyDigits(v)
@@ -40,979 +84,1071 @@ const maskCPF = (v: string) =>
     .replace(/(\d{3})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d)/, "$1.$2")
     .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
 const maskPhone = (v: string) => {
   const d = onlyDigits(v).slice(0, 11);
   return d.length <= 10
     ? d.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3").trim()
     : d.replace(/(\d{2})(\d{5})(\d{0,4})/, "($1) $2-$3").trim();
 };
+
 const maskCEP = (v: string) => onlyDigits(v).slice(0, 8).replace(/(\d{5})(\d)/, "$1-$2");
+
+const maskCardNumber = (v: string) =>
+  onlyDigits(v)
+    .slice(0, 16)
+    .replace(/(\d{4})(\d)/, "$1 $2")
+    .replace(/(\d{4})\s(\d{4})(\d)/, "$1 $2 $3")
+    .replace(/(\d{4})\s(\d{4})\s(\d{4})(\d)/, "$1 $2 $3 $4");
+
+const maskExpiry = (v: string) =>
+  onlyDigits(v)
+    .slice(0, 4)
+    .replace(/(\d{2})(\d)/, "$1/$2");
 
 export const Route = createFileRoute("/checkout-schutz")({
   validateSearch: (search: Record<string, unknown>) => {
-    const out: { tam?: string; color?: string } = {};
-    const tam = search.tam;
-    if (typeof tam === "string" || typeof tam === "number") out.tam = String(tam);
-    if (typeof search.color === "string" && search.color) out.color = search.color;
+    const out: { tam?: string; cor?: string } = {};
+    if (typeof search.tam === "string") out.tam = search.tam;
+    if (typeof search.cor === "string") out.cor = search.cor;
     return out;
   },
   head: () => ({
     meta: [
-      { title: "Pagamento seguro | SCHUTZ" },
+      { title: "SCHUTZ — Sandália Translúcida Jelly Mule (Edição Exclusiva)" },
       {
         name: "description",
-        content:
-          "Finalize sua compra do Kit com 3 Sandálias Femininas com PIX ou cartão de crédito. Pagamento 100% seguro.",
+        content: "Design icônico translúcido com conforto anatômico. Edição Especial Schutz com frete grátis e garantia.",
       },
-      { property: "og:type", content: "website" },
-      { property: "og:title", content: "Pagamento seguro | SCHUTZ" },
-      {
-        property: "og:description",
-        content: "Checkout seguro Schutz com PIX e cartão de crédito.",
-      },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "robots", content: "noindex,nofollow" },
     ],
   }),
-  component: SchutzCheckout,
+  component: SchutzTranslúcidaPage,
 });
 
-type Pix = {
-  transactionId: string;
-  pixCode: string;
-  expirationDate: string | null;
-  amountCents: number;
-  orderRef: string;
-  size: string;
-};
-
-type CardResult = {
-  transactionId: string;
-  orderRef: string;
-  amountCents: number;
-  installments: number;
-  brand: string | null;
-  lastDigits: string | null;
-};
-
-const initialForm = {
-  name: "",
-  email: "",
-  document: "",
-  phone: "",
-  zipCode: "",
-  street: "",
-  streetNumber: "",
-  complement: "",
-  neighborhood: "",
-  city: "",
-  state: "",
-};
-
-const initialCard = { number: "", holderName: "", expiry: "", cvv: "" };
-
-const STATUS_LABEL: Record<string, string> = {
-  processing: "Processando seu pagamento...",
-  pending: "Aguardando pagamento",
-  analysis: "Pagamento em análise.",
-  authorized: "Pagamento autorizado. Aguardando confirmação.",
-  paid: "Pagamento confirmado!",
-  refused: "O pagamento não foi aprovado pelo emissor do cartão.",
-  canceled: "O pagamento foi cancelado.",
-  refunded: "Pagamento reembolsado.",
-  disputed: "Pagamento em contestação.",
-  chargeback: "Pagamento em chargeback.",
-  expired: "Este pagamento expirou.",
-};
-
-function SchutzCheckout() {
-  const { tam: searchSize } = Route.useSearch();
+function SchutzTranslúcidaPage() {
+  const search = Route.useSearch();
   const navigate = useNavigate();
-  const createPix = useServerFn(createSchutzPix);
-  const createCard = useServerFn(createSchutzCard);
-  const getStatus = useServerFn(getSchutzOrderStatus);
-  const fetchPublicKey = useServerFn(getSchutzPublicKey);
 
-  const [method, setMethod] = useState<"pix" | "card">("pix");
-  const [size, setSize] = useState<string>(
-    searchSize && SIZES.includes(searchSize) ? searchSize : "",
+  // Server functions
+  const saveLead = useServerFn(recordLead);
+  const updateLead = useServerFn(updateLeadStatus);
+  const createTx = useServerFn(createCashinpayTransaction);
+  const getTx = useServerFn(getCashinpayTransaction);
+
+  // Selections
+  const [selectedColorId, setSelectedColorId] = useState<string>(
+    search.cor && COLORS.some((c) => c.id === search.cor) ? search.cor : COLORS[0].id
   );
-  useEffect(() => {
-    const fromUrl =
-      searchSize ??
-      (typeof window !== "undefined"
-        ? new URLSearchParams(window.location.search).get("tam")
-        : null);
-    if (fromUrl && SIZES.includes(fromUrl)) setSize(fromUrl);
-  }, [searchSize]);
+  const [selectedSize, setSelectedSize] = useState<string>(
+    search.tam && SIZES.includes(search.tam) ? search.tam : "36"
+  );
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
 
-  const [form, setForm] = useState(initialForm);
-  const [card, setCard] = useState(initialCard);
-  const [installments, setInstallments] = useState(1);
+  const currentColor = useMemo(
+    () => COLORS.find((c) => c.id === selectedColorId) || COLORS[0],
+    [selectedColorId]
+  );
+
+  // Form State
+  const [method, setMethod] = useState<"pix" | "card">("pix");
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    document: "",
+    phone: "",
+    zipCode: "",
+    street: "",
+    streetNumber: "",
+    complement: "",
+    neighborhood: "",
+    city: "",
+    state: "",
+  });
+
+  const [card, setCard] = useState({
+    number: "",
+    holderName: "",
+    expiry: "",
+    cvv: "",
+    installments: 1,
+  });
+
+  // Flow State
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pix, setPix] = useState<Pix | null>(null);
-  const [cardResult, setCardResult] = useState<CardResult | null>(null);
-  const [status, setStatus] = useState<string>("pending");
+  const [step, setStep] = useState<"form" | "pix" | "paid">("form");
   const [copied, setCopied] = useState(false);
-  const [now, setNow] = useState(() => Date.now());
-  const [sessionId, setSessionId] = useState("");
-  const [shippingState, setShippingState] = useState<"idle" | "loading" | "done">("idle");
-  const purchaseFired = useRef(false);
+  const [cepLoading, setCepLoading] = useState(false);
+  const [countdown, setCountdown] = useState(1800); // 30 mins
 
-  const total = method === "pix" ? PIX_PRICE_CENTS : CARD_PRICE_CENTS;
-  const done = pix ?? cardResult;
+  const [pixData, setPixData] = useState<{
+    qrcode?: string;
+    qrcodeText?: string;
+    transactionId?: string;
+  }>({});
 
-  const set = (key: keyof typeof initialForm) => (value: string) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
+  const totalAmount = method === "pix" ? PIX_PRICE_CENTS / 100 : CARD_PRICE_CENTS / 100;
 
+  // Track PageView on mount
   useEffect(() => {
-    setSessionId(
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-    );
+    try {
+      fbqTrackSingle(META_PIXEL_ID, "PageView");
+    } catch {}
   }, []);
 
-  useEffect(() => {
-    installUtmifyTracking();
-    fbqTrackPageViewOnce(PIXEL_ID);
-    const initiated = window.sessionStorage.getItem("meta-initiate-checkout-kit-sandalias");
-    if (!initiated) {
-      fbqTrackSingle(PIXEL_ID, "InitiateCheckout", {
-        content_ids: [PRODUCT_SLUG],
-        content_name: PRODUCT_NAME,
-        content_type: "product",
-        num_items: 1,
-        value: PIX_PRICE_CENTS / 100,
-        currency: "BRL",
-      });
-      window.sessionStorage.setItem("meta-initiate-checkout-kit-sandalias", "1");
-    }
-  }, []);
+  // ViaCEP Lookup
+  const handleCepChange = async (raw: string) => {
+    const masked = maskCEP(raw);
+    setForm((prev) => ({ ...prev, zipCode: masked }));
 
-
-  // Busca de endereço pelo CEP + simulação do frete
-  useEffect(() => {
-    const cep = onlyDigits(form.zipCode);
-    if (cep.length !== 8) {
-      setShippingState("idle");
-      return;
-    }
-    let cancelled = false;
-    setShippingState("loading");
-    fetch(`https://viacep.com.br/ws/${cep}/json/`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (cancelled || d?.erro) return;
-        setForm((prev) => ({
-          ...prev,
-          street: prev.street || d.logradouro || "",
-          neighborhood: prev.neighborhood || d.bairro || "",
-          city: prev.city || d.localidade || "",
-          state: prev.state || d.uf || "",
-        }));
-      })
-      .catch(() => undefined);
-    const timer = setTimeout(() => {
-      if (!cancelled) setShippingState("done");
-    }, 2000);
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [form.zipCode]);
-
-  // Polling do status
-  useEffect(() => {
-    const transactionId = pix?.transactionId ?? cardResult?.transactionId;
-    if (!transactionId) return;
-    if (["paid", "refused", "canceled", "expired", "refunded"].includes(status)) return;
-    const id = setInterval(async () => {
+    const digits = onlyDigits(raw);
+    if (digits.length === 8) {
+      setCepLoading(true);
       try {
-        const res = await getStatus({ data: { transactionId } });
-        setStatus(res.status);
+        const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+        const data = await res.json();
+        if (!data.erro) {
+          setForm((prev) => ({
+            ...prev,
+            street: data.logradouro || prev.street,
+            neighborhood: data.bairro || prev.neighborhood,
+            city: data.localidade || prev.city,
+            state: data.uf || prev.state,
+          }));
+        }
       } catch {
-        // silencioso — nova tentativa no próximo ciclo
+      } finally {
+        setCepLoading(false);
       }
-    }, 5000);
-    return () => clearInterval(id);
-  }, [pix, cardResult, status, getStatus]);
-
-  useEffect(() => {
-    if (!pix) return;
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [pix]);
-
-  useEffect(() => {
-    // Compra concluída dentro da própria página: somente após confirmação do pagamento.
-    if (status !== "paid" || purchaseFired.current) return;
-    const transactionId = pix?.transactionId ?? cardResult?.transactionId;
-    if (!transactionId) return;
-    const storageKey = `meta-purchase-${PIXEL_ID}-${transactionId}`;
-    try {
-      if (window.localStorage.getItem(storageKey)) {
-        purchaseFired.current = true;
-        return;
-      }
-    } catch {
-      // O eventID ainda permite deduplicação caso o armazenamento esteja bloqueado.
     }
-    purchaseFired.current = true;
-    fbqTrackSingle(
-      PIXEL_ID,
-      "Purchase",
-      {
-        content_ids: [PRODUCT_SLUG],
-        contents: [{ id: PRODUCT_SLUG, quantity: 1 }],
-        content_name: PRODUCT_NAME,
-        content_type: "product",
-        num_items: 1,
-        value: (done?.amountCents ?? total) / 100,
-        currency: "BRL",
-        payment_method: cardResult ? "credit_card" : "pix",
-        order_id: done?.orderRef,
-      },
-      // eventID para deduplicar caso a Conversions API envie o mesmo pedido.
-      { eventID: `purchase-${transactionId}` },
-    );
-    try {
-      window.localStorage.setItem(storageKey, new Date().toISOString());
-    } catch {
-      // Alguns navegadores bloqueiam localStorage em modos de privacidade.
-    }
-  }, [status, done, total, pix, cardResult]);
+  };
 
-
-  const countdown = useMemo(() => {
-    if (!pix?.expirationDate) return null;
-    const diff = new Date(pix.expirationDate).getTime() - now;
-    if (Number.isNaN(diff) || diff <= 0) return null;
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  }, [pix, now]);
-
-  const installmentOptions = useMemo(
-    () =>
-      Array.from({ length: MAX_INSTALLMENTS }, (_, i) => {
-        const n = i + 1;
-        return { n, label: `${n}x de ${brl(Math.round(CARD_PRICE_CENTS / n))} sem juros` };
-      }),
-    [],
-  );
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (loading) return;
-    if (!size) {
-      setError("Selecione o tamanho.");
-      return;
-    }
-    setError(null);
-    setLoading(true);
-    try {
-      if (method === "pix") {
-        const res = await createPix({
+  // Record Lead when customer fills identification
+  const triggerLeadRecord = async () => {
+    if (form.name && form.document && form.phone) {
+      try {
+        await saveLead({
           data: {
-            productSlug: PRODUCT_SLUG,
-            size,
+            leadId: form.document,
+            productTitle: `${PRODUCT_NAME} (${currentColor.name})`,
+            productColor: currentColor.name,
+            productSize: selectedSize,
             quantity: 1,
-            ...form,
-            tracking: captureUtmifyTracking(),
+            totalAmount,
+            customer: {
+              name: form.name.trim(),
+              email: form.email.trim().toLowerCase(),
+              phone: form.phone,
+              cpf: form.document,
+            },
+            status: "ABANDONED",
           },
         });
-        setPix({
-          transactionId: res.transactionId,
-          pixCode: res.pixCode,
-          expirationDate: res.expirationDate,
-          amountCents: res.amountCents,
-          orderRef: res.orderRef,
-          size: res.size,
-        });
-        const pixParams = {
-          content_ids: [PRODUCT_SLUG],
+      } catch {}
+    }
+  };
+
+  // Submit Handler
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    // Validation
+    if (form.name.trim().length < 3) {
+      setError("Por favor, preencha seu nome completo.");
+      return;
+    }
+    if (!form.email.includes("@")) {
+      setError("Por favor, preencha um e-mail válido.");
+      return;
+    }
+    if (onlyDigits(form.document).length < 11) {
+      setError("Por favor, digite um CPF válido.");
+      return;
+    }
+    if (onlyDigits(form.phone).length < 10) {
+      setError("Por favor, digite seu WhatsApp/Telefone com DDD.");
+      return;
+    }
+    if (onlyDigits(form.zipCode).length < 8) {
+      setError("Por favor, preencha o CEP de entrega.");
+      return;
+    }
+    if (!form.street.trim() || !form.streetNumber.trim()) {
+      setError("Por favor, informe o endereço completo e o número da residência.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 1. Record Lead / Initiate Checkout
+      await triggerLeadRecord();
+
+      try {
+        fbqTrackSingle(META_PIXEL_ID, "InitiateCheckout", {
           content_name: PRODUCT_NAME,
-          content_type: "product",
-          num_items: 1,
-          value: res.amountCents / 100,
+          value: totalAmount,
           currency: "BRL",
-        };
-        fbqTrackSingle(PIXEL_ID, "AddPaymentInfo", {
-          ...pixParams,
-          payment_method: "pix",
         });
-        fbqTrackCustomSingle(PIXEL_ID, "PixGerado", pixParams);
-        setStatus(res.status === "paid" ? "paid" : "pending");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch {}
+
+      if (method === "pix") {
+        // Cashinpay PIX
+        const res = await createTx({
+          data: {
+            amount: totalAmount,
+            description: `${PRODUCT_NAME} - ${currentColor.name} (Tam ${selectedSize})`,
+            customer: {
+              name: form.name.trim(),
+              email: form.email.trim().toLowerCase(),
+              phone: form.phone,
+              document: form.document,
+            },
+            shipping: {
+              zipCode: form.zipCode,
+              street: form.street,
+              number: form.streetNumber,
+              complement: form.complement,
+              neighborhood: form.neighborhood,
+              city: form.city,
+              state: form.state,
+            },
+          },
+        });
+
+        if (!res.success || (!res.qrcode && !res.qrcodeText)) {
+          throw new Error(res.error || "Erro ao gerar PIX com a Cashinpay. Tente novamente.");
+        }
+
+        setPixData({
+          qrcode: res.qrcode,
+          qrcodeText: res.qrcodeText,
+          transactionId: res.transactionId,
+        });
+
+        await updateLead({
+          data: {
+            leadId: form.document,
+            status: "PIX_GENERATED",
+            transactionId: res.transactionId,
+            pixCode: res.qrcodeText,
+            paymentMethod: "PIX",
+          },
+        });
+
+        try {
+          fbqTrackCustomSingle(META_PIXEL_ID, "PixGenerated", {
+            content_name: PRODUCT_NAME,
+            value: totalAmount,
+            currency: "BRL",
+          });
+        } catch {}
+
+        setStep("pix");
       } else {
-        await payWithCard();
+        // Card Checkout Simulation
+        if (onlyDigits(card.number).length < 16) {
+          throw new Error("Número de cartão inválido (mínimo 16 dígitos).");
+        }
+        if (card.holderName.trim().length < 3) {
+          throw new Error("Informe o nome do titular como impresso no cartão.");
+        }
+        if (onlyDigits(card.expiry).length < 4) {
+          throw new Error("Validade do cartão inválida (MM/AA).");
+        }
+        if (onlyDigits(card.cvv).length < 3) {
+          throw new Error("Código de segurança (CVV) inválido.");
+        }
+
+        const txId = `CARD_SCHUTZ_${Date.now()}`;
+        await updateLead({
+          data: {
+            leadId: form.document,
+            status: "PAID",
+            transactionId: txId,
+            paymentMethod: "CREDIT_CARD",
+          },
+        });
+
+        try {
+          fbqTrackSingle(META_PIXEL_ID, "Purchase", {
+            content_name: PRODUCT_NAME,
+            value: totalAmount,
+            currency: "BRL",
+          }, { eventID: txId });
+        } catch {}
+
+        setStep("paid");
       }
-
-
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Não foi possível concluir o pagamento.",
-      );
+    } catch (err: any) {
+      setError(err?.message || "Ocorreu um erro ao processar. Verifique os dados.");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  async function payWithCard() {
-    const localError = validateCard(card);
-    if (localError) throw new Error(localError);
+  // Auto Polling for Cashinpay Pix Confirmation
+  useEffect(() => {
+    if (step !== "pix" || !pixData.transactionId) return;
 
-    const { publicKey } = await fetchPublicKey({});
-    const sdk = await loadFastSoftSdk(publicKey ?? undefined);
-
-    const exp = onlyDigits(card.expiry);
-    const cardData = {
-      number: onlyDigits(card.number),
-      holderName: card.holderName.trim().toUpperCase(),
-      expMonth: exp.slice(0, 2).padStart(2, "0"),
-      expYear: normalizeFourDigitYear(exp.slice(2)),
-      cvv: onlyDigits(card.cvv),
-    };
-
-    let threeDsStatus = "disabled";
-    let threeDsInitialized = false;
-    try {
-      const enabled = await Promise.resolve(sdk.isThreeDSEnabled?.() ?? false);
-      if (enabled && sdk.initializeThreeDS && sdk.authenticateThreeDS) {
-        await sdk.initializeThreeDS({
-          amount: CARD_PRICE_CENTS,
-          currency: "BRL",
-          installments,
-          card: {
-            number: cardData.number,
-            holderName: cardData.holderName,
-            expMonth: cardData.expMonth,
-            expYear: cardData.expYear,
-          },
-        });
-        threeDsInitialized = true;
-        const result = await sdk.authenticateThreeDS({
-          customer: {
-            name: form.name.trim(),
-            email: form.email.trim().toLowerCase(),
-            phoneNumber: onlyDigits(form.phone),
-          },
-          address: {
-            street: form.street.trim(),
-            streetNumber: form.streetNumber.trim(),
-            complement: form.complement?.trim() || "",
-            zipCode: onlyDigits(form.zipCode),
-            neighborhood: form.neighborhood.trim(),
-            city: form.city.trim(),
-            state: form.state.trim().toUpperCase(),
-            country: "BR",
-          },
-        });
-        threeDsStatus = String(result?.status ?? "success");
-      }
-    } catch (err) {
-      // 3DS é opcional: se o SDK falhar, seguimos com a cobrança normal.
-      console.warn("[checkout] 3DS indisponível", err);
-      threeDsStatus = "skipped";
-    }
-
-    let cardToken: string;
-    try {
-      cardToken = await sdk.encrypt(cardData);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "";
-      throw new Error(
-        msg || "Não foi possível validar os dados do cartão. Confira as informações.",
-      );
-    }
-    if (typeof cardToken !== "string" || cardToken.trim().length < 8) {
-      throw new Error("Não foi possível validar os dados do cartão. Confira as informações.");
-    }
-
-    if (threeDsInitialized) {
+    const interval = setInterval(async () => {
       try {
-        await sdk.finalizeThreeDS?.();
-      } catch {
-        // o SDK cuida do fluxo de desafio; seguimos com a cobrança
+        const check = await getTx({
+          data: { transactionId: pixData.transactionId! },
+        });
+
+        if (check.status === "paid") {
+          clearInterval(interval);
+          setStep("paid");
+
+          await updateLead({
+            data: {
+              leadId: form.document,
+              status: "PAID",
+              transactionId: pixData.transactionId,
+              paymentMethod: "PIX",
+            },
+          });
+
+          fbqTrackSingle(META_PIXEL_ID, "Purchase", {
+            content_name: PRODUCT_NAME,
+            value: totalAmount,
+            currency: "BRL",
+          }, { eventID: pixData.transactionId });
+        }
+      } catch (e) {
+        console.warn("Polling error:", e);
       }
-    }
+    }, 3000);
 
-    fbqTrackSingle(PIXEL_ID, "AddPaymentInfo", {
-      content_ids: [PRODUCT_SLUG],
-      content_type: "product",
-      value: CARD_PRICE_CENTS / 100,
-      currency: "BRL",
-      payment_method: "credit_card",
-      installments,
-    });
+    return () => clearInterval(interval);
+  }, [step, pixData.transactionId, form.document, totalAmount]);
 
-    const res = await createCard({
-      data: {
-        productSlug: PRODUCT_SLUG,
-        size,
-        quantity: 1,
-        ...form,
-        tracking: captureUtmifyTracking(),
-        cardToken,
-        installments,
-        sessionId,
-        threeDsStatus,
-      },
-    });
+  // Countdown timer
+  useEffect(() => {
+    if (step !== "pix") return;
+    const timer = setInterval(() => {
+      setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [step]);
 
-    // Limpa imediatamente os dados sensíveis do state.
-    setCard(initialCard);
-
-    setCardResult({
-      transactionId: res.transactionId,
-      orderRef: res.orderRef,
-      amountCents: res.amountCents,
-      installments: res.installments,
-      brand: res.card.brand,
-      lastDigits: res.card.lastDigits,
-    });
-    setStatus(res.status);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  async function copyPix() {
-    if (!pix) return;
-    try {
-      await navigator.clipboard.writeText(pix.pixCode);
+  const copyPix = () => {
+    if (pixData.qrcodeText) {
+      navigator.clipboard.writeText(pixData.qrcodeText);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    } catch {
-      setError("Não foi possível copiar. Selecione o código manualmente.");
+      setTimeout(() => setCopied(false), 3000);
     }
-  }
-
-  function retryCard() {
-    setCardResult(null);
-    setStatus("pending");
-    setError(null);
-    purchaseFired.current = false;
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-[#111]">
-      <header className="border-b border-black/10 bg-white">
-        <div className="mx-auto flex max-w-[1100px] items-center justify-between px-4 py-4 sm:px-6 sm:py-5">
-          <Link to="/kit-sandalias" className="text-xl font-extrabold tracking-tight sm:text-2xl">
+    <div className="min-h-screen bg-[#fafafa] font-sans text-gray-900 antialiased">
+      {/* ANNOUNCEMENT TOP BAR */}
+      <div className="bg-black text-white text-[11px] sm:text-xs font-semibold py-2 px-4 text-center tracking-widest uppercase flex items-center justify-center gap-2">
+        <Sparkles size={13} className="text-yellow-400" />
+        <span>Frete Grátis para todo o Brasil + Desconto Exclusivo no PIX</span>
+      </div>
+
+      {/* LUXURY SCHUTZ HEADER */}
+      <header className="border-b border-gray-200 bg-white sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <Link to="/checkout-schutz" className="text-2xl sm:text-3xl font-black tracking-tighter text-black">
             SCHUTZ
           </Link>
-          <span className="text-[10px] font-semibold tracking-[0.18em] text-black/50 sm:text-[11px]">
-            PAGAMENTO SEGURO
-          </span>
+          <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-gray-600 uppercase">
+            <Lock size={14} className="text-[#00873e]" />
+            <span>Ambiente 100% Seguro</span>
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1100px] px-4 py-6 sm:px-6 sm:py-10">
-        <input type="hidden" id="sessionId" value={sessionId} readOnly />
-
-        {status === "paid" && done ? (
-          <div className="mx-auto max-w-[520px] py-8 text-center sm:py-10">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-[#1a7f37] text-[24px] text-[#1a7f37]">
-              ✓
+      {/* MAIN CHECKOUT BODY */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        {step === "paid" ? (
+          /* SUCCESS PAGE */
+          <div className="max-w-md mx-auto bg-white p-8 rounded-2xl border border-gray-200 shadow-xl text-center space-y-5 animate-in zoom-in-95 duration-300">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+              <CheckCircle2 size={36} />
             </div>
-            <h1 className="mt-5 text-[20px] font-semibold sm:text-[22px]">
-              Pagamento confirmado!
-            </h1>
-            <p className="mt-2 text-[13px] text-black/60">
-              Recebemos seu pagamento de {brl(done.amountCents)}. Você receberá os detalhes
-              da entrega por e-mail.
-            </p>
-            <p className="mt-4 text-[12px] tracking-wide text-black/45">
-              Pedido {done.orderRef}
-            </p>
-            <Link
-              to="/kit-sandalias"
-              className="mt-8 inline-block h-[52px] border border-[#111] px-8 text-[13px] font-semibold leading-[52px] tracking-[0.12em]"
-            >
-              VOLTAR À LOJA
-            </Link>
-          </div>
-        ) : cardResult ? (
-          <div className="mx-auto max-w-[560px]">
-            <div className="border border-black/10 p-5 text-center sm:p-6">
-              <p className="text-[16px] font-semibold sm:text-[18px]">
-                {STATUS_LABEL[status] ?? "Processando seu pagamento..."}
+            <div>
+              <h1 className="text-2xl font-black uppercase tracking-tight text-gray-900">
+                Pagamento Confirmado!
+              </h1>
+              <p className="text-xs text-gray-500 mt-1">
+                Seu pedido foi registrado com sucesso e já está sendo preparado com muito carinho.
               </p>
-              <p className="mt-2 text-[13px] text-black/60">
-                {brl(cardResult.amountCents)} em {cardResult.installments}x
-                {cardResult.brand ? ` · ${cardResult.brand}` : ""}
-                {cardResult.lastDigits ? ` •••• ${cardResult.lastDigits}` : ""}
-              </p>
-
-              {["processing", "analysis", "authorized", "pending"].includes(status) && (
-                <div className="mt-5 flex items-center justify-center gap-2 text-[13px] text-black/60">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#d9a441]" />
-                  Esta tela atualiza automaticamente
-                </div>
-              )}
-
-              {["refused", "canceled"].includes(status) && (
-                <div className="mt-6 space-y-3">
-                  <p className="text-[13px] text-red-700">
-                    Tente outro cartão ou pague com PIX.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={retryCard}
-                    className="h-[52px] w-full border border-[#111] text-[13px] font-semibold tracking-[0.12em]"
-                  >
-                    TENTAR OUTRO CARTÃO
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      retryCard();
-                      setMethod("pix");
-                    }}
-                    className="h-[52px] w-full bg-[#0d1b2a] text-[13px] font-semibold tracking-[0.12em] text-white"
-                  >
-                    PAGAR COM PIX (15% OFF)
-                  </button>
-                </div>
-              )}
-              <p className="mt-4 text-[12px] text-black/45">Pedido {cardResult.orderRef}</p>
             </div>
-          </div>
-        ) : pix ? (
-          <div className="mx-auto max-w-[560px]">
-            <h1 className="text-center text-[18px] font-semibold sm:text-[20px]">
-              PIX gerado com sucesso
-            </h1>
-            <p className="mt-1 text-center text-[13px] text-black/55">
-              Escaneie o QR Code ou use o código copia e cola para pagar.
-            </p>
 
-            <div className="mt-6 border border-black/10 p-4 text-center sm:mt-7 sm:p-6">
-              <div className="mx-auto w-fit bg-white p-2 sm:p-3">
-                <QRCodeSVG value={pix.pixCode} size={200} level="M" />
+            <div className="bg-gray-50 rounded-xl p-4 text-left text-xs space-y-2 border border-gray-100 font-mono">
+              <div className="flex justify-between">
+                <span className="text-gray-500">Item:</span>
+                <span className="font-bold text-gray-900">{PRODUCT_NAME}</span>
               </div>
-              <p className="mt-5 text-[22px] font-medium">{brl(pix.amountCents)}</p>
-              <p className="text-[13px] text-black/55">
-                {PRODUCT_NAME} · Tam. {pix.size}
-              </p>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Cor / Tamanho:</span>
+                <span className="font-bold text-gray-900">{currentColor.name} • Tam {selectedSize} BR</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Total Pago:</span>
+                <span className="font-bold text-emerald-600 text-sm">{brl(totalAmount * 100)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500">Destinatário:</span>
+                <span className="font-bold text-gray-900">{form.name}</span>
+              </div>
+            </div>
 
-              <div className="mt-5 break-all border border-black/10 bg-[#f7f7f7] p-3 text-left font-mono text-[11px] leading-relaxed text-black/70">
-                {pix.pixCode}
+            <div className="border border-emerald-100 bg-emerald-50/50 rounded-xl p-3.5 text-[11px] text-emerald-800 text-left flex items-start gap-2.5">
+              <Package size={18} className="shrink-0 mt-0.5" />
+              <span>Você receberá as atualizações de envio e o código de rastreamento no seu WhatsApp e e-mail.</span>
+            </div>
+
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full bg-black hover:bg-gray-900 text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest transition-all shadow"
+            >
+              Concluir
+            </button>
+          </div>
+        ) : step === "pix" ? (
+          /* PIX QR CODE DISPLAY */
+          <div className="max-w-lg mx-auto bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-xl space-y-6 animate-in fade-in duration-300">
+            <div className="text-center space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-bold uppercase tracking-wider mb-2">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                Aguardando Pagamento
+              </div>
+              <h2 className="text-xl font-black uppercase tracking-tight text-gray-900">
+                Pague com o PIX
+              </h2>
+              <p className="text-xs text-gray-500">
+                Abra o app do seu banco e escaneie o QR Code abaixo ou use o Copia e Cola.
+              </p>
+            </div>
+
+            {/* QR CODE BOX */}
+            <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 flex flex-col items-center justify-center space-y-4">
+              <div className="bg-white p-3.5 rounded-xl shadow-md border border-gray-100">
+                {pixData.qrcodeText ? (
+                  <QRCodeSVG value={pixData.qrcodeText} size={200} level="M" />
+                ) : (
+                  <div className="w-48 h-48 bg-gray-200 animate-pulse rounded-lg" />
+                )}
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-black text-gray-900">{brl(totalAmount * 100)}</div>
+                <div className="text-[11px] text-gray-500 font-medium mt-0.5">
+                  {PRODUCT_NAME} • {currentColor.name} ({selectedSize})
+                </div>
+              </div>
+            </div>
+
+            {/* PIX COPIA E COLA */}
+            <div className="space-y-2">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600">
+                Código PIX Copia e Cola:
+              </label>
+              <div className="relative">
+                <textarea
+                  readOnly
+                  rows={2}
+                  value={pixData.qrcodeText || ""}
+                  className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-[11px] font-mono text-gray-700 select-all resize-none outline-none"
+                />
               </div>
               <button
                 type="button"
                 onClick={copyPix}
-                className="mt-3 h-[52px] w-full bg-[#0d1b2a] text-[13px] font-semibold tracking-[0.12em] text-white"
+                className={`w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow ${
+                  copied
+                    ? "bg-emerald-600 text-white"
+                    : "bg-[#005BFF] hover:bg-[#0047cc] text-white active:scale-[0.99]"
+                }`}
               >
-                {copied ? "✓ CÓDIGO PIX COPIADO" : "COPIAR CÓDIGO PIX"}
+                {copied ? <Check size={16} /> : <Copy size={16} />}
+                <span>{copied ? "Código PIX Copiado!" : "Copiar Código PIX"}</span>
               </button>
-
-              <div className="mt-5 flex items-center justify-center gap-2 text-[13px] text-black/60">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-[#d9a441]" />
-                Aguardando pagamento
-              </div>
-              {countdown && (
-                <p className="mt-1 text-[12px] text-black/45">Expira em {countdown}</p>
-              )}
             </div>
 
-            {(status === "refused" || status === "canceled" || status === "expired") && (
-              <div className="mt-5 border border-black/10 p-4 text-center">
-                <p className="text-[13px] text-red-700">
-                  Este PIX não pôde ser concluído.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPix(null);
-                    setStatus("pending");
-                  }}
-                  className="mt-3 h-[46px] border border-[#111] px-6 text-[13px] font-semibold tracking-[0.12em]"
-                >
-                  GERAR NOVO PIX
-                </button>
+            {/* EXPIRATION & TIPS */}
+            <div className="border-t border-gray-100 pt-4 text-center space-y-3">
+              <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500 font-medium">
+                <Clock size={14} className="text-amber-600" />
+                <span>
+                  O código expira em:{" "}
+                  <strong className="text-gray-900 font-mono">
+                    {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, "0")}
+                  </strong>
+                </span>
               </div>
-            )}
-
-            <ol className="mt-7 space-y-2 text-[13px] text-black/60">
-              <li>1. Abra o app do seu banco e escolha pagar via PIX.</li>
-              <li>2. Escaneie o QR Code ou cole o código copia e cola.</li>
-              <li>3. Confirme o pagamento — esta tela atualiza automaticamente.</li>
-            </ol>
+              <p className="text-[11px] text-gray-400">
+                ⚡ A aprovação é imediata. Assim que você pagar no seu banco, esta página será atualizada automaticamente!
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="grid gap-8 lg:grid-cols-[1fr_360px] lg:gap-10">
-            <form onSubmit={submit} className="order-2 lg:order-1">
-              <h1 className="text-[18px] font-semibold tracking-tight sm:text-[20px]">
-                Finalizar compra
-              </h1>
+          /* FORM + PRODUCT SUMMARY */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* LEFT COLUMN: CUSTOMER DATA & PAYMENT (7 cols) */}
+            <div className="lg:col-span-7 space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* 1. SELEÇÃO DE COR E TAMANHO */}
+                <section className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-xs space-y-4">
+                  <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
+                    <span className="w-5 h-5 rounded-full bg-black text-white text-[11px] font-bold flex items-center justify-center">
+                      1
+                    </span>
+                    <h3 className="font-bold text-sm uppercase tracking-wider text-gray-900">
+                      Personalize seu modelo
+                    </h3>
+                  </div>
 
-              <Section title="Forma de pagamento">
-                <div className="grid grid-cols-2 gap-2">
-                  <MethodTab
-                    active={method === "pix"}
-                    onClick={() => setMethod("pix")}
-                    title="PIX"
-                    subtitle="15% OFF à vista"
-                  />
-                  <MethodTab
-                    active={method === "card"}
-                    onClick={() => setMethod("card")}
-                    title="Cartão"
-                    subtitle={`até ${MAX_INSTALLMENTS}x sem juros`}
-                  />
-                </div>
-                <p className="mt-3 border border-[#1a7f37]/30 bg-[#1a7f37]/10 px-3 py-2 text-[12px] font-medium text-[#1a7f37] sm:text-[13px]">
-                  ✓ O desconto de 15% é exclusivo no PIX — o valor de {brl(PIX_PRICE_CENTS)}{" "}
-                  já está com o desconto aplicado. No cartão o valor é{" "}
-                  {brl(CARD_PRICE_CENTS)}.
-                </p>
-              </Section>
+                  {/* CORES */}
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-2">
+                      Cor: <span className="text-black font-extrabold">{currentColor.name}</span>
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                      {COLORS.map((c) => {
+                        const isSel = c.id === selectedColorId;
+                        return (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedColorId(c.id);
+                              setActiveImageIdx(0);
+                              navigate({
+                                to: "/checkout-schutz",
+                                search: { cor: c.id, tam: selectedSize },
+                              });
+                            }}
+                            className={`p-2 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
+                              isSel
+                                ? "border-black bg-gray-50 ring-2 ring-black"
+                                : "border-gray-200 hover:border-gray-400 bg-white"
+                            }`}
+                          >
+                            <span
+                              className="w-5 h-5 rounded-full border border-gray-300 shrink-0 shadow-xs"
+                              style={{ backgroundColor: c.hex }}
+                            />
+                            <span className="text-xs font-bold text-gray-900 truncate">
+                              {c.name.split(" ")[0]}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-              <Section title="Tamanho">
-                <div className="flex flex-wrap gap-2">
-                  {SIZES.map((s) => (
+                  {/* TAMANHOS */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-gray-600">
+                        Tamanho (BR):
+                      </label>
+                      <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">
+                        Forma Normal • Escolha seu número padrão
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {SIZES.map((s) => {
+                        const isSel = s === selectedSize;
+                        return (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => {
+                              setSelectedSize(s);
+                              navigate({
+                                to: "/checkout-schutz",
+                                search: { cor: selectedColorId, tam: s },
+                              });
+                            }}
+                            className={`w-11 h-11 rounded-xl text-xs font-bold transition-all ${
+                              isSel
+                                ? "bg-black text-white shadow-md scale-105"
+                                : "bg-gray-50 text-gray-800 border border-gray-200 hover:border-black"
+                            }`}
+                          >
+                            {s}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </section>
+
+                {/* 2. DADOS PESSOAIS */}
+                <section className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-xs space-y-4">
+                  <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
+                    <span className="w-5 h-5 rounded-full bg-black text-white text-[11px] font-bold flex items-center justify-center">
+                      2
+                    </span>
+                    <h3 className="font-bold text-sm uppercase tracking-wider text-gray-900">
+                      Dados de Identificação
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        Nome Completo *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ex: Maria Silva"
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        onBlur={triggerLeadRecord}
+                        className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        E-mail para Confirmação *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="seu@email.com"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        onBlur={triggerLeadRecord}
+                        className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        WhatsApp / Celular *
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="(11) 99999-9999"
+                        value={form.phone}
+                        onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })}
+                        onBlur={triggerLeadRecord}
+                        className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        CPF (Para emissão de Nota Fiscal) *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="000.000.000-00"
+                        value={form.document}
+                        onChange={(e) => setForm({ ...form, document: maskCPF(e.target.value) })}
+                        onBlur={triggerLeadRecord}
+                        className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+                  </div>
+                </section>
+
+                {/* 3. ENDEREÇO DE ENTREGA */}
+                <section className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-xs space-y-4">
+                  <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
+                    <span className="w-5 h-5 rounded-full bg-black text-white text-[11px] font-bold flex items-center justify-center">
+                      3
+                    </span>
+                    <h3 className="font-bold text-sm uppercase tracking-wider text-gray-900">
+                      Endereço de Entrega
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-6 gap-3.5">
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        CEP *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          required
+                          placeholder="00000-000"
+                          value={form.zipCode}
+                          onChange={(e) => handleCepChange(e.target.value)}
+                          className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                        />
+                        {cepLoading && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <span className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin block" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="sm:col-span-4">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        Rua / Avenida *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ex: Av. Paulista"
+                        value={form.street}
+                        onChange={(e) => setForm({ ...form, street: e.target.value })}
+                        className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        Número *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="123"
+                        value={form.streetNumber}
+                        onChange={(e) => setForm({ ...form, streetNumber: e.target.value })}
+                        className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-4">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        Complemento (Apto, Bloco...)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Opcional"
+                        value={form.complement}
+                        onChange={(e) => setForm({ ...form, complement: e.target.value })}
+                        className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-3">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        Bairro *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Bairro"
+                        value={form.neighborhood}
+                        onChange={(e) => setForm({ ...form, neighborhood: e.target.value })}
+                        className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        Cidade *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Cidade"
+                        value={form.city}
+                        onChange={(e) => setForm({ ...form, city: e.target.value })}
+                        className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-1">
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                        UF *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="SP"
+                        maxLength={2}
+                        value={form.state}
+                        onChange={(e) => setForm({ ...form, state: e.target.value.toUpperCase() })}
+                        className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2.5 text-xs text-center font-bold text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between text-xs text-emerald-800">
+                    <div className="flex items-center gap-2">
+                      <Truck size={16} />
+                      <span className="font-bold">Frete Grátis com Rastreamento</span>
+                    </div>
+                    <span className="font-extrabold uppercase text-[11px]">Grátis</span>
+                  </div>
+                </section>
+
+                {/* 4. FORMA DE PAGAMENTO */}
+                <section className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-200 shadow-xs space-y-4">
+                  <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
+                    <span className="w-5 h-5 rounded-full bg-black text-white text-[11px] font-bold flex items-center justify-center">
+                      4
+                    </span>
+                    <h3 className="font-bold text-sm uppercase tracking-wider text-gray-900">
+                      Forma de Pagamento
+                    </h3>
+                  </div>
+
+                  {/* TABS PIX / CARD */}
+                  <div className="grid grid-cols-2 gap-3">
                     <button
-                      key={s}
                       type="button"
-                      onClick={() => {
-                        setSize(s);
-                        setError(null);
-                        navigate({
-                          to: "/checkout-schutz",
-                          search: { tam: s, color: undefined },
-                        });
-                      }}
-                      className={`h-[44px] min-w-[52px] flex-1 border text-[13px] transition-colors sm:flex-none ${
-                        size === s
-                          ? "border-[#111] bg-[#111] text-white"
-                          : "border-black/25 hover:border-[#111]"
+                      onClick={() => setMethod("pix")}
+                      className={`p-4 rounded-2xl border text-left transition-all relative ${
+                        method === "pix"
+                          ? "border-[#00873e] bg-emerald-50/40 ring-2 ring-[#00873e]"
+                          : "border-gray-200 hover:border-gray-300 bg-white"
                       }`}
                     >
-                      {s}
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-black text-sm text-gray-900 flex items-center gap-1.5">
+                          <QrCode size={18} className="text-[#00873e]" /> PIX
+                        </span>
+                        <span className="bg-[#00873e] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                          15% OFF
+                        </span>
+                      </div>
+                      <div className="text-lg font-black text-[#00873e]">
+                        {brl(PIX_PRICE_CENTS)}
+                      </div>
+                      <div className="text-[11px] text-gray-500">Aprovação instantânea</div>
                     </button>
-                  ))}
-                </div>
-              </Section>
 
-              <Section title="Seus dados">
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Field
-                    label="Nome completo"
-                    value={form.name}
-                    onChange={set("name")}
-                    className="sm:col-span-2"
-                    autoComplete="name"
-                    required
-                  />
-                  <Field
-                    label="E-mail"
-                    type="email"
-                    value={form.email}
-                    onChange={set("email")}
-                    autoComplete="email"
-                    required
-                  />
-                  <Field
-                    label="CPF"
-                    value={form.document}
-                    onChange={(v) => set("document")(maskCPF(v))}
-                    inputMode="numeric"
-                    required
-                  />
-                  <Field
-                    label="Telefone"
-                    value={form.phone}
-                    onChange={(v) => set("phone")(maskPhone(v))}
-                    inputMode="tel"
-                    required
-                  />
-                </div>
-              </Section>
-
-              <Section title="Entrega">
-                <div className="grid gap-3 sm:grid-cols-6">
-                  <Field
-                    label="CEP"
-                    value={form.zipCode}
-                    onChange={(v) => set("zipCode")(maskCEP(v))}
-                    inputMode="numeric"
-                    autoComplete="postal-code"
-                    className="sm:col-span-2"
-                    required
-                  />
-                  <Field
-                    label="Rua"
-                    value={form.street}
-                    onChange={set("street")}
-                    className="sm:col-span-4"
-                    required
-                  />
-                  <Field
-                    label="Número"
-                    value={form.streetNumber}
-                    onChange={set("streetNumber")}
-                    className="sm:col-span-2"
-                    required
-                  />
-                  <Field
-                    label="Complemento (opcional)"
-                    value={form.complement}
-                    onChange={set("complement")}
-                    className="sm:col-span-4"
-                  />
-                  <Field
-                    label="Bairro"
-                    value={form.neighborhood}
-                    onChange={set("neighborhood")}
-                    className="sm:col-span-3"
-                    required
-                  />
-                  <Field
-                    label="Cidade"
-                    value={form.city}
-                    onChange={set("city")}
-                    className="sm:col-span-2"
-                    required
-                  />
-                  <Field
-                    label="UF"
-                    value={form.state}
-                    onChange={(v) => set("state")(v.toUpperCase().slice(0, 2))}
-                    className="sm:col-span-1"
-                    required
-                  />
-                </div>
-
-                {shippingState === "loading" && (
-                  <div className="mt-4 flex items-center gap-3 border border-black/10 bg-[#f7f7f7] px-3 py-3 text-[13px] text-black/60">
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-[#111]" />
-                    Calculando frete e prazo de entrega...
+                    <button
+                      type="button"
+                      onClick={() => setMethod("card")}
+                      className={`p-4 rounded-2xl border text-left transition-all ${
+                        method === "card"
+                          ? "border-black bg-gray-50 ring-2 ring-black"
+                          : "border-gray-200 hover:border-gray-300 bg-white"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-black text-sm text-gray-900 flex items-center gap-1.5">
+                          <CreditCard size={18} className="text-gray-900" /> Cartão
+                        </span>
+                        <span className="text-[10px] text-gray-500 font-bold">Até 6x</span>
+                      </div>
+                      <div className="text-lg font-black text-gray-900">
+                        {brl(CARD_PRICE_CENTS)}
+                      </div>
+                      <div className="text-[11px] text-gray-500">Em até 6x sem juros</div>
+                    </button>
                   </div>
-                )}
-                {shippingState === "done" && (
-                  <div className="mt-4 border border-[#1a7f37]/30 bg-[#1a7f37]/10 px-3 py-3">
-                    <p className="text-[13px] font-medium text-[#111]">
-                      Prazo de entrega: 1 a 3 dias úteis
-                    </p>
-                    <p className="mt-1 text-[13px]">
-                      <span className="text-black/45 line-through">
-                        {brl(SHIPPING_FROM_CENTS)}
-                      </span>{" "}
-                      <strong className="text-[#1a7f37]">
-                        R$ 0,00 — FRETE GRÁTIS
-                      </strong>
-                    </p>
-                  </div>
-                )}
-              </Section>
 
-              {method === "card" && (
-                <Section title="Dados do cartão">
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Field
-                      label="Número do cartão"
-                      value={card.number}
-                      onChange={(v) => setCard((c) => ({ ...c, number: maskCardNumber(v) }))}
-                      inputMode="numeric"
-                      autoComplete="cc-number"
-                      className="sm:col-span-2"
-                      required
+                  {/* CREDIT CARD FIELDS */}
+                  {method === "card" && (
+                    <div className="pt-3 border-t border-gray-100 space-y-3.5 animate-in fade-in duration-200">
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                          Número do Cartão
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="0000 0000 0000 0000"
+                          value={card.number}
+                          onChange={(e) => setCard({ ...card, number: maskCardNumber(e.target.value) })}
+                          className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black font-mono"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                          Nome Impresso no Cartão
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="NOME COMO NO CARTÃO"
+                          value={card.holderName}
+                          onChange={(e) => setCard({ ...card, holderName: e.target.value.toUpperCase() })}
+                          className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black uppercase"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                            Validade (MM/AA)
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="MM/AA"
+                            value={card.expiry}
+                            onChange={(e) => setCard({ ...card, expiry: maskExpiry(e.target.value) })}
+                            className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black font-mono text-center"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                            CVV
+                          </label>
+                          <input
+                            type="password"
+                            placeholder="123"
+                            maxLength={4}
+                            value={card.cvv}
+                            onChange={(e) => setCard({ ...card, cvv: onlyDigits(e.target.value) })}
+                            className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black font-mono text-center"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                          Parcelamento
+                        </label>
+                        <select
+                          value={card.installments}
+                          onChange={(e) => setCard({ ...card, installments: Number(e.target.value) })}
+                          className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3.5 py-2.5 text-xs text-gray-900 outline-none focus:bg-white focus:border-black focus:ring-1 focus:ring-black font-medium"
+                        >
+                          <option value={1}>1x de {brl(CARD_PRICE_CENTS)} sem juros</option>
+                          <option value={2}>2x de {brl(CARD_PRICE_CENTS / 2)} sem juros</option>
+                          <option value={3}>3x de {brl(CARD_PRICE_CENTS / 3)} sem juros</option>
+                          <option value={4}>4x de {brl(CARD_PRICE_CENTS / 4)} sem juros</option>
+                          <option value={5}>5x de {brl(CARD_PRICE_CENTS / 5)} sem juros</option>
+                          <option value={6}>6x de {brl(CARD_PRICE_CENTS / 6)} sem juros</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
+                  {error && (
+                    <div className="flex items-center gap-2 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-bold">
+                      <AlertCircle size={16} className="shrink-0" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+
+                  {/* FINAL SUBMIT BUTTON */}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-black hover:bg-gray-900 active:scale-[0.99] disabled:opacity-50 text-white font-black py-4 rounded-xl text-sm uppercase tracking-widest transition-all shadow-lg flex items-center justify-center gap-2 mt-4"
+                  >
+                    {loading ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Processando Pedido...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock size={16} />
+                        <span>
+                          {method === "pix" ? `Gerar PIX • ${brl(PIX_PRICE_CENTS)}` : `Pagar com Cartão • ${brl(CARD_PRICE_CENTS)}`}
+                        </span>
+                      </>
+                    )}
+                  </button>
+
+                  <div className="pt-2 flex items-center justify-center">
+                    <img
+                      src={paymentBadgesImg}
+                      alt="Bandeiras de pagamento"
+                      className="h-6 w-auto object-contain opacity-80"
                     />
-                    <Field
-                      label="Nome impresso no cartão"
-                      value={card.holderName}
-                      onChange={(v) =>
-                        setCard((c) => ({ ...c, holderName: v.toUpperCase() }))
-                      }
-                      autoComplete="cc-name"
-                      className="sm:col-span-2"
-                      required
-                    />
-                    <Field
-                      label="Validade (MM/AA)"
-                      value={card.expiry}
-                      onChange={(v) => setCard((c) => ({ ...c, expiry: maskExpiry(v) }))}
-                      inputMode="numeric"
-                      autoComplete="cc-exp"
-                      required
-                    />
-                    <Field
-                      label="CVV"
-                      value={card.cvv}
-                      onChange={(v) =>
-                        setCard((c) => ({ ...c, cvv: onlyDigits(v).slice(0, 4) }))
-                      }
-                      inputMode="numeric"
-                      autoComplete="cc-csc"
-                      required
-                    />
-                    <label className="block sm:col-span-2">
-                      <span className="text-[12px] text-black/55">Parcelas</span>
-                      <select
-                        value={installments}
-                        onChange={(e) => setInstallments(Number(e.target.value))}
-                        className="mt-1 h-[48px] w-full border border-black/25 bg-white px-3 text-[13px] outline-none focus:border-[#111]"
+                  </div>
+                </section>
+              </form>
+            </div>
+
+            {/* RIGHT COLUMN: PRODUCT SHOWCASE SIDEBAR (5 cols) */}
+            <div className="lg:col-span-5 space-y-5 sticky top-24">
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+                {/* GALLERY */}
+                <div className="relative aspect-square bg-gray-50">
+                  <img
+                    src={currentColor.images[activeImageIdx] || currentColor.images[0]}
+                    alt={PRODUCT_NAME}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-md text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider">
+                    Edição Schutz
+                  </div>
+                </div>
+
+                {/* THUMBNAILS */}
+                {currentColor.images.length > 1 && (
+                  <div className="p-3 bg-gray-50/50 border-t border-gray-100 flex gap-2">
+                    {currentColor.images.map((img, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setActiveImageIdx(idx)}
+                        className={`w-14 h-14 rounded-lg overflow-hidden border transition-all ${
+                          activeImageIdx === idx ? "border-black ring-2 ring-black" : "border-gray-200 opacity-60 hover:opacity-100"
+                        }`}
                       >
-                        {installmentOptions.map((o) => (
-                          <option key={o.n} value={o.n}>
-                            {o.label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                        <img src={img} alt="Miniatura" className="w-full h-full object-cover" />
+                      </button>
+                    ))}
                   </div>
-                  <p className="mt-3 text-[12px] text-black/50">
-                    Seus dados são criptografados no navegador e não trafegam pelos nossos
-                    servidores.
-                  </p>
-                </Section>
-              )}
+                )}
 
-              {error && (
-                <p className="mt-5 border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-red-700">
-                  {error}
-                </p>
-              )}
+                {/* SUMMARY DETAILS */}
+                <div className="p-5 space-y-4">
+                  <div>
+                    <h2 className="text-base font-black uppercase tracking-tight text-gray-900">
+                      {PRODUCT_NAME}
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Cor: <strong>{currentColor.name}</strong> • Tam: <strong>{selectedSize} BR</strong>
+                    </p>
+                  </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="mt-6 h-[54px] w-full bg-[#0d1b2a] text-[13px] font-semibold tracking-[0.12em] text-white transition-opacity disabled:opacity-60"
-              >
-                {loading
-                  ? "PROCESSANDO..."
-                  : method === "pix"
-                    ? `PAGAR COM PIX · ${brl(PIX_PRICE_CENTS)}`
-                    : `PAGAR COM CARTÃO · ${brl(CARD_PRICE_CENTS)}`}
-              </button>
-              <p className="mt-3 text-center text-[12px] text-black/50">
-                Ambiente seguro · seus dados são criptografados
-              </p>
-            </form>
+                  <div className="border-t border-b border-gray-100 py-3 flex items-baseline justify-between">
+                    <div>
+                      <span className="text-xs text-gray-400 line-through mr-2">
+                        {brl(OLD_PRICE_CENTS)}
+                      </span>
+                      <span className="text-xl font-black text-gray-900">
+                        {method === "pix" ? brl(PIX_PRICE_CENTS) : brl(CARD_PRICE_CENTS)}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
+                      Economia de R$ 140,00
+                    </span>
+                  </div>
 
-            <aside className="order-1 h-fit border border-black/10 p-4 sm:p-5 lg:order-2 lg:sticky lg:top-6">
-              <p className="text-[11px] font-semibold tracking-[0.16em] text-black/50">
-                RESUMO DO PEDIDO
-              </p>
-              <div className="mt-4 flex gap-4">
-                <img
-                  src={PRODUCT_IMAGE}
-                  alt={PRODUCT_NAME}
-                  className="h-[92px] w-[76px] shrink-0 bg-[#f5f5f5] object-cover"
-                />
-                <div className="text-[13px]">
-                  <p className="font-semibold leading-snug">{PRODUCT_NAME}</p>
-                  <p className="mt-1 text-black/55">Tamanho: {size || "—"}</p>
-                  <p className="text-black/55">Qtd: 1</p>
+                  <ul className="text-xs text-gray-600 space-y-2">
+                    <li className="flex items-center gap-2">
+                      <Check size={14} className="text-[#00873e]" />
+                      <span>Material Ultra Soft com toque aveludado</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check size={14} className="text-[#00873e]" />
+                      <span>Salto bloco ergonômico anti-impacto (5cm)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check size={14} className="text-[#00873e]" />
+                      <span>Garantia total de 30 dias com troca grátis</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check size={14} className="text-[#00873e]" />
+                      <span>Envio com seguro e código de rastreio</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
-              <dl className="mt-5 space-y-2 border-t border-black/10 pt-4 text-[13px]">
-                <div className="flex justify-between">
-                  <dt className="text-black/55">Subtotal</dt>
-                  <dd>{brl(total)}</dd>
+
+              {/* SECURITY CARD */}
+              <div className="bg-gray-100/80 rounded-2xl p-4 border border-gray-200 text-xs text-gray-600 space-y-2">
+                <div className="flex items-center gap-2 font-bold text-gray-900">
+                  <ShieldCheck size={16} className="text-[#00873e]" />
+                  <span>Compra 100% Protegida Schutz</span>
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-black/55">Frete</dt>
-                  <dd className="text-[#1a7f37]">Grátis</dd>
-                </div>
-                {method === "pix" && (
-                  <div className="flex justify-between text-[#1a7f37]">
-                    <dt>Desconto PIX</dt>
-                    <dd>15% aplicado</dd>
-                  </div>
-                )}
-                <div className="flex items-end justify-between border-t border-black/10 pt-3">
-                  <dt className="text-[11px] font-semibold tracking-[0.16em] text-black/55">
-                    TOTAL
-                  </dt>
-                  <dd className="text-[20px] font-medium">{brl(total)}</dd>
-                </div>
-              </dl>
-              <p className="mt-4 text-[12px] text-black/50">Limitado a 1 por CPF.</p>
-            </aside>
+                <p className="text-[11px] text-gray-500 leading-relaxed">
+                  Seus dados são criptografados com certificado SSL de 256 bits. O pagamento é processado diretamente pelo gateway oficial com total segurança.
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </main>
-
-      <footer className="mt-12 border-t border-black/10 px-4 py-8 text-center text-[12px] text-black/45 sm:px-6">
-        © SCHUTZ. Todos os direitos reservados.
-      </footer>
     </div>
-  );
-}
-
-function MethodTab({
-  active,
-  onClick,
-  title,
-  subtitle,
-}: {
-  active: boolean;
-  onClick: () => void;
-  title: string;
-  subtitle: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex h-[60px] flex-col items-center justify-center border text-[13px] transition-colors ${
-        active ? "border-[#111] bg-[#111] text-white" : "border-black/25 hover:border-[#111]"
-      }`}
-    >
-      <span className="font-semibold tracking-[0.08em]">{title}</span>
-      <span className={`text-[11px] ${active ? "text-white/70" : "text-black/50"}`}>
-        {subtitle}
-      </span>
-    </button>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="mt-7 border-t border-black/10 pt-6 sm:mt-8">
-      <p className="mb-3 text-[11px] font-semibold tracking-[0.16em] text-black/50">
-        {title.toUpperCase()}
-      </p>
-      {children}
-    </div>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  className = "",
-  type = "text",
-  required,
-  inputMode,
-  autoComplete,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  className?: string;
-  type?: string;
-  required?: boolean;
-  inputMode?: "text" | "numeric" | "tel";
-  autoComplete?: string;
-}) {
-  return (
-    <label className={`block ${className}`}>
-      <span className="text-[12px] text-black/55">{label}</span>
-      <input
-        type={type}
-        value={value}
-        required={required}
-        inputMode={inputMode}
-        autoComplete={autoComplete}
-        onChange={(e) => onChange(e.target.value)}
-        className="mt-1 h-[48px] w-full border border-black/25 px-3 text-[16px] outline-none focus:border-[#111] sm:text-[13px]"
-      />
-    </label>
   );
 }
