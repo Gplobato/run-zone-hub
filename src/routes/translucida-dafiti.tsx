@@ -8,6 +8,9 @@ import {
   ShieldCheck,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+  ArrowRight,
   Star,
   Lock,
   Heart,
@@ -134,7 +137,8 @@ function DafitiTranslúcidaPDP() {
 
   const [selectedColorId, setSelectedColorId] = useState("cristal");
   const [selectedSize, setSelectedSize] = useState<string | null>("36");
-  const [welcomeOpen, setWelcomeOpen] = useState(true);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
   const [descOpen, setDescOpen] = useState(true);
   const [specsOpen, setSpecsOpen] = useState(false);
   const [careOpen, setCareOpen] = useState(false);
@@ -383,29 +387,97 @@ function DafitiTranslúcidaPDP() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* LEFT: GALLERY (7 cols) */}
-          <div className="lg:col-span-7 space-y-6">
-            {/* GALLERIES FOR ALL COLORS PRE-RENDERED FOR INSTANT 0MS SWITCHING */}
-            {COLORS.map((c) => (
-              <div
-                key={c.id}
-                className={c.id === selectedColorId ? "grid grid-cols-1 sm:grid-cols-2 gap-3.5" : "hidden"}
-              >
-                {c.images.map((src, i) => (
-                  <div
-                    key={i}
-                    className="aspect-square bg-white overflow-hidden rounded-2xl border border-gray-200 shadow-xs group"
-                  >
-                    <img
-                      src={src}
-                      alt={`${PRODUCT_NAME} - ${c.name}`}
-                      loading="eager"
-                      decoding="async"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          <div className="lg:col-span-7 space-y-5">
+            {/* MOBILE GALLERY VIEW (sm:hidden) */}
+            <div className="sm:hidden space-y-2.5">
+              <div className="relative aspect-square bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-xs">
+                <img
+                  src={currentColor.images[activeImageIndex] || currentColor.images[0]}
+                  alt={`${PRODUCT_NAME} - ${currentColor.name}`}
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveImageIndex((prev) =>
+                      prev > 0 ? prev - 1 : currentColor.images.length - 1
+                    )
+                  }
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 shadow-md border border-gray-200 flex items-center justify-center text-gray-800 active:scale-90 transition-transform"
+                  aria-label="Foto anterior"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveImageIndex((prev) =>
+                      prev < currentColor.images.length - 1 ? prev + 1 : 0
+                    )
+                  }
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 shadow-md border border-gray-200 flex items-center justify-center text-gray-800 active:scale-90 transition-transform"
+                  aria-label="Próxima foto"
+                >
+                  <ChevronRight size={18} />
+                </button>
+                {/* DOTS */}
+                <div className="absolute bottom-2.5 inset-x-0 flex justify-center gap-1.5">
+                  {currentColor.images.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setActiveImageIndex(i)}
+                      className={`h-2 rounded-full transition-all ${
+                        activeImageIndex === i ? "w-6 bg-black" : "w-2 bg-black/30"
+                      }`}
                     />
-                  </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* MOBILE MINI THUMBNAILS */}
+              <div className="flex gap-2 justify-center">
+                {currentColor.images.map((src, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setActiveImageIndex(i)}
+                    className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                      activeImageIndex === i
+                        ? "border-black ring-1 ring-black shadow-xs"
+                        : "border-gray-200 opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  </button>
                 ))}
               </div>
-            ))}
+            </div>
+
+            {/* DESKTOP GALLERY VIEW (hidden sm:block) */}
+            <div className="hidden sm:block">
+              {COLORS.map((c) => (
+                <div
+                  key={c.id}
+                  className={c.id === selectedColorId ? "grid grid-cols-2 gap-3.5" : "hidden"}
+                >
+                  {c.images.map((src, i) => (
+                    <div
+                      key={i}
+                      className="aspect-square bg-white overflow-hidden rounded-2xl border border-gray-200 shadow-xs group"
+                    >
+                      <img
+                        src={src}
+                        alt={`${PRODUCT_NAME} - ${c.name}`}
+                        loading="eager"
+                        decoding="async"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
 
             {/* HIGHLIGHTS / BENEFÍCIOS */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-4">
@@ -480,33 +552,45 @@ function DafitiTranslúcidaPDP() {
               </p>
             </div>
 
-            {/* COLOR SELECTOR */}
+            {/* COLOR SELECTOR WITH REAL SHOE THUMBNAIL PHOTOS */}
             <div>
-              <div className="flex items-center justify-between text-xs mb-2">
+              <div className="flex items-center justify-between text-xs mb-2.5">
                 <span className="font-bold text-gray-700">Cor Selecionada:</span>
                 <span className="font-black text-black">{currentColor.name}</span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {COLORS.map((c) => {
                   const isSel = c.id === selectedColorId;
                   return (
                     <button
                       key={c.id}
                       type="button"
-                      onClick={() => setSelectedColorId(c.id)}
-                      className={`p-2.5 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
+                      onClick={() => {
+                        setSelectedColorId(c.id);
+                        setActiveImageIndex(0);
+                      }}
+                      className={`p-2 rounded-2xl border text-left flex flex-col items-center gap-1.5 transition-all ${
                         isSel
-                          ? "border-black bg-gray-50 ring-2 ring-black shadow-2xs"
+                          ? "border-black bg-gray-50 ring-2 ring-black shadow-xs"
                           : "border-gray-200 hover:border-gray-400 bg-white"
                       }`}
                     >
-                      <span
-                        className="w-4 h-4 rounded-full border border-gray-300 shrink-0 shadow-xs"
-                        style={{ backgroundColor: c.hex }}
-                      />
-                      <span className="text-[11px] font-bold text-gray-900 truncate">
-                        {c.name.split(" ")[0]}
-                      </span>
+                      <div className="w-full aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200/80">
+                        <img
+                          src={c.images[0]}
+                          alt={c.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1.5 w-full justify-center">
+                        <span
+                          className="w-3 h-3 rounded-full border border-gray-300 shrink-0"
+                          style={{ backgroundColor: c.hex }}
+                        />
+                        <span className="text-[11px] font-bold text-gray-900 truncate">
+                          {c.name.split(" ")[0]}
+                        </span>
+                      </div>
                     </button>
                   );
                 })}
@@ -812,10 +896,31 @@ function DafitiTranslúcidaPDP() {
             </p>
           </div>
         </div>
-        <div className="border-t border-neutral-900 py-6 text-center text-[10px] text-neutral-600 uppercase tracking-widest">
+        <div className="border-t border-neutral-900 py-6 text-center text-[10px] text-neutral-600 uppercase tracking-widest pb-24 lg:pb-6">
           © DAFITI GROUP BRASIL. Todos os direitos reservados.
         </div>
       </footer>
+
+      {/* STICKY MOBILE BOTTOM BUY BAR */}
+      <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-gray-200 p-3 z-40 lg:hidden shadow-2xl flex items-center justify-between gap-3 animate-in slide-in-from-bottom duration-300">
+        <div>
+          <span className="text-[10px] text-gray-400 line-through block">
+            R$ {PRICE_OLD.toFixed(2).replace(".", ",")}
+          </span>
+          <span className="text-base font-black text-gray-900 leading-none">
+            R$ {PRICE_PIX.toFixed(2).replace(".", ",")}{" "}
+            <span className="text-[10px] font-bold text-emerald-600">no PIX</span>
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={handleBuy}
+          className="flex-1 max-w-[210px] h-12 bg-black hover:bg-neutral-900 active:scale-95 text-white rounded-2xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg transition-transform"
+        >
+          <span>COMPRAR AGORA</span>
+          <ArrowRight size={15} />
+        </button>
+      </div>
     </div>
   );
 }
