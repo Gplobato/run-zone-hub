@@ -136,7 +136,7 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
         </button>
 
         <p className="text-center text-[10px] text-gray-400">
-          💡 Padrão: <code>admin</code> / <code>admin2026</code>
+          🔒 Acesso restrito ao proprietário
         </p>
       </form>
     </div>

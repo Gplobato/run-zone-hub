@@ -38,9 +38,12 @@ import translucidaRosa1 from "@/assets/mercadopromo/translucida-rosa-1.jpg";
 import translucidaRosa2 from "@/assets/mercadopromo/translucida-rosa-2.jpg";
 import translucidaRosa3 from "@/assets/mercadopromo/translucida-rosa-3.jpg";
 import translucidaPreta1 from "@/assets/mercadopromo/translucida-preta-1.jpg";
-import translucidaPreta2 from "@/assets/mercadopromo/translucida-preta-2.jpg";
 import translucidaPreta3 from "@/assets/mercadopromo/translucida-preta-3.png";
 import translucidaPromoBanner from "@/assets/mercadopromo/translucida-promo-banner.jpg";
+import reviewDafiti1 from "@/assets/mercadopromo/review-dafiti-1.jpg";
+import reviewDafiti2 from "@/assets/mercadopromo/review-dafiti-2.jpg";
+import reviewDafiti3 from "@/assets/mercadopromo/review-dafiti-3.jpg";
+import paymentBadgesImg from "@/assets/mercadopromo/payment-badges.png";
 
 const PRODUCT_NAME = "Sandália Translúcida Jelly Mule Feminina";
 const BRAND_NAME = "DAFITI SHOES";
@@ -86,25 +89,28 @@ const maskCEP = (v: string) =>
 
 const REVIEWS = [
   {
-    name: "Fernanda Lima",
+    name: "Mariana Siqueira",
     city: "São Paulo, SP",
     rating: 5,
     when: "há 2 dias",
-    text: "Simplesmente deslumbrante! O material translúcido é super macio e flexível, não machuca nada o calcanhar nem aperta os dedos. O salto bloco de 5cm dá uma estabilidade maravilhosa para passar o dia inteiro em pé. Chegou super rápido pelos Correios.",
+    image: reviewDafiti1,
+    text: "Simplesmente deslumbrante! Veio na caixa oficial da Dafiti impecável. O material translúcido é super macio e flexível, não machuca nada o calcanhar nem aperta os dedos. O salto bloco de 5cm dá uma estabilidade maravilhosa para passar o dia inteiro em pé. Chegou super rápido pelos Correios.",
   },
   {
     name: "Juliana Mendes",
     city: "Rio de Janeiro, RJ",
     rating: 5,
     when: "há 4 dias",
-    text: "Comprei a Âmbar (marrom) e a Cristal. Elas são absurdamente sofisticadas pessoalmente! As tramas vazadas deixam o pé fresco no calor e combinam com tudo, desde alfaiataria até vestidos longos fluidos. O acabamento é impecável.",
+    image: reviewDafiti2,
+    text: "Comprei a Quartzo Rosa e a Cristal. Elas são absurdamente sofisticadas no pé! As tramas vazadas deixam o pé fresco no calor e combinam com tudo, desde jeans até vestidos longos fluidos. O acabamento e o conforto são nota 10.",
   },
   {
     name: "Camila Rodrigues",
     city: "Belo Horizonte, MG",
     rating: 5,
     when: "há 1 semana",
-    text: "Amei o conforto da palmilha acolchoada. A sensação é de leveza absoluta. A transparência dá uma alongada incrível nas pernas e o calce é super prático. Vale cada centavo, recomendo de olhos fechados!",
+    image: reviewDafiti3,
+    text: "Amei o conforto da palmilha e a leveza da cor Fumê! A sensação é de pisar nas nuvens. A transparência dá uma alongada incrível nas pernas e o calce é super prático. Vale cada centavo, recomendo de olhos fechados!",
   },
 ];
 
@@ -843,18 +849,32 @@ function DafitiTranslúcidaPDP() {
 
           <div className="grid gap-4 md:grid-cols-3">
             {REVIEWS.map((r, i) => (
-              <div key={i} className="border border-gray-200 p-5 rounded-2xl bg-white space-y-3 shadow-2xs">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <strong className="text-xs text-gray-900">{r.name}</strong>
-                    <div className="text-[10px] text-gray-400">{r.city}</div>
+              <div key={i} className="border border-gray-200 p-5 rounded-2xl bg-white space-y-3 shadow-2xs flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <strong className="text-xs text-gray-900">{r.name}</strong>
+                      <div className="text-[10px] text-gray-400">{r.city}</div>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                      ✓ Comprador Verificado
+                    </span>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                    ✓ Comprador Verificado
-                  </span>
+                  {r.image && (
+                    <div className="rounded-xl overflow-hidden aspect-square max-h-56 bg-gray-50 border border-gray-100 shadow-2xs">
+                      <img
+                        src={r.image}
+                        alt={`Foto enviada por ${r.name}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="text-amber-400 text-xs">★★★★★</div>
+                  <p className="text-xs text-gray-600 leading-relaxed">{r.text}</p>
                 </div>
-                <div className="text-amber-400 text-xs">★★★★★</div>
-                <p className="text-xs text-gray-600 leading-relaxed">{r.text}</p>
+                <div className="text-[10px] text-gray-400 font-medium pt-1 border-t border-gray-100">
+                  Avaliado {r.when} na Dafiti
+                </div>
               </div>
             ))}
           </div>
@@ -883,11 +903,17 @@ function DafitiTranslúcidaPDP() {
           </div>
           <div>
             <h4 className="font-bold text-white uppercase text-[11px] tracking-wider mb-3">Formas de Pagamento</h4>
-            <ul className="space-y-2 text-[11px]">
+            <ul className="space-y-2 text-[11px] mb-3">
               <li>PIX (Aprovação Imediata)</li>
               <li>Cartão de Crédito em até 6x</li>
-              <li>Bandeiras: Visa, Master, Elo, Hiper</li>
             </ul>
+            <div className="pt-1">
+              <img
+                src={paymentBadgesImg}
+                alt="Bandeiras de Pagamento Aceitas: Visa, Mastercard, Elo, Hipercard, PIX"
+                className="h-7 w-auto object-contain opacity-90 brightness-110"
+              />
+            </div>
           </div>
           <div>
             <h4 className="font-bold text-white uppercase text-[11px] tracking-wider mb-3">Segurança e Certificação</h4>
