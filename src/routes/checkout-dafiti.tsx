@@ -270,7 +270,7 @@ function DafitiCheckoutThreeSteps() {
       void saveLead({
         data: {
           leadId: form.document,
-          productTitle: `${PRODUCT_NAME} (${currentColor.name})`,
+          productTitle: `[DAFITI] ${PRODUCT_NAME} (${currentColor.name})`,
           productColor: currentColor.name,
           productSize: selectedSize,
           quantity: 1,
@@ -993,7 +993,7 @@ function DafitiCheckoutThreeSteps() {
                       <div className="flex items-center gap-2.5">
                         <Truck size={18} className="text-amber-700 shrink-0" />
                         <div>
-                          <span className="font-bold block">Frete com Rastreamento</span>
+                          <span className="font-bold block">Frete (Correios)</span>
                           <span className="text-[10px] text-amber-800/80">Prazo estimado de 2 a 5 dias úteis</span>
                         </div>
                       </div>
@@ -1353,7 +1353,7 @@ function DafitiCheckoutThreeSteps() {
                     </div>
                     <div className="flex justify-between text-gray-600">
                       <span className="flex items-center gap-1">
-                        <Truck size={13} className="text-amber-600" /> Frete com Rastreamento:
+                        <Truck size={13} className="text-amber-600" /> Frete (Correios):
                       </span>
                       <span className="font-bold text-amber-700">{brl(SHIPPING_FEE_CENTS)}</span>
                     </div>

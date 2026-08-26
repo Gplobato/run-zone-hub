@@ -608,7 +608,7 @@ function DafitiTranslúcidaPDP() {
                   <div className="border-t border-gray-200 pt-2 flex items-center justify-between">
                     <div className="flex items-center gap-1.5 font-bold text-gray-900">
                       <Truck size={15} className="text-amber-600" />
-                      <span>Entrega Express (Correios)</span>
+                      <span>Frete (Correios)</span>
                     </div>
                     <span className="font-black text-black text-xs">
                       R$ {SHIPPING_FEE.toFixed(2).replace(".", ",")}

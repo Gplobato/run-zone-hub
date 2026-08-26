@@ -7,7 +7,7 @@ declare global {
   }
 }
 
-export const META_PIXEL_ID = "37033721662937730";
+export const META_PIXEL_ID = "1108161594900025";
 
 export function fbqTrack(event: string, params?: Record<string, unknown>) {
   if (typeof window !== "undefined" && typeof window.fbq === "function") {
