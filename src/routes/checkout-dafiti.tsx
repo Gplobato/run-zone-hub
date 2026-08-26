@@ -201,11 +201,19 @@ function DafitiCheckoutThreeSteps() {
 
   const totalAmount = TOTAL_PRICE_CENTS / 100; // R$ 60,80
 
-  // Track PageView on mount
+  // Track PageView on mount & Preload all images
   useEffect(() => {
     try {
       fbqTrackSingle(META_PIXEL_ID, "PageView");
     } catch {}
+
+    // Preload all color images immediately for instant color selection
+    COLORS.forEach((color) => {
+      color.images.forEach((imgSrc) => {
+        const img = new Image();
+        img.src = imgSrc;
+      });
+    });
   }, []);
 
   // ViaCEP Lookup with slight delay

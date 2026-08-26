@@ -167,6 +167,14 @@ function DafitiTranslúcidaPDP() {
         currency: "BRL",
       });
     } catch {}
+
+    // Preload all color images immediately for instantaneous 0ms color switching
+    COLORS.forEach((color) => {
+      color.images.forEach((imgSrc) => {
+        const img = new Image();
+        img.src = imgSrc;
+      });
+    });
   }, []);
 
   const handleCalculateCep = async () => {
@@ -376,21 +384,28 @@ function DafitiTranslúcidaPDP() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* LEFT: GALLERY (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {currentColor.images.map((src, i) => (
-                <div
-                  key={i}
-                  className="aspect-square bg-white overflow-hidden rounded-2xl border border-gray-200 shadow-xs group"
-                >
-                  <img
-                    src={src}
-                    alt={`${PRODUCT_NAME} - ${currentColor.name}`}
-                    loading={i < 2 ? "eager" : "lazy"}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-              ))}
-            </div>
+            {/* GALLERIES FOR ALL COLORS PRE-RENDERED FOR INSTANT 0MS SWITCHING */}
+            {COLORS.map((c) => (
+              <div
+                key={c.id}
+                className={c.id === selectedColorId ? "grid grid-cols-1 sm:grid-cols-2 gap-3.5" : "hidden"}
+              >
+                {c.images.map((src, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square bg-white overflow-hidden rounded-2xl border border-gray-200 shadow-xs group"
+                  >
+                    <img
+                      src={src}
+                      alt={`${PRODUCT_NAME} - ${c.name}`}
+                      loading="eager"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
 
             {/* HIGHLIGHTS / BENEFÍCIOS */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-4">
